@@ -11,18 +11,29 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.TreeMap;
 
 public class StorageSaving {
 
     public static Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
-    public static HashMap<String, SContainer> loadStorageData() {
-        HashMap<String, SContainer> map = new HashMap<>();
+    public static LinkedHashMap<String, SContainer> loadStorageData() {
+        TreeMap<String, SContainer> sorted = new TreeMap<>((a, b) -> {
+            String[] partsA = a.split("-", 2);
+            String[] partsB = b.split("-", 2);
+            int prefixCmp = partsB[0].compareTo(partsA[0]);
+            if (prefixCmp != 0) return prefixCmp;
+            try {
+                return Integer.compare(Integer.parseInt(partsA[1]), Integer.parseInt(partsB[1]));
+            } catch (NumberFormatException e) {
+                return partsA[1].compareTo(partsB[1]);
+            }
+        });
         File folder = new File(JefConfig.configDirectory, "storage");
         if (!folder.exists()) {
             folder.mkdirs();
-            return new HashMap<>();
+            return new LinkedHashMap<>();
         }
         for (File file : folder.listFiles()) {
             try {
@@ -32,14 +43,14 @@ public class StorageSaving {
                 }
                 SContainer container = gson.fromJson(new FileReader(file), SContainer.class);
                 if (container != null) {
-                    map.put(container.id, container);
+                    sorted.put(container.id, container);
                 }
             } catch (IOException e) {
                 JefMod.logger.info("Error while trying to load " + file.getName() + " ERROR: " + e.getMessage());
                 e.printStackTrace();
             }
         }
-        return map;
+        return new LinkedHashMap<>(sorted);
     }
 
     public static void saveStorageData(Collection<SContainer> containers) {

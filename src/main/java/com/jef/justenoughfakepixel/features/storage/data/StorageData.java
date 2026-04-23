@@ -11,7 +11,7 @@ public class StorageData {
 
 
     public static void loadContainers() {
-        containers = new LinkedHashMap<>(StorageSaving.loadStorageData());
+        containers = StorageSaving.loadStorageData();
     }
 
 

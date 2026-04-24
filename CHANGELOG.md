@@ -1,5 +1,5 @@
 
-# JEF 1.2.4 - 1.2.5 Changelog
+# JEF 1.2.5 - 1.2.6 Changelog
 
 
 - Added Storage Overlay

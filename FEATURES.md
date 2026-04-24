@@ -81,7 +81,7 @@
 ## Storage
 
 - **Storage Overlay** — Renders a Custom Storage Overlay which allows for managing inventories with ease.
-- **Jump-To-Active** — Automatically center the active storage container in overlay.
+- **Jump To Active** — Automatically center the active storage container in overlay.
 - **Multiple themes** — Storage overlay has themes "Default", "Dark", "Wooden", "Ender", "Parchment" to select from.
 
 ## Waypoints

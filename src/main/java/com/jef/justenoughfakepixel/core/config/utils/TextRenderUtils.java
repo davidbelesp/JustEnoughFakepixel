@@ -31,6 +31,8 @@ public final class TextRenderUtils {
     }
 
     public static void drawHoveringText(List<String> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font) {
+        mouseY += com.jef.justenoughfakepixel.features.misc.ScrollableTooltips.scrollOffset;
+
         if (textLines.isEmpty()) {
             GlStateManager.disableLighting();
             return;
@@ -116,5 +118,12 @@ public final class TextRenderUtils {
         java.util.List<String> lines = new java.util.ArrayList<>();
         lines.add(text);
         drawHoveringText(lines, mouseX, mouseY, font);
+    }
+
+    public static void drawItemTooltip(net.minecraft.item.ItemStack stack, int mouseX, int mouseY, FontRenderer font) {
+        if (stack == null) return;
+        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
+        java.util.List<String> tooltip = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
+        drawHoveringText(tooltip, mouseX, mouseY, font);
     }
 }

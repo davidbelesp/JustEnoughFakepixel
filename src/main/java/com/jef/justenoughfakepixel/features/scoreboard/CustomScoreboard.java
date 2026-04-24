@@ -29,43 +29,46 @@ public class CustomScoreboard extends Overlay {
     private static final int LINE_GAP = 1;
     private static final int SUPERSAMPLE = 2;
 
-    private static final int LINE_SERVER = 0;
-    private static final int LINE_SEASON = 1;
-    private static final int LINE_TIME = 2;
+    // ── known line IDs (must match exampleText indices in Scoreboard.java) ───
+    private static final int LINE_SERVER       = 0;
+    private static final int LINE_SEASON       = 1;
+    private static final int LINE_TIME         = 2;
     private static final int LINE_PROFILE_TYPE = 3;
-    private static final int LINE_ISLAND = 4;
-    private static final int LINE_LOCATION = 5;
-    private static final int LINE_EMPTY1 = 6;
-    private static final int LINE_PURSE = 7;
-    private static final int LINE_BANK = 8;
-    private static final int LINE_BITS = 9;
-    private static final int LINE_GEMS = 10;
-    private static final int LINE_EMPTY2 = 11;
-    private static final int LINE_EVENT = 12;
-    private static final int LINE_COOKIE = 13;
-    private static final int LINE_POWER = 14;
-    private static final int LINE_EMPTY3 = 15;
-    private static final int LINE_FETCHUR = 16;
-    private static final int LINE_SLAYER = 17;
-    private static final int LINE_EMPTY4 = 18;
-    private static final int LINE_EMPTY5 = 19;
-    private static final int LINE_EMPTY6 = 20;
-    private static final int LINE_EMPTY7 = 21;
+    private static final int LINE_ISLAND       = 4;
+    private static final int LINE_LOCATION     = 5;
+    private static final int LINE_EMPTY1       = 6;
+    private static final int LINE_PURSE        = 7;
+    private static final int LINE_BANK         = 8;
+    private static final int LINE_BITS         = 9;
+    private static final int LINE_POWDER       = 10;
+    private static final int LINE_GEMS         = 11;
+    private static final int LINE_EMPTY2       = 12;
+    private static final int LINE_EVENT        = 13;
+    private static final int LINE_COOKIE       = 14;
+    private static final int LINE_POWER        = 15;
+    private static final int LINE_EMPTY3       = 16;
+    private static final int LINE_FETCHUR      = 17;
+    private static final int LINE_SLAYER       = 18;
+    private static final int LINE_EMPTY4       = 19;
+    private static final int LINE_EMPTY5       = 20;
+    private static final int LINE_EMPTY6       = 21;
+    private static final int LINE_EMPTY7       = 22;
+    private static final int LINE_EXTRA        = 23;
 
     private static final String LOC_SYMBOL_NORMAL = "⏣";
-    private static final String LOC_SYMBOL_RIFT = "ф";
+    private static final String LOC_SYMBOL_RIFT   = "ф";
 
-    private static final Pattern SERVER_PATTERN = Pattern.compile("\\s*\\d{2}/\\d{2}/\\d{2}.*");
-    private static final Pattern SEASON_PATTERN = Pattern.compile("\\s*(?:(?:Late|Early) )?(?:Spring|Summer|Autumn|Winter) \\d+.*");
-    private static final Pattern TIME_PATTERN = Pattern.compile("\\s*\\d+:\\d+(?:am|pm).*");
+    private static final Pattern SERVER_PATTERN   = Pattern.compile("\\s*\\d{2}/\\d{2}/\\d{2}.*");
+    private static final Pattern SEASON_PATTERN   = Pattern.compile("\\s*(?:(?:Late|Early) )?(?:Spring|Summer|Autumn|Winter) \\d+.*");
+    private static final Pattern TIME_PATTERN     = Pattern.compile("\\s*\\d+:\\d+(?:am|pm).*");
     private static final Pattern PROFILE_TYPE_PATTERN = Pattern.compile("(?:Ironman|Stranded|Bingo|Classic)");
-    private static final Pattern PURSE_PATTERN = Pattern.compile("(?:Piggy|Purse): [\\d,.]+");
-    private static final Pattern BANK_PATTERN = Pattern.compile("Bank: .+");
-    private static final Pattern BITS_PATTERN = Pattern.compile("Bits: [\\d,.]+");
-    private static final Pattern EVENT_PATTERN = Pattern.compile("(?:Fishing Festival|Mining Fiesta|Spooky Festival|Season of Jerry|Traveling Zoo|New Year Celebration|Election|Fallen Star|Festival of Gifts).*");
-    private static final Pattern SLAYER_PATTERN = Pattern.compile("Slayer Quest");
+    private static final Pattern PURSE_PATTERN    = Pattern.compile("(?:Piggy|Purse): [\\d,.]+");
+    private static final Pattern BANK_PATTERN     = Pattern.compile("Bank: .+");
+    private static final Pattern BITS_PATTERN     = Pattern.compile("Bits: [\\d,.]+");
+    private static final Pattern EVENT_PATTERN    = Pattern.compile("(?:Fishing Festival|Mining Fiesta|Spooky Festival|Season of Jerry|Traveling Zoo|New Year Celebration|Election|Fallen Star|Festival of Gifts).*");
+    private static final Pattern SLAYER_PATTERN   = Pattern.compile("Slayer Quest");
     private static final Pattern COOKIE_SUPPRESS_PATTERN = Pattern.compile("Cookie Buff.*|\\d+d\\s+\\d+h.*");
-    private static final Pattern WEBSITE_PATTERN = Pattern.compile(".*fakepixel.*");
+    private static final Pattern WEBSITE_PATTERN  = Pattern.compile(".*fakepixel.*");
 
     @Getter
     private static CustomScoreboard instance;
@@ -77,7 +80,9 @@ public class CustomScoreboard extends Overlay {
     }
 
     public static boolean isActive() {
-        return JefConfig.feature != null && JefConfig.feature.scoreboard != null && JefConfig.feature.scoreboard.enabled;
+        return JefConfig.feature != null
+                && JefConfig.feature.scoreboard != null
+                && JefConfig.feature.scoreboard.enabled;
     }
 
     private static List<Integer> getLineOrder() {
@@ -89,34 +94,21 @@ public class CustomScoreboard extends Overlay {
         return result;
     }
 
-    @Override
-    public Position getPosition() {
-        return JefConfig.feature.scoreboard.position;
+    @Override public Position getPosition()  { return JefConfig.feature.scoreboard.position; }
+    @Override public float   getScale()      { return JefConfig.feature.scoreboard.scale; }
+    @Override public int     getBgColor()    { return ChromaColour.specialToChromaRGB(JefConfig.feature.scoreboard.scoreboardBg); }
+    @Override public int     getCornerRadius(){ return (int) JefConfig.feature.scoreboard.cornerRadius; }
+    @Override protected boolean extraGuard() { return isActive(); }
+    @Override protected boolean isEnabled()  {
+        return isActive()
+                && !Minecraft.getMinecraft().gameSettings.showDebugInfo
+                && !com.jef.justenoughfakepixel.features.storage.StorageManager.isOverlayActive();
     }
 
-    @Override
-    public float getScale() {
-        return JefConfig.feature.scoreboard.scale;
-    }
-
-    @Override
-    public int getBgColor() {
-        return ChromaColour.specialToChromaRGB(JefConfig.feature.scoreboard.scoreboardBg);
-    }
-
-    @Override
-    public int getCornerRadius() {
-        return (int) JefConfig.feature.scoreboard.cornerRadius;
-    }
-
-    @Override
-    protected boolean extraGuard() {
-        return isActive();
-    }
-
-    @Override
-    protected boolean isEnabled() {
-        return isActive() && !Minecraft.getMinecraft().gameSettings.showDebugInfo;
+    private static String formatPowder(long v) {
+        if (v >= 1_000_000) return String.format("%.1fM", v / 1_000_000.0);
+        if (v >= 1_000)     return String.format("%.1fK", v / 1_000.0);
+        return Long.toString(v);
     }
 
     private String toTitleCase(String s) {
@@ -126,6 +118,21 @@ public class CustomScoreboard extends Overlay {
         return sb.toString().trim();
     }
 
+    // ── alignment ─────────────────────────────────────────────────────────────
+    // alignment config: 0=Left, 1=Center, 2=Right
+
+    private int xFor(String line, int boxW, int alignment) {
+        Minecraft mc = Minecraft.getMinecraft();
+        int w = mc.fontRendererObj.getStringWidth(line);
+        switch (alignment) {
+            case 1: return PAD_X + (boxW - PAD_X * 2 - w) / 2;
+            case 2: return boxW - PAD_X - w;
+            default: return PAD_X;
+        }
+    }
+
+    // ── getLines ──────────────────────────────────────────────────────────────
+
     @Override
     public List<String> getLines(boolean preview) {
         List<String> raw = new ArrayList<>(SkyblockData.getScoreboardLines());
@@ -134,18 +141,18 @@ public class CustomScoreboard extends Overlay {
 
         boolean inDungeon = SkyblockData.isInDungeon();
 
-        String serverRaw = null;
-        String seasonRaw = null;
-        String timeRaw = null;
-        String locationRaw = null;
-        String purseRaw = null;
-        String bankRaw = null;
-        String bitsRaw = null;
+        String serverRaw      = null;
+        String seasonRaw      = null;
+        String timeRaw        = null;
+        String locationRaw    = null;
+        String purseRaw       = null;
+        String bankRaw        = null;
+        String bitsRaw        = null;
         String profileTypeRaw = null;
-        String websiteRaw = null;
-        List<String> eventLines = new ArrayList<>();
+        String websiteRaw     = null;
+        List<String> eventLines  = new ArrayList<>();
         List<String> slayerLines = new ArrayList<>();
-        Set<String> claimed = new LinkedHashSet<>();
+        Set<String>  claimed     = new LinkedHashSet<>();
 
         for (int i = 0; i < raw.size(); i++) {
             String l = raw.get(i);
@@ -153,256 +160,189 @@ public class CustomScoreboard extends Overlay {
             if (c.isEmpty()) continue;
 
             if (locationRaw == null && (l.contains(LOC_SYMBOL_NORMAL) || l.contains(LOC_SYMBOL_RIFT))) {
-                locationRaw = l;
-                claimed.add(l);
-                continue;
+                locationRaw = l; claimed.add(l); continue;
             }
             if (serverRaw == null && SERVER_PATTERN.matcher(c).matches()) {
-                serverRaw = l;
-                claimed.add(l);
-                continue;
+                serverRaw = l; claimed.add(l); continue;
             }
             if (seasonRaw == null && SEASON_PATTERN.matcher(c).matches()) {
-                seasonRaw = l;
-                claimed.add(l);
-                continue;
+                seasonRaw = l; claimed.add(l); continue;
             }
             if (timeRaw == null && TIME_PATTERN.matcher(c).matches()) {
-                timeRaw = l;
-                claimed.add(l);
-                continue;
+                timeRaw = l; claimed.add(l); continue;
             }
             if (purseRaw == null && PURSE_PATTERN.matcher(c).find()) {
-                purseRaw = l;
-                claimed.add(l);
-                continue;
+                purseRaw = l; claimed.add(l); continue;
             }
             if (bankRaw == null && BANK_PATTERN.matcher(c).find()) {
-                bankRaw = l;
-                claimed.add(l);
-                continue;
+                bankRaw = l; claimed.add(l); continue;
             }
             if (bitsRaw == null && BITS_PATTERN.matcher(c).find()) {
-                bitsRaw = l;
-                claimed.add(l);
-                continue;
+                bitsRaw = l; claimed.add(l); continue;
             }
             if (COOKIE_SUPPRESS_PATTERN.matcher(c).find()) {
-                claimed.add(l);
-                continue;
+                claimed.add(l); continue;
             }
             if (profileTypeRaw == null && PROFILE_TYPE_PATTERN.matcher(c).find()) {
-                profileTypeRaw = l;
-                claimed.add(l);
-                continue;
+                profileTypeRaw = l; claimed.add(l); continue;
             }
             if (EVENT_PATTERN.matcher(c).find()) {
-                eventLines.add(l);
-                claimed.add(l);
+                eventLines.add(l); claimed.add(l);
                 if (i + 1 < raw.size()) {
                     String next = raw.get(i + 1);
                     if (!ColorUtils.stripColor(next).trim().isEmpty()) {
-                        eventLines.add(next);
-                        claimed.add(next);
-                        i++;
+                        eventLines.add(next); claimed.add(next); i++;
                     }
                 }
                 continue;
             }
             if (slayerLines.isEmpty() && SLAYER_PATTERN.matcher(c).find()) {
-                claimed.add(l);
-                slayerLines.add(l);
-                for (int offset = 1; offset <= 2 && (i + offset) < raw.size(); offset++) {
-                    String next = raw.get(i + offset);
+                claimed.add(l); slayerLines.add(l);
+                for (int off = 1; off <= 2 && (i + off) < raw.size(); off++) {
+                    String next = raw.get(i + off);
                     if (!ColorUtils.stripColor(next).trim().isEmpty()) {
-                        slayerLines.add(next);
-                        claimed.add(next);
+                        slayerLines.add(next); claimed.add(next);
                     }
                 }
                 i += 2;
                 continue;
             }
             if (websiteRaw == null && WEBSITE_PATTERN.matcher(c).find()) {
-                websiteRaw = l;
-                claimed.add(l);
+                websiteRaw = l; claimed.add(l);
             }
         }
 
-        Map<String, Integer> rawIndex = new LinkedHashMap<>();
-        for (int i = 0; i < raw.size(); i++)
-            rawIndex.put(raw.get(i), i);
+        // Build list of unclaimed lines in their original scoreboard order
+        List<String> unknownLines = new ArrayList<>();
+        for (int ri = 0; ri < raw.size(); ri++) {
+            String l = raw.get(ri);
+            if (claimed.contains(l)) continue;
+            String c = ColorUtils.stripColor(l).trim();
+            if (c.isEmpty() || WEBSITE_PATTERN.matcher(c).find()) continue;
+            UnknownLinesHandler.handle(l);
+            unknownLines.add(l);
+        }
 
-        List<String> lines = new ArrayList<>();
+        List<String> lines     = new ArrayList<>();
+        List<Integer> rawIndex = new ArrayList<>();
 
         String title = SkyblockData.getScoreboardTitle();
-        if (title != null && !title.isEmpty()) lines.add(title);
-
-        List<Integer> lineRawIndex = new ArrayList<>();
-        lineRawIndex.add(-1);
+        if (title != null && !title.isEmpty()) { lines.add(title); rawIndex.add(-1); }
 
         for (int id : getLineOrder()) {
             switch (id) {
                 case LINE_SERVER:
-                    if (serverRaw != null) {
-                        lines.add(serverRaw);
-                        lineRawIndex.add(rawIndex.getOrDefault(serverRaw, -1));
-                    }
+                    if (serverRaw != null) { lines.add(serverRaw); rawIndex.add(-1); }
                     break;
                 case LINE_SEASON:
-                    if (seasonRaw != null) {
-                        lines.add(seasonRaw);
-                        lineRawIndex.add(rawIndex.getOrDefault(seasonRaw, -1));
-                    }
+                    if (seasonRaw != null) { lines.add(seasonRaw); rawIndex.add(-1); }
                     break;
                 case LINE_TIME:
-                    if (timeRaw != null) {
-                        lines.add(timeRaw);
-                        lineRawIndex.add(rawIndex.getOrDefault(timeRaw, -1));
-                    }
+                    if (timeRaw != null) { lines.add(timeRaw); rawIndex.add(-1); }
                     break;
                 case LINE_PROFILE_TYPE:
-                    if (profileTypeRaw != null) {
-                        lines.add(profileTypeRaw);
-                        lineRawIndex.add(rawIndex.getOrDefault(profileTypeRaw, -1));
-                    }
+                    if (profileTypeRaw != null) { lines.add(profileTypeRaw); rawIndex.add(-1); }
                     break;
                 case LINE_ISLAND: {
                     SkyblockData.Location loc = SkyblockData.getCurrentLocation();
                     if (loc != SkyblockData.Location.NONE) {
                         String name;
                         if (loc == SkyblockData.Location.CRIMSON_ISLE) name = "Crimson Isles";
-                        else if (loc == SkyblockData.Location.HUB) name = "Skyblock Hub";
+                        else if (loc == SkyblockData.Location.HUB)     name = "Skyblock Hub";
                         else name = toTitleCase(loc.name());
-                        lines.add("㋖ §b" + name);
-                        lineRawIndex.add(-1);
+                        lines.add("㋖ §b" + name); rawIndex.add(-1);
                     }
                     break;
                 }
                 case LINE_LOCATION:
-                    if (locationRaw != null) {
-                        lines.add(locationRaw);
-                        lineRawIndex.add(rawIndex.getOrDefault(locationRaw, -1));
-                    }
+                    if (locationRaw != null) { lines.add(locationRaw); rawIndex.add(-1); }
                     break;
                 case LINE_PURSE:
-                    if (purseRaw != null) {
-                        lines.add(purseRaw);
-                        lineRawIndex.add(rawIndex.getOrDefault(purseRaw, -1));
-                    }
+                    if (purseRaw != null) { lines.add(purseRaw); rawIndex.add(-1); }
                     break;
                 case LINE_BANK:
                     if (!inDungeon) {
                         if (bankRaw != null) {
-                            lines.add(bankRaw);
-                            lineRawIndex.add(rawIndex.getOrDefault(bankRaw, -1));
+                            lines.add(bankRaw); rawIndex.add(-1);
                         } else {
                             String bank = BankParser.getBank();
-                            if (bank != null) {
-                                lines.add("§fBank: §6" + bank);
-                                lineRawIndex.add(-1);
-                            }
+                            if (bank != null) { lines.add("§fBank: §6" + bank); rawIndex.add(-1); }
                         }
                     }
                     break;
                 case LINE_BITS:
-                    if (bitsRaw != null) {
-                        lines.add(bitsRaw);
-                        lineRawIndex.add(rawIndex.getOrDefault(bitsRaw, -1));
+                    if (bitsRaw != null) { lines.add(bitsRaw); rawIndex.add(-1); }
+                    break;
+                case LINE_POWDER:
+                    if (SkyblockData.isOnSkyblock() && !inDungeon
+                            && (SkyblockData.getCurrentLocation() == SkyblockData.Location.DWARVEN
+                            || SkyblockData.getCurrentLocation() == SkyblockData.Location.CRYSTAL_HOLLOWS)) {
+                        long mithril  = TablistParser.getMithrilPowder();
+                        long gemstone = TablistParser.getGemstonePowder();
+                        long glacite  = TablistParser.getGlacitePowder();
+                        if (mithril > 0 || gemstone > 0 || glacite > 0) {
+                            lines.add("§9§lPowder"); rawIndex.add(-1);
+                            if (mithril  > 0) { lines.add(" §7- §fMithril: §2"  + formatPowder(mithril));  rawIndex.add(-1); }
+                            if (gemstone > 0) { lines.add(" §7- §fGemstone: §d" + formatPowder(gemstone)); rawIndex.add(-1); }
+                            if (glacite  > 0) { lines.add(" §7- §fGlacite: §b"  + formatPowder(glacite));  rawIndex.add(-1); }
+                        }
                     }
                     break;
                 case LINE_GEMS:
                     if (!inDungeon) {
                         String gems = TablistParser.readGems();
-                        if (gems != null) {
-                            lines.add("§fGems: §a" + gems);
-                            lineRawIndex.add(-1);
-                        }
+                        if (gems != null) { lines.add("§fGems: §a" + gems); rawIndex.add(-1); }
                     }
                     break;
                 case LINE_EVENT:
-                    for (String el : eventLines) {
-                        lines.add(el);
-                        lineRawIndex.add(rawIndex.getOrDefault(el, -1));
-                    }
+                    for (String el : eventLines) { lines.add(el); rawIndex.add(-1); }
                     break;
                 case LINE_COOKIE:
                     if (!inDungeon) {
                         String cookie = TablistParser.readCookieBuff();
                         if (cookie != null && !cookie.toLowerCase().contains("not active")) {
-                            lines.add("§dCookie Buff: §f" + cookie);
-                            lineRawIndex.add(-1);
+                            lines.add("§dCookie Buff: §f" + cookie); rawIndex.add(-1);
                         }
                     }
                     break;
                 case LINE_POWER: {
                     String power = MaxwellPowerSync.getPower();
                     if (power != null && SkyblockData.isOnSkyblock()) {
-                        lines.add("§fPower: §d" + power);
-                        lineRawIndex.add(-1);
+                        lines.add("§fPower: §d" + power); rawIndex.add(-1);
                     }
                     break;
                 }
                 case LINE_FETCHUR:
                     if (SkyblockData.isOnSkyblock()) {
-                        lines.add("§fFetchur: §e" + FetchurData.getTodaysItem());
-                        lineRawIndex.add(-1);
+                        lines.add("§fFetchur: §e" + FetchurData.getTodaysItem()); rawIndex.add(-1);
                     }
                     break;
                 case LINE_SLAYER:
-                    if (!inDungeon) {
-                        for (String sl : slayerLines) {
-                            lines.add(sl);
-                            lineRawIndex.add(rawIndex.getOrDefault(sl, -1));
-                        }
-                    }
+                    if (!inDungeon)
+                        for (String sl : slayerLines) { lines.add(sl); rawIndex.add(-1); }
                     break;
-                case LINE_EMPTY1:
-                case LINE_EMPTY2:
-                case LINE_EMPTY3:
-                case LINE_EMPTY4:
-                case LINE_EMPTY5:
-                case LINE_EMPTY6:
-                case LINE_EMPTY7:
+
+                case LINE_EXTRA:
+                    for (String ul : unknownLines) { lines.add(ul); rawIndex.add(-1); }
+                    break;
+                case LINE_EMPTY1: case LINE_EMPTY2: case LINE_EMPTY3: case LINE_EMPTY4:
+                case LINE_EMPTY5: case LINE_EMPTY6: case LINE_EMPTY7:
                     if (SkyblockData.isOnSkyblock() && !inDungeon) {
-                        lines.add("");
-                        lineRawIndex.add(-1);
+                        lines.add(""); rawIndex.add(-1);
                     }
                     break;
             }
         }
 
-        for (int ri = 0; ri < raw.size(); ri++) {
-            String l = raw.get(ri);
-            if (claimed.contains(l)) continue;
-
-            String c = ColorUtils.stripColor(l).trim();
-            if (c.isEmpty()) continue;
-            if (WEBSITE_PATTERN.matcher(c).find()) continue;
-
-            UnknownLinesHandler.handle(l);
-
-            int insertAt = lines.size();
-            for (int j = lineRawIndex.size() - 1; j >= 0; j--) {
-                if (lineRawIndex.get(j) != -1 && lineRawIndex.get(j) <= ri) {
-                    insertAt = j + 1;
-                    break;
-                }
-            }
-
-            lines.add(insertAt, l);
-            lineRawIndex.add(insertAt, ri);
-        }
-
-        if (websiteRaw != null) lines.add(websiteRaw);
+        if (websiteRaw != null) { lines.add(websiteRaw); rawIndex.add(-1); }
 
         List<String> clean = new ArrayList<>();
-        for (String line : lines) {
-            clean.add(ColorUtils.stripColor(line));
-        }
+        for (String line : lines) clean.add(ColorUtils.stripColor(line));
         CustomScoreboardAPI.update(clean);
         return lines;
     }
 
+    // ── render ────────────────────────────────────────────────────────────────
 
     @Override
     public void render(boolean preview) {
@@ -413,17 +353,18 @@ public class CustomScoreboard extends Overlay {
         if (lines.isEmpty()) return;
 
         boolean down = Keyboard.isKeyDown(JefConfig.feature.debug.scoreboardDebugKey);
-        if (down && !wasDown && JefConfig.feature.debug.scoreboardDebug) {
+        if (down && !wasDown && JefConfig.feature.debug.scoreboardDebug)
             ChatUtils.sendMessage(CustomScoreboardAPI.toJson());
-        }
         wasDown = down;
 
-        Minecraft mc = Minecraft.getMinecraft();
-        float scale = getScale();
-        int lh = LINE_HEIGHT + LINE_GAP;
-        int ss = SUPERSAMPLE;
+        Minecraft mc   = Minecraft.getMinecraft();
+        float scale    = getScale();
+        int lh         = LINE_HEIGHT + LINE_GAP;
+        int ss         = SUPERSAMPLE;
+        int alignment  = JefConfig.feature.scoreboard.lineAlignment;
+        int minWidth   = JefConfig.feature.scoreboard.minWidth;
 
-        int maxW = 60;
+        int maxW = minWidth;
         for (String line : lines)
             maxW = Math.max(maxW, mc.fontRendererObj.getStringWidth(line));
 
@@ -448,17 +389,21 @@ public class CustomScoreboard extends Overlay {
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
 
         int bgColor = getBgColor();
-        if ((bgColor >>> 24) != 0) drawRoundedRect(0, 0, boxW * ss, boxH * ss, getCornerRadius() * ss, bgColor);
+        if ((bgColor >>> 24) != 0)
+            drawRoundedRect(0, 0, boxW * ss, boxH * ss, getCornerRadius() * ss, bgColor);
 
         GL11.glScalef(ss, ss, 1f);
 
+        // Line 0 (title) is always centered
         String title = lines.get(0);
-        int titleX = (boxW - mc.fontRendererObj.getStringWidth(title)) / 2;
+        int titleX   = (boxW - mc.fontRendererObj.getStringWidth(title)) / 2;
         mc.fontRendererObj.drawStringWithShadow(title, titleX, PAD_Y, -1);
 
         int textY = PAD_Y + lh;
         for (int i = 1; i < lines.size(); i++) {
-            mc.fontRendererObj.drawStringWithShadow(lines.get(i), PAD_X, textY, 0xFFFFFF);
+            String line = lines.get(i);
+            int lx = xFor(line, boxW, alignment);
+            mc.fontRendererObj.drawStringWithShadow(line, lx, textY, 0xFFFFFF);
             textY += lh;
         }
 

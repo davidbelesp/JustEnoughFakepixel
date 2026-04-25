@@ -14,8 +14,13 @@ import com.jef.justenoughfakepixel.features.profile.data.base.Statistics;
 import com.jef.justenoughfakepixel.features.profile.data.dungeon.DungeonData;
 import com.jef.justenoughfakepixel.features.profile.data.dungeon.Floor;
 import com.jef.justenoughfakepixel.features.profile.data.dungeon.FloorData;
+import com.jef.justenoughfakepixel.features.profile.data.inventory.InventoryData;
 import com.jef.justenoughfakepixel.features.profile.data.skills.Skill;
 import com.jef.justenoughfakepixel.features.profile.data.skills.SkillData;
+import com.jef.justenoughfakepixel.features.profile.data.skills.SkillsData;
+import com.jef.justenoughfakepixel.features.profile.data.slayer.Slayer;
+import com.jef.justenoughfakepixel.features.profile.data.slayer.SlayerData;
+import com.jef.justenoughfakepixel.features.profile.data.slayer.SlayersData;
 import com.jef.justenoughfakepixel.features.profile.vars.EquipmentSlot;
 import com.jef.justenoughfakepixel.features.profile.vars.ProfileMode;
 import com.jef.justenoughfakepixel.utils.ColorUtils;
@@ -54,66 +59,164 @@ public class ProfileParser {
                 windowID, 19, 0, 0, Minecraft.getMinecraft().thePlayer
         );
 
-        // INVENTORY
-        GuiWaiter.waitFor("View Inventory", 2, 8,invChest -> {
-            InventoryData invData = parseInvData(invChest);
-            if (invData == null) {
+        // Data
+        final InventoryData[] inventory = new InventoryData[1];
+        final SkillsData[] skill = new SkillsData[1];
+        final HOTMData[] mountain = new HOTMData[1];
+        final DungeonData[] dungeonData = new DungeonData[1];
+        final SlayersData[] slayerData = new SlayersData[1];
+        // Inventory
+        GuiWaiter.waitFor("View Inventory",2,8,"View Profile",inv -> {
+            inventory[0] = parseInvData(inv);
+            if (inventory[0] == null) {
                 JefMod.logger.info("[ProfileParser] InventoryData was null for: " + base.playerName);
                 parsing = false;
                 return;
             }
             JefMod.logger.info("[ProfileParser] InventoryData parsed for: " + base.playerName);
+        },prof1 -> {
+            windowID = prof1.windowId;
+            mc.playerController.windowClick(windowID,21,0,0,mc.thePlayer);
 
-            GuiWaiter.waitFor("View Profile",2,-1,prof1 -> {
-                windowID = prof1.windowId;
+            // Skills
+            GuiWaiter.waitFor("View Skills",2,49,"View Profile",skills -> {
+                skill[0] = parseSkills(skills);
+                if(skill[0] == null){
+                    JefMod.logger.info("[ProfileParser] SkillData was null for: " + base.playerName);
+                    parsing = false;
+                    return;
+                }
+                JefMod.logger.info("[ProfileParser] SkillData parsed for: " + base.playerName);
+            },prof2 -> {
+                windowID = prof2.windowId;
+                mc.playerController.windowClick(windowID,41,0,0,mc.thePlayer);
 
-                mc.playerController.windowClick(windowID, 21, 0, 0, mc.thePlayer);
-                GuiWaiter.waitFor("View Skills", 2,49, skillChest -> {
-                    EnumMap<Skill, SkillData> skillData = parseSkills(skillChest);
-                    if (skillData.isEmpty()) {
-                        JefMod.logger.info("[ProfileParser] SkillData was null for: " + base.playerName);
+                // HOTM
+                GuiWaiter.waitFor("View HOTM", 2,31,"View Profile",hotm -> {
+                    mountain[0] = parseHOTM(hotm);
+                    if(mountain[0] == null){
+                        JefMod.logger.info("[ProfileParser] HOTMData was null for: " + base.playerName);
                         parsing = false;
                         return;
                     }
-                    JefMod.logger.info("[ProfileParser] SkillData parsed for: " + base.playerName);
+                    JefMod.logger.info("[ProfileParser] HOTMData parsed for: " + base.playerName);
+                },prof3 -> {
+                    windowID = prof3.windowId;
+                    mc.playerController.windowClick(windowID,43,0,0,mc.thePlayer);
 
-                    GuiWaiter.waitFor("View Profile",2,-1,prof2 ->  {
-                        windowID = prof2.windowId;
-                        mc.playerController.windowClick(windowID,41,0,0,mc.thePlayer);
-                        GuiWaiter.waitFor("View HOTM",2,31,hotm -> {
-                            HOTMData hotmData = parseHOTM(hotm);
-                            if(hotmData == null){
-                                JefMod.logger.info("[ProfileParser] HOTMData was null for: " + base.playerName);
+                    // Dungeon
+                    GuiWaiter.waitFor("View Dungeon Stats",2,49,"View Profile",dungeon -> {
+                        dungeonData[0] = parseDungeon(dungeon);
+                        if(dungeonData[0] == null){
+                            JefMod.logger.info("[ProfileParser] DungeonData was null for: " + base.playerName);
+                            parsing = false;
+                            return;
+                        }
+                        JefMod.logger.info("[ProfileParser] DungeonData parsed for: " + base.playerName);
+                    },prof4 -> {
+
+                        windowID = prof4.windowId;
+                        mc.playerController.windowClick(windowID,33,0,0,mc.thePlayer);
+
+                        GuiWaiter.waitFor("View Slayers",2,31,"View Profile", slayers -> {
+                            slayerData[0] = parseSlayer(slayers);
+                            if(slayerData[0] == null){
+                                JefMod.logger.info("[ProfileParser] SlayersData was null for: " + base.playerName);
                                 parsing = false;
                                 return;
                             }
-                            JefMod.logger.info("[ProfileParser] HOTMData parsed for: " + base.playerName);
-                            GuiWaiter.waitFor("View Profile",2,-1,prof3 -> {
-                                windowID = prof3.windowId;
-                                mc.playerController.windowClick(windowID,43,0,0,mc.thePlayer);
-                                GuiWaiter.waitFor("View Dungeon Stats",2,49,dungeon -> {
-                                    DungeonData dungeonData = parseDungeon(dungeon);
-                                    if(dungeonData == null){
-                                        JefMod.logger.info("[ProfileParser] DungeonData was null for: " + base.playerName);
-                                        parsing = false;
-                                        return;
-                                    }
-                                    JefMod.logger.info("[ProfileParser] DungeonData parsed for: " + base.playerName);
-                                    ProfileData profile = new ProfileData(base, invData, skillData,hotmData,dungeonData);
-                                    profileData.put(base.playerName, profile);
-                                    writeToJson(profile);
-                                    parsing = false;
-                                    JefMod.logger.info("[ProfileParser] Saved profile: " + base.playerName);
-                                });
-                            });
+                            JefMod.logger.info("[ProfileParser] SlayersData parsed for: " + base.playerName);
+                        },prof5 -> {
+                            if(!parsing) {
+                                JefMod.logger.info("[ProfileParser] Not Parsing cause one data is null");
+                                JefMod.logger.info("[ProfileParser] Data: Inventory: " +
+                                        (inventory[0] != null) + " | Skills: " + (skill[0] != null) +
+                                        " | HOTM: "+ (mountain[0] != null) + " | Dungeon: " + (dungeonData[0] != null)
+                                + " | Slayer: " + (slayerData[0] != null));
+                                return;
+                            }
+                            ProfileData profile = new ProfileData(base, inventory[0], skill[0],mountain[0], dungeonData[0],slayerData[0]);
+                            profileData.put(base.playerName, profile);
+                            writeToJson(profile);
+                            parsing = false;
+                            JefMod.logger.info("[ProfileParser] Saved profile: " + base.playerName);
                         });
-
                     });
                 });
             });
         });
     }
 
+    public static SlayersData parseSlayer(ContainerChest container) {
+        if (container == null) return null;
+        String title = ColorUtils.stripColor(
+                container.getLowerChestInventory().getDisplayName().getUnformattedText()
+        ).trim();
+        if (!title.equals("View Slayers")) return null;
+        EnumMap<Slayer, SlayerData> slayers = new EnumMap<>(Slayer.class);
+        for(Slayer slayer : Slayer.values()){
+            JefMod.logger.info("[Slayer1] " + slayer);
+            ItemStack stack = container.getSlot(slayer.itemSlot).getStack();
+            if(stack == null) { JefMod.logger.info("[Slayer] Null stack at slot " + slayer.itemSlot + " for " + slayer + " — skipping"); continue; }
+            if(!ColorUtils.stripColor(stack.getDisplayName()).equals(slayer.itemName)) {
+                JefMod.logger.info("[Slayer] Name mismatch for " + slayer + " at slot " + slayer.itemSlot + " — got: " + ColorUtils.stripColor(stack.getDisplayName()) + ", expected: " + slayer.itemName + " — skipping");
+                continue;
+            }
+            List<String> lore = getLore(stack);
+
+            int curLevel = -1,t1Kills = -1,t2Kills = -1,t3Kills = -1,t4Kills = -1,t5Kills = -1;
+            long curExp = -1,reqExp = -1;
+            HashMap<String,Integer> drops = new HashMap<>();
+            int dropIndex = -1;
+            try {
+                for (String s : lore) {
+                    if (s.startsWith("Level:")) {
+                        curLevel = Integer.parseInt(s.split(":")[1].trim());
+                    }
+                    if(s.endsWith("XP") && s.contains("/")){
+                        String[] words = s.split(" ");
+                        String[] exp = words[0].split("/");
+                        curExp = parseRawNumber(exp[0].trim());
+                        reqExp = parseRawNumber(exp[1].trim());
+                    }
+                    if(s.startsWith("T1 Kills:")){
+                        t1Kills = (int)parseRawNumber(s.split(":")[1].trim());
+                    }
+                    if(s.startsWith("T2 Kills:")){
+                        t2Kills = (int)parseRawNumber(s.split(":")[1].trim());
+                    }
+                    if(s.startsWith("T3 Kills:")){
+                        t3Kills = (int)parseRawNumber(s.split(":")[1].trim());
+                    }
+                    if(s.startsWith("T4 Kills:")){
+                        t4Kills = (int)parseRawNumber(s.split(":")[1].trim());
+                    }
+                    if (s.startsWith("T5 Kills:")){
+                        t5Kills = (int)parseRawNumber(s.split(":")[1].trim());
+                    }
+                    if(s.startsWith("Rare Drops:")){
+                        dropIndex = lore.indexOf(s) + 1;
+                    }
+                }
+                for(int i = dropIndex;i < lore.size();i++){
+                    String line = lore.get(i);
+                    if(!line.contains(":")) break;
+                    String[] words = line.split(":");
+                    drops.put(words[0].trim(),(int)parseRawNumber(words[1].trim()));
+                }
+                if(curLevel < 0) { JefMod.logger.info("[Slayer] No level found for " + slayer + " — skipping"); continue; }
+                JefMod.logger.info("[Slayer2] " + slayer + " | " + slayers.size());
+                slayers.put(slayer,new SlayerData(
+                        curLevel,curExp,reqExp,t1Kills,t2Kills,t3Kills,t4Kills,t5Kills,drops
+                ));
+                JefMod.logger.info("[Slayer3] " + slayer + " | " + slayers.size());
+            }catch (NumberFormatException e){
+                JefMod.logger.info(e.getMessage());
+                e.printStackTrace();
+            }
+        }
+        return new SlayersData(slayers);
+    }
     public static DungeonData parseDungeon(ContainerChest container){
         if (container == null) return null;
         String title = ColorUtils.stripColor(
@@ -510,14 +613,14 @@ public class ProfileParser {
 
 
 
-    public static EnumMap<Skill, SkillData> parseSkills(ContainerChest container) {
+    public static SkillsData parseSkills(ContainerChest container) {
         EnumMap<Skill, SkillData> result = new EnumMap<>(Skill.class);
-        if (container == null) return result;
+        if (container == null) return null;
 
         String title = ColorUtils.stripColor(
                 container.getLowerChestInventory().getDisplayName().getUnformattedText()
         ).trim();
-        if (!title.equals("View Skills")) return result;
+        if (!title.equals("View Skills")) return null;
 
         int[] slots = {19,20,21,22,23,24,25,30,31,32};
 
@@ -571,8 +674,8 @@ public class ProfileParser {
 
             result.put(skill, new SkillData(skill, currentLevel, currentXp, requiredXp));
         }
-
-        return result;
+        if(result.isEmpty()) return null;
+        return new SkillsData(result);
     }
 
     private static long parseRawNumber(String raw) {

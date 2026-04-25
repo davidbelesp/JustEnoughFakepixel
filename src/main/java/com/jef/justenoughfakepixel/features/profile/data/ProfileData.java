@@ -2,19 +2,20 @@ package com.jef.justenoughfakepixel.features.profile.data;
 
 import com.jef.justenoughfakepixel.features.profile.data.base.BaseData;
 import com.jef.justenoughfakepixel.features.profile.data.dungeon.DungeonData;
-import com.jef.justenoughfakepixel.features.profile.data.skills.Skill;
-import com.jef.justenoughfakepixel.features.profile.data.skills.SkillData;
+import com.jef.justenoughfakepixel.features.profile.data.inventory.InventoryData;
+import com.jef.justenoughfakepixel.features.profile.data.skills.SkillsData;
+import com.jef.justenoughfakepixel.features.profile.data.slayer.SlayersData;
 import lombok.AllArgsConstructor;
 
-import java.util.EnumMap;
 
 @AllArgsConstructor
 public class ProfileData {
 
     public BaseData baseData;
     public InventoryData inventoryData;
-    public EnumMap<Skill, SkillData> skillData;
+    public SkillsData skillData;
     public HOTMData hotmData;
     public DungeonData dungeonData;
+    public SlayersData slayersData;
 
 }

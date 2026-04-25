@@ -1,4 +1,4 @@
-package com.jef.justenoughfakepixel.features.profile.data;
+package com.jef.justenoughfakepixel.features.profile.data.inventory;
 
 import com.jef.justenoughfakepixel.features.profile.vars.EquipmentSlot;
 import lombok.AllArgsConstructor;

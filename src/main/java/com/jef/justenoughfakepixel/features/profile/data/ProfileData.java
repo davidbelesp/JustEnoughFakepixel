@@ -3,6 +3,7 @@ package com.jef.justenoughfakepixel.features.profile.data;
 import com.jef.justenoughfakepixel.features.profile.data.base.BaseData;
 import com.jef.justenoughfakepixel.features.profile.data.dungeon.DungeonData;
 import com.jef.justenoughfakepixel.features.profile.data.inventory.InventoryData;
+import com.jef.justenoughfakepixel.features.profile.data.pets.PetsData;
 import com.jef.justenoughfakepixel.features.profile.data.skills.SkillsData;
 import com.jef.justenoughfakepixel.features.profile.data.slayer.SlayersData;
 import com.jef.justenoughfakepixel.features.profile.data.wardrobe.WardrobeData;
@@ -19,5 +20,6 @@ public class ProfileData {
     public DungeonData dungeonData;
     public SlayersData slayersData;
     public WardrobeData wardrobeData;
+    public PetsData petsData;
 
 }

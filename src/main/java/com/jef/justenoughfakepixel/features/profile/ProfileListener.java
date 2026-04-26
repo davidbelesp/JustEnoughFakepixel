@@ -16,7 +16,9 @@ import java.util.List;
 public class ProfileListener {
 
     private static final List<String> PROFILE_TITLES = Arrays.asList(
-            "Select Profile", "View Profile", "View Inventory","View Skills","View HOTM","View Dungeon Stats","View Slayers","View Wardrobe"
+            "Select Profile", "View Profile", "View Inventory",
+            "View Skills","View HOTM","View Dungeon Stats",
+            "View Slayers","View Wardrobe","View Pets"
     );
 
     @SubscribeEvent

@@ -27,6 +27,10 @@ public class Misc {
     @Category(name = "Inventory Buttons", desc = "Clickable shortcut buttons on inventories")
     public InvButtonsConfig invButtons = new InvButtonsConfig();
 
+    @Expose
+    @Category(name = "JEFProtect", desc = "Prevent dropping protected items; use /jefprotect to toggle protection on the held item")
+    public ProtectItemConfig protectItem = new ProtectItemConfig();
+
     // ── standalone options ───────────────────────────────────────────────────
     @Expose
     @ConfigOption(name = "Item Stack Tips", desc = "Shows enchant levels on books and floor numbers on Catacombs passes")

@@ -93,6 +93,11 @@ public final class GuiTextures {
     public static final ResourceLocation CASE_BLUR_SHADER = new ResourceLocation("justenoughfakepixel", "shaders/post/blur.json");
 
     // -------------------------------------------------------------------------
+    // Protect Item
+    // -------------------------------------------------------------------------
+    public static final ResourceLocation PROTECT_ITEM_STAR = new ResourceLocation("justenoughfakepixel", "textures/gui/protect_star.png");
+
+    // -------------------------------------------------------------------------
     // Capes UI
     // -------------------------------------------------------------------------
     public static final ResourceLocation CAPES_UI = new ResourceLocation("justenoughfakepixel", "textures/gui/capesUI.png");

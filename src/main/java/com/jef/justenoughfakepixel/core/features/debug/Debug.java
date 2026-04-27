@@ -3,7 +3,6 @@ package com.jef.justenoughfakepixel.core.features.debug;
 import com.google.gson.annotations.Expose;
 import com.jef.justenoughfakepixel.core.config.gui.config.ConfigAnnotations.*;
 import com.jef.justenoughfakepixel.core.features.debug.*;
-import org.lwjgl.input.Keyboard;
 
 public class Debug {
 
@@ -25,8 +24,4 @@ public class Debug {
     @ConfigOption(name = "Reload Repo", desc = "Re-fetch all data from the remote repo")
     @ConfigEditorButton(runnableId = "reloadRepo", buttonText = "Reload")
     public boolean reloadRepoButton = false;
-
-    // ── flat fields kept for runtime code compatibility ──────────────────────
-    @Expose public boolean scoreboardDebug = false;
-    @Expose public int scoreboardDebugKey = Keyboard.KEY_NONE;
 }

@@ -160,7 +160,7 @@ public class CapeManager {
     }
 
     public static boolean hasCape(String user) {
-        if (!JefConfig.feature.cosmetics.capesEnabled) return false;
+        if (!JefConfig.feature.cosmetics.capes.capesEnabled) return false;
         String id = activeCapes.get(user);
         return id != null && !id.equals("none") && !id.equals("pending");
     }
@@ -178,8 +178,8 @@ public class CapeManager {
     }
 
     public static void initialise(boolean force) {
-        if (!JefConfig.feature.cosmetics.capesEnabled && !force) return;
-        POLL_INTERVAL_MS = JefConfig.feature.cosmetics.reloadInterval * 1000L;
+        if (!JefConfig.feature.cosmetics.capes.capesEnabled && !force) return;
+        POLL_INTERVAL_MS = JefConfig.feature.cosmetics.capes.reloadInterval * 1000L;
         capes.clear();
 
         new Thread(CapeLoader::loadAllCapes, "CapeLoader-Init").start();

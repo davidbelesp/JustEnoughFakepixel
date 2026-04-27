@@ -24,12 +24,4 @@ public class Waypoints {
     @Expose
     @Category(name = "Auto Advance", desc = "Settings for automatic waypoint progression")
     public AutoAdvanceConfig autoAdvance = new AutoAdvanceConfig();
-
-    // ── flat fields kept for runtime code compatibility ──────────────────────
-    @Expose public String boxColour = "0:217:255:255:0";
-    @Expose public String tracerColour = "0:255:255:255:0";
-    @Expose public String labelColour = "0:255:255:255:255";
-    @Expose public String distanceLabelColour = "0:255:85:255:255";
-    @Expose public float advanceRange = 5.0f;
-    @Expose public float advanceDelayMs = 2000f;
 }

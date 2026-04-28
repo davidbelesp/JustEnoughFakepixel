@@ -9,9 +9,4 @@ public class Cosmetics {
     @Expose
     @Category(name = "Capes", desc = "Settings for the Capes")
     public CapesConfig capes = new CapesConfig();
-
-    // ── flat fields kept for runtime code compatibility ──────────────────────
-    @Expose public boolean capesEnabled = true;
-    @Expose public String reloadCapes = "";
-    @Expose public int reloadInterval = 30;
 }

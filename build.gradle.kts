@@ -80,7 +80,10 @@ dependencies {
         isTransitive = false
     }
     annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
-    implementation(kotlin("stdlib"))
+
+    // Kotlin standard library, must be shadowed into the JAR
+    shadowImpl(kotlin("stdlib"))
+
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
 
@@ -149,6 +152,7 @@ tasks.shadowJar {
     fun relocate(name: String) = relocate(name, "$baseGroup.deps.$name")
     relocate("org.reflections")
     relocate("org.javassist")
+    relocate("kotlin")
 }
 
 tasks.assemble.get().dependsOn(tasks.remapJar)

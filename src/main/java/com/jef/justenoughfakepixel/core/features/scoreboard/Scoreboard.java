@@ -86,5 +86,10 @@ public class Scoreboard {
     ));
 
     @Expose
+    @ConfigOption(name = "Unknown Lines Warning", desc = "Show a chat warning when the scoreboard contains a line the mod doesn't recognise.\n§eReporting these in the Discord helps get them added!")
+    @ConfigEditorBoolean
+    public boolean unknownLinesWarning = false;
+
+    @Expose
     public Position position = new Position(-2, 140);
 }

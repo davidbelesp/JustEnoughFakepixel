@@ -6,6 +6,7 @@ import com.jef.justenoughfakepixel.features.capes.CapeManager;
 import com.jef.justenoughfakepixel.features.diana.DianaStats;
 import com.jef.justenoughfakepixel.features.dungeons.caseopening.CitManager;
 import com.jef.justenoughfakepixel.features.fishing.trophy.TrophyFishStorage;
+import com.jef.justenoughfakepixel.features.misc.ProtectedItemStorage;
 import com.jef.justenoughfakepixel.features.mining.powder.PowderStats;
 import com.jef.justenoughfakepixel.features.misc.invbuttons.InventoryButtonStorage;
 import com.jef.justenoughfakepixel.features.misc.invbuttons.SkyblockItemCache;
@@ -53,6 +54,7 @@ public class JefMod {
         PetCache.getInstance().initFile(JefConfig.configDirectory);
         CurrentPetTracker.getInstance().initFile(JefConfig.configDirectory);
         TrophyFishStorage.getInstance().initFile(JefConfig.configDirectory);
+        ProtectedItemStorage.INSTANCE.init(JefConfig.configDirectory);
         CapeManager.initialise(false);
     }
 
@@ -75,7 +77,7 @@ public class JefMod {
         TrophyFishStorage.getInstance().load();
 
         new CitManager();
-        if (JefConfig.feature.misc.showCurrentPet) PetCache.getInstance().warmupTextures();
+        if (JefConfig.feature.misc.currentPet.showCurrentPet) PetCache.getInstance().warmupTextures();
 
         MinecraftForge.EVENT_BUS.register(GuiWaiter.INSTANCE);
         MinecraftForge.EVENT_BUS.register(this);

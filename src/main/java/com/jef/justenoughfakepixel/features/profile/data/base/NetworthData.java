@@ -5,10 +5,10 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class NetworthData {
 
-    public int totalNetWorth;
-    public int itemNetWorth;
-    public int armorNetWorth;
-    public int petNetWorth;
-    public int accessoriesNetWorth;
+    public long totalNetWorth;
+    public long itemNetWorth;
+    public long armorNetWorth;
+    public long petNetWorth;
+    public long accessoriesNetWorth;
 
 }

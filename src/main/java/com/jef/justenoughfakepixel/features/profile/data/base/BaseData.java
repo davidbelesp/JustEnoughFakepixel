@@ -10,8 +10,8 @@ public class BaseData {
     public int currentLevel;
     public long profileAge;
     public ProfileMode currentMode;
-    public int currentPurse;
-    public int bankBalance;
+    public long currentPurse;
+    public long bankBalance;
     public int bitCount;
 
     public NetworthData networth;

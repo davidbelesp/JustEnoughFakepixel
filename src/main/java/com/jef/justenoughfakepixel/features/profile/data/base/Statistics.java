@@ -6,8 +6,8 @@ import lombok.AllArgsConstructor;
 public class Statistics {
 
     public long playtime;
-    public int kills;
-    public int deaths;
-    public int highCritDamage;
+    public long kills;
+    public long deaths;
+    public long highCritDamage;
 
 }

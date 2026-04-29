@@ -43,6 +43,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemSkull;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
@@ -66,6 +67,7 @@ public class ProfileParser {
             + " | Bags: " + (bagsData[0] != null));
             return;
         }
+        if(base.playerProfile.isEmpty() || base.playerName.isEmpty()) return;
         ProfileData profile = new ProfileData(base, inventory[0], skill[0], mountain[0],
                 dungeonData[0], slayerData[0],wardrobeData[0],petsData[0],storageData[0],
                 bagsData[0]);
@@ -830,9 +832,10 @@ public class ProfileParser {
     public static ItemData parseItemData(ItemStack stack) {
         if (stack == null) return null;
         String displayName = stack.getDisplayName();
+        String itemID = stack.getItem().getRegistryName();
         String skyblockID = ItemUtils.getInternalName(stack);
         List<String> lore = getLoreColored(stack);
-        return new ItemData(displayName, lore, skyblockID);
+        return new ItemData(displayName, lore, skyblockID,itemID);
     }
 
 
@@ -875,7 +878,7 @@ public class ProfileParser {
         long totalNetworth = 0L, itemNetworth = 0L, armorNetworth = 0L,
                 petNetworth = 0L, accessoriesNetworth = 0L;
         long playtime = 0L;
-        int kills = 0, deaths = 0;
+        long kills = 0, deaths = 0;
         long highCrit = 0L;
 
         for (String raw : lore) {
@@ -911,9 +914,9 @@ public class ProfileParser {
                 } else if (line.startsWith("Playtime:")) {
                     playtime = parseTimeToSeconds(line.substring("Playtime:".length()).trim());
                 } else if (line.startsWith("Kills:")) {
-                    kills = (int) parseLongNumber(line.substring("Kills:".length()));
+                    kills = parseLongNumber(line.substring("Kills:".length()));
                 } else if (line.startsWith("Deaths:")) {
-                    deaths = (int) parseLongNumber(line.substring("Deaths:".length()));
+                    deaths = parseLongNumber(line.substring("Deaths:".length()));
                 } else if (line.startsWith("Highest Critical Damage:")) {
                     highCrit = parseLongNumber(line.substring("Highest Critical Damage:".length()));
                 }
@@ -924,10 +927,10 @@ public class ProfileParser {
 
         return new BaseData(
                 playerName, "",level, profileAge, mode,
-                (int) purse, (int) bank, bits,
-                new NetworthData((int) totalNetworth, (int) itemNetworth,
-                        (int) armorNetworth, (int) petNetworth, (int) accessoriesNetworth),
-                new Statistics(playtime, kills, deaths, (int) highCrit)
+                purse, bank, bits,
+                new NetworthData(totalNetworth, itemNetworth,
+                        armorNetworth, petNetworth, accessoriesNetworth),
+                new Statistics(playtime, kills, deaths, highCrit)
         );
     }
 
@@ -1027,7 +1030,9 @@ public class ProfileParser {
             ItemStack stack = container.getSlot(slot).getStack();
             if (stack == null) continue;
 
-            Skill skill = Skill.get(ColorUtils.stripColor(stack.getDisplayName().split(" ")[0]));
+            String name = ColorUtils.stripColor(stack.getDisplayName()).trim();
+            String[] words = name.split(" ");
+            Skill skill = Skill.get(words[0]);
             if (skill == null) continue;
             List<String> lore = getLore(stack);
             if (lore.isEmpty()) continue;
@@ -1036,35 +1041,19 @@ public class ProfileParser {
             long currentXp = 0L;
             long requiredXp = -1L;
 
-            for (String line : lore) {
-                if (line.startsWith("Progress to Level")) {
-                    try {
-                        String afterLevel = line.substring(line.indexOf("Level ") + 6);
-                        String levelStr = afterLevel.substring(0, afterLevel.indexOf(':')).trim();
-                        int nextLevel = Integer.parseInt(levelStr);
-                        currentLevel = nextLevel - 1;
-                    } catch (Exception ignored) {
-                    }
-                }
+            String romanLevel = words[words.length-1];
+            try{
+                currentLevel = RomanNumeralParser.parse(romanLevel);
+                JefMod.logger.info(skill.name() + " Level: " + currentLevel);
+            }catch (IllegalArgumentException ignored) {}
 
+            for (String line : lore) {
                 if (line.contains("/") && !line.contains(" ")) {
                     try {
                         String[] parts = line.split("/");
                         currentXp = parseRawNumber(parts[0]);
                         requiredXp = parseRawNumber(parts[1]);
                     } catch (Exception ignored) {
-                    }
-                }
-            }
-
-            if (currentLevel == -1) {
-                for (String line : lore) {
-                    if (line.startsWith("Level ")) {
-                        try {
-                            currentLevel = Integer.parseInt(line.substring(6).trim());
-                        } catch (Exception ignored) {
-                        }
-                        break;
                     }
                 }
             }

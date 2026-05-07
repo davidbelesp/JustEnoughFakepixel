@@ -39,7 +39,6 @@ public class JefMod {
         JefConfig.init();
         JefRepo.init();
         logger = Logger.getLogger("[JEF] ");
-        loginAs("GinaFro");
         JefStorageManager.initAll(JefConfig.configDirectory);
         // ProtectedItemStorage uses .init() rather than .initFile(), so it stays manual for now.
         ProtectedItemStorage.INSTANCE.init(JefConfig.configDirectory);
@@ -47,11 +46,6 @@ public class JefMod {
         CapeManager.initialise(false);
     }
 
-    public void loginAs(String user){
-        ((MixinMinecraft) Minecraft.getMinecraft()).setSession(new Session(
-                user,user,"0","legacy"
-        ));
-    }
     @Mod.EventHandler
     public void clientInit(FMLInitializationEvent event) {
         JefConfig.register();

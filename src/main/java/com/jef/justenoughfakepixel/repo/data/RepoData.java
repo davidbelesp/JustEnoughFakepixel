@@ -8,6 +8,6 @@ public class RepoData {
     public String apiUrl = "aHR0cHM6Ly9qZWYtcmVwby52ZXJjZWwuYXBwL2FwaS9qZWY=";
 
     @SerializedName("capeApi")
-    public String capeApi = "https://cape-api.netlify.app";
+    public String capeApi = "https://capeapi.qzz.io";
 
 }

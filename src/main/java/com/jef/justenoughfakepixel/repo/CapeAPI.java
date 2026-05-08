@@ -11,4 +11,10 @@ public class CapeAPI {
         return url.capeApi;
     }
 
+    public static String getAPIUrl(String endpoint){
+        RepoData url = RepoHandler.get(JefRepo.KEY_REPO, RepoData.class,new RepoData());
+        JefMod.logger.info("Cape API Url Fetched: " + url.capeApi);
+        return url.capeApi + (url.capeApi.endsWith("/") ? "" : "/") + endpoint;
+    }
+
 }

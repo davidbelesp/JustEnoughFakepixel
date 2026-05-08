@@ -1031,7 +1031,7 @@ public class ProfileParser {
         );
     }
 
-    private static List<String> getLore(ItemStack stack) {
+    public static List<String> getLore(ItemStack stack) {
         List<String> lore = new ArrayList<>();
         if (stack == null || !stack.hasTagCompound()) return lore;
         NBTTagCompound display = stack.getTagCompound().getCompoundTag("display");

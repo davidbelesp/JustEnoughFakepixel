@@ -10,7 +10,7 @@ public class CalculatorUtils {
 
     public static final DecimalFormat FORMAT = new DecimalFormat("#,##0.##########");
     private static final String BINOPS = "+-*/x^%";
-    private static final String POSTOPS = "mkbts";
+    private static final String POSTOPS = "mkbts!";
     private static final String DIGITS = "0123456789";
 
     private static final Map<String, BigDecimal> CONSTANTS = new HashMap<>();
@@ -266,6 +266,9 @@ public class CalculatorUtils {
                             case "t":
                                 stack.push(v.multiply(new BigDecimal("1000000000000")));
                                 break;
+                            case "!":
+                                stack.push(factorial(v));
+                                break;
                             default:
                                 throw new CalculatorException("Unknown postop " + t.operatorValue, t.tokenStart, t.tokenLength);
                         }
@@ -318,6 +321,8 @@ public class CalculatorUtils {
                 return new BigDecimal(Math.log(stack.pop().doubleValue()));
             case "log2":
                 return new BigDecimal(Math.log(stack.pop().doubleValue()) / Math.log(2));
+            case "exp":
+                return new BigDecimal(Math.exp(stack.pop().doubleValue()));
 
             // Powers and roots
             case "sqrt":
@@ -355,6 +360,19 @@ public class CalculatorUtils {
             default:
                 throw new CalculatorException("Unknown function: " + func, t.tokenStart, t.tokenLength);
         }
+    }
+
+    private static BigDecimal factorial(BigDecimal n) throws CalculatorException {
+        int num = n.intValue();
+        if (num < 0) throw new CalculatorException("Factorial of negative number", 0, 0);
+        if (num > 170) throw new CalculatorException("Factorial too large (max 170)", 0, 0);
+        if (n.compareTo(new BigDecimal(num)) != 0) throw new CalculatorException("Factorial requires integer", 0, 0);
+
+        long result = 1;
+        for (int i = 2; i <= num; i++) {
+            result *= i;
+        }
+        return new BigDecimal(result);
     }
 
     private enum TokenType {NUMBER, BINOP, LPAREN, RPAREN, POSTOP, FUNCTION, CONSTANT, COMMA}

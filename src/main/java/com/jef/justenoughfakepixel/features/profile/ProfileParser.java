@@ -192,7 +192,7 @@ public class ProfileParser {
                                         // Pets
                                         HashMap<Integer,Pet> pets = new HashMap<>();
                                         GuiWaiter.waitForPaged("View Pets",2,53,"Next Page",49,"View Profile",
-                                                chest -> pets.putAll(parsePets(pets.size()-1,chest)),
+                                                chest -> pets.putAll(parsePets(Math.max(0,pets.size()-1),chest)),
                                                 prof7 -> {
                                                     JefMod.logger.info("[ProfileParser] PetsData parsed for: " + base.playerName);
                                                     petsData[0] = new PetsData(pets);

@@ -9,7 +9,6 @@ import com.jef.justenoughfakepixel.init.RegisterEvents;
 import com.jef.justenoughfakepixel.utils.chat.ChatUtils;
 import com.jef.justenoughfakepixel.utils.data.SkyblockData;
 import com.jef.justenoughfakepixel.utils.overlay.Overlay;
-import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.world.WorldEvent;
@@ -39,8 +38,12 @@ public class DungeonStats extends Overlay {
             {85, 221, 21}  // F7/M7
     };
 
-    @Getter
     private static DungeonStats instance;
+
+    // Manual getter for Kotlin interop
+    public static DungeonStats getInstance() {
+        return instance;
+    }
 
     private final DungeonTimers timers;
     private final DungeonEndStats endStats;
@@ -67,6 +70,10 @@ public class DungeonStats extends Overlay {
     public static boolean isInBossFight() {
         DungeonStats s = getInstance();
         return s != null && s.timers.getBossTime() > 0 && s.timers.getBossDeadTime() == 0;
+    }
+
+    public boolean isInStormPhase() {
+        return timers.getStormStart() > 0 && timers.getStormEnd() == 0;
     }
 
     public static String getFormattedPb(String arg1, String arg2) {

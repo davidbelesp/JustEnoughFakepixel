@@ -4,12 +4,9 @@ import com.jef.justenoughfakepixel.core.JefConfig;
 import com.jef.justenoughfakepixel.core.config.editors.ChromaColour;
 import com.jef.justenoughfakepixel.init.RegisterEvents;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.PositionedSound;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.projectile.EntityFishHook;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -49,17 +46,7 @@ public class FishingTimerOverlay {
     }
 
     private void playAlertSound() {
-        try {
-            ISound sound = new PositionedSound(new ResourceLocation("random.orb")) {{
-                volume = 1f;
-                pitch = 2f;
-                repeat = false;
-                repeatDelay = 0;
-                attenuationType = ISound.AttenuationType.NONE;
-            }};
-            Minecraft.getMinecraft().getSoundHandler().playSound(sound);
-        } catch (Exception ignored) {
-        }
+        com.jef.justenoughfakepixel.utils.SoundUtils.playSound("random.orb", 1f, 2f);
     }
 
     @SubscribeEvent

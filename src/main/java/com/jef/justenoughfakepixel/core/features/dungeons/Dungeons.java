@@ -21,6 +21,10 @@ public class Dungeons {
     public String bloodMobColor = "200:255:50:50:255";
 
     @Expose
+    @Category(name = "Crush Alert", desc = "Alert when Storm is near a pillar in F7/M7 phase 2")
+    public CrushAlertConfig crushAlert = new CrushAlertConfig();
+
+    @Expose
     @Category(name = "Boss Highlights", desc = "Highlight dungeon bosses and their minions")
     public BossHighlightConfig bossHighlight = new BossHighlightConfig();
 

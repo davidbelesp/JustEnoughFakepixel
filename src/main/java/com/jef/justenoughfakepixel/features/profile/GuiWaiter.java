@@ -1,13 +1,11 @@
 package com.jef.justenoughfakepixel.features.profile;
 
 import com.jef.justenoughfakepixel.JefMod;
-import com.jef.justenoughfakepixel.features.price.ahparser.parser.AuctionParser;
 import com.jef.justenoughfakepixel.utils.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
-import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -163,14 +161,6 @@ public class GuiWaiter {
         }
 
         if (hasNextPage) {
-            // JefMod.logger.info("[GuiWaiter] Manual Paged GUI: highlighting next page (slot " + actualNextSlot + ") and waiting for user.");
-
-            // Highlight the slot
-            Slot slotObj = container.inventorySlots.get(actualNextSlot);
-            if (slotObj != null) {
-                AuctionParser.highlightSlot = slotObj.slotNumber;
-            }
-
             // Queue a wait with a 10-second timeout (200 ticks) waiting for the user to click the next page
             PendingWait manualWait = new PendingWait(expectedTitle, tickDelay, -1,
                     next -> handleManualPage(next, expectedTitle, tickDelay,
@@ -181,17 +171,9 @@ public class GuiWaiter {
 
         } else {
             int actualBackSlot = resolveSlot(container, backSlot);
-            JefMod.logger.info("[GuiWaiter] Manual Paged GUI: last page reached, highlighting back (slot " + actualBackSlot + ")");
+            JefMod.logger.info("[GuiWaiter] Manual Paged GUI: last page reached, waiting for user to click back (slot " + actualBackSlot + ")");
 
-            if (actualBackSlot >= 0) {
-                Slot backSlotObj = container.inventorySlots.get(actualBackSlot);
-                if (backSlotObj != null) {
-                    AuctionParser.highlightSlot = backSlotObj.slotNumber;
-                }
-            }
             if (returnTitle != null && onReturn != null) {
-                // JefMod.logger.info("[GuiWaiter] Queuing return wait for: '" + returnTitle + "'");
-
                 PendingWait returnWait = new PendingWait(returnTitle, 2, -1, onReturn, null, null, container.windowId);
                 returnWait.maxPollTicks = 200;
                 queue.addFirst(returnWait);
@@ -223,7 +205,6 @@ public class GuiWaiter {
             JefMod.logger.info("[GuiWaiter] Intercepted empty container chat: '" + msg + "'. Aborting wait for '" + head.expectedTitle + "'");
 
             queue.poll(); // Remove the stalled wait from the queue
-            AuctionParser.highlightSlot = -1;
             head.callback.accept(null); // Safely pass null
 
             if (head.returnTitle != null && head.onReturn != null) {
@@ -265,7 +246,6 @@ public class GuiWaiter {
                 if (head.pollTicks >= 520) {
                     JefMod.logger.info("[GuiWaiter] TIMEOUT waiting for '" + head.expectedTitle + "' — cancelling remaining queue (" + queue.size() + " items)");
                     queue.clear();
-                    AuctionParser.highlightSlot = -1;
                     ProfileParser.parsing = false;
                 }
                 return;
@@ -287,7 +267,6 @@ public class GuiWaiter {
             head.container = currentChest;
         }
 
-        AuctionParser.highlightSlot = -1;
         head.callback.accept(head.container);
 
         int actualPressSlot = resolveSlot(head.container, head.pressSlot);

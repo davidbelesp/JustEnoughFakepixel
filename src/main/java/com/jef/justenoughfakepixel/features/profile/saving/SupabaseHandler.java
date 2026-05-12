@@ -3,6 +3,7 @@ package com.jef.justenoughfakepixel.features.profile.saving;
 import com.jef.justenoughfakepixel.JefMod;
 import com.jef.justenoughfakepixel.features.profile.ProfileCompressor;
 import com.jef.justenoughfakepixel.features.profile.ProfileParser;
+import com.jef.justenoughfakepixel.features.profile.WaiterLogs;
 import com.jef.justenoughfakepixel.features.profile.data.ProfileData;
 import com.jef.justenoughfakepixel.repo.CapeAPI;
 
@@ -24,6 +25,7 @@ public class SupabaseHandler {
         if (now - lastUploadTime < 30_000) {
             long secondsLeft = (30_000 - (now - lastUploadTime)) / 1000;
             JefMod.logger.info("[SupabaseHandler] Upload for " + playerName + " is on cooldown. Please wait " + secondsLeft + "s.");
+            WaiterLogs.addLog("[SupabaseHandler] Upload for " + playerName + " is on cooldown. Please wait " + secondsLeft + "s.");
             return;
         }
 
@@ -31,13 +33,16 @@ public class SupabaseHandler {
 
         new Thread(() -> {
             JefMod.logger.info("[SupabaseHandler] Initiating upload for: " + playerName);
+            WaiterLogs.addLog("[SupabaseHandler] Initiating upload for: " + playerName);
             boolean success = pushProfileToAPI(playerName, data);
 
             if (success) {
                 JefMod.logger.info("[SupabaseHandler] Successfully uploaded profile to cloud for: " + playerName);
+                WaiterLogs.addLog("[SupabaseHandler] Successfully uploaded profile to cloud for: " + playerName);
             } else {
                 JefMod.logger.info("[SupabaseHandler] Failed to upload profile to cloud for: " + playerName);
-                 lastUploaded.remove(playerName);
+                WaiterLogs.addLog("[SupabaseHandler] Failed to upload profile to cloud for: " + playerName);
+                lastUploaded.remove(playerName);
             }
         }, "ProfilePush-" + playerName).start();
     }
@@ -66,6 +71,7 @@ public class SupabaseHandler {
 
         } catch (Exception e) {
             JefMod.logger.info("[SupabaseHandler] Exception pushing profile: " + e.getMessage());
+            WaiterLogs.addLog("[SupabaseHandler] Exception pushing profile: " + e.getMessage());
             e.printStackTrace();
             return false;
         }

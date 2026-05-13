@@ -23,7 +23,7 @@ import com.jef.justenoughfakepixel.features.scoreboard.CustomScoreboard;
 import com.jef.justenoughfakepixel.features.waypoints.WaypointGroupGui;
 import com.jef.justenoughfakepixel.repo.JefRepo;
 import com.jef.justenoughfakepixel.repo.RepoHandler;
-import com.jef.justenoughfakepixel.gui.JefOptionsGui;
+import com.jef.justenoughfakepixel.JefOptionsGui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.settings.KeyBinding;
@@ -216,6 +216,7 @@ public class JefConfig {
     public static void openBpsEditor() {
         if (feature == null) return;
         com.jef.justenoughfakepixel.features.farming.BPSOverlay overlay = com.jef.justenoughfakepixel.features.farming.BPSOverlay.getInstance();
+        assert overlay != null;
         screenToOpen = new GuiPositionEditor(feature.farming.bps.bpsPosition, overlay::getOverlayWidth, overlay::getOverlayHeight, () -> overlay.render(true), JefConfig::saveConfig, JefConfig::saveConfig).withOverlayScale(feature.farming.bps.bpsScale).withParent(Minecraft.getMinecraft().currentScreen);
     }
 

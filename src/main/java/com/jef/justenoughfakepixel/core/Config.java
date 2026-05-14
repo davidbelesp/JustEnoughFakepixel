@@ -94,6 +94,8 @@ public class Config {
             case "openPowderEditor": JefConfig.openPowderEditor(); break;
             case "openInvButtonEditor": JefConfig.openInvButtonEditor(); break;
             case "resetPowderTracker": JefConfig.resetPowderTracker(); break;
+            case "openPristineEditor": JefConfig.openPristineEditor(); break;
+            case "resetPristineTracker": JefConfig.resetPristineTracker(); break;
             case "openDungeonBreakerEditor": JefConfig.openDungeonBreakerEditor(); break;
             case "openTrophyFishEditor": JefConfig.openTrophyFishEditor(); break;
             case "openDungeonRoomOverlayEditor": JefConfig.openDungeonRoomOverlayEditor(); break;

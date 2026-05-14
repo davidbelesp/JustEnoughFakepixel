@@ -27,7 +27,7 @@ public class PowderStats implements JefStorageManager.Managed, JefStorageManager
         return INSTANCE;
     }
 
-    private static void tick(RateInfo info, long current) {
+    public static void tick(RateInfo info, long current) {
         info.estimated = current;
         long difference = info.estimated - info.lastEstimated;
         info.lastEstimated = info.estimated;

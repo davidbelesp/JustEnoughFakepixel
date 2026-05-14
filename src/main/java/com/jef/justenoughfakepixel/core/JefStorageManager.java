@@ -42,6 +42,7 @@ public enum JefStorageManager {
     INV_BUTTONS    (InventoryButtonStorage.getInstance()),
     DIANA_STATS    (DianaStats.getInstance()),
     POWDER_STATS   (PowderStats.getInstance()),
+    PRISTINE_STATS (com.jef.justenoughfakepixel.features.mining.pristine.PristineStats.getInstance()),
     MAXWELL_POWER  (MaxwellPowerSync.getInstance()),
     PET_CACHE      (PetCache.getInstance()),
     CURRENT_PET    (CurrentPetTracker.getInstance()),

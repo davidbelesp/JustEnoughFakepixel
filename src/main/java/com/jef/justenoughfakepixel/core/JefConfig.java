@@ -47,6 +47,7 @@ public class JefConfig {
     private static int screenTicks = 0;
     private static boolean waypointManagerKeyWasDown = false;
     private static boolean powderToggleKeyWasDown = false;
+    private static boolean pristineToggleKeyWasDown = false;
     private static boolean registered = false;
 
     private static boolean isKeyOrMouseDown(int keyCode) {
@@ -224,6 +225,17 @@ public class JefConfig {
         PowderStats.getInstance().reset();
     }
 
+    public static void openPristineEditor() {
+        if (feature == null) return;
+        com.jef.justenoughfakepixel.features.mining.pristine.PristineOverlay overlay = com.jef.justenoughfakepixel.features.mining.pristine.PristineOverlay.getInstance();
+        if (overlay == null) return;
+        screenToOpen = new GuiPositionEditor(feature.mining.pristineTrackerConfig.pristineOverlayPos, overlay::getOverlayWidth, overlay::getOverlayHeight, () -> overlay.render(true), JefConfig::saveConfig, JefConfig::saveConfig).withOverlayScale(feature.mining.pristineTrackerConfig.pristineOverlayScale).withParent(Minecraft.getMinecraft().currentScreen);
+    }
+
+    public static void resetPristineTracker() {
+        com.jef.justenoughfakepixel.features.mining.pristine.PristineStats.getInstance().reset();
+    }
+
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
@@ -250,5 +262,11 @@ public class JefConfig {
         }
 
         powderToggleKeyWasDown = feature != null && isKeyOrMouseDown(feature.mining.powderTrackerConfig.powderToggleKey);
+
+        if (feature != null && isKeyOrMouseDown(feature.mining.pristineTrackerConfig.pristineToggleKey) && !pristineToggleKeyWasDown && Minecraft.getMinecraft().currentScreen == null) {
+            com.jef.justenoughfakepixel.features.mining.pristine.PristineStats.getInstance().toggleTracking();
+        }
+
+        pristineToggleKeyWasDown = feature != null && isKeyOrMouseDown(feature.mining.pristineTrackerConfig.pristineToggleKey);
     }
 }

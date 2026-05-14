@@ -27,6 +27,10 @@ public class Mining {
     public PowderTrackerConfig powderTrackerConfig = new PowderTrackerConfig();
 
     @Expose
+    @Category(name = "Pristine Tracker", desc = "Tracks pristine gemstone drops in Crystal Hollows")
+    public PristineTrackerConfig pristineTrackerConfig = new PristineTrackerConfig();
+
+    @Expose
     @Category(name = "/hotm Powder Display", desc = "Powder cost info on HOTM perk tooltips")
     public HotmPowderConfig hotmPowder = new HotmPowderConfig();
 }

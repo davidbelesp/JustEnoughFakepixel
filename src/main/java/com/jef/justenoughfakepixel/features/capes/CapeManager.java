@@ -16,7 +16,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -70,26 +69,17 @@ public class CapeManager {
 
         lastFetched = now;
 
-        new Thread(() -> {
-            String id = fetchIDFromAPI(playerName);
-            activeCapes.put(playerName, id == null ? "none" : id);
-        }, "CapeFetch-" + playerName).start();
+        new Thread(CapeManager::fetchIDFromAPI, "CapeFetch-" + playerName).start();
     }
 
     public static void refreshAll() {
-        new Thread(() -> {
-            for (String playerName : new HashSet<>(activeCapes.keySet())) {
-                String id = fetchIDFromAPI(playerName);
-                activeCapes.put(playerName, id == null ? "none" : id);
-                try { Thread.sleep(100); } catch (InterruptedException ignored) {}
-            }
-        }, "CapeRefreshAll").start();
+        new Thread(CapeManager::fetchIDFromAPI, "CapeRefreshAll").start();
     }
 
 
-    public static String fetchIDFromAPI(String playerName) {
+    public static void fetchIDFromAPI() {
         try {
-            URL url = new URL(CapeAPI.getAPIUrl() + "/cape/");
+            URL url = new URL(CapeAPI.getAPIUrl() + "/cape");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.setRequestProperty("x-mod-secret", MOD_SECRET);
@@ -97,7 +87,7 @@ public class CapeManager {
             conn.setConnectTimeout(5000);
             conn.setReadTimeout(5000);
 
-            if (conn.getResponseCode() != 200) return null;
+            if (conn.getResponseCode() != 200) return;
 
             String json = readResponse(conn);
 
@@ -105,11 +95,8 @@ public class CapeManager {
             Map<String,String> map = new Gson().fromJson(json, type);
             activeCapes.putAll(map);
             lastFetched = System.currentTimeMillis();
-
-            return activeCapes.getOrDefault(playerName,null);
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
         }
     }
 
@@ -176,6 +163,12 @@ public class CapeManager {
 
     public static Cape getCapeForPlayer(String pl) {
         String capeID = activeCapes.get(pl);
+        if(capeID == null){
+            if(System.currentTimeMillis() - lastFetched > POLL_INTERVAL_MS) {
+                CapeManager.fetchCapeAsync(pl);
+                capeID = activeCapes.get(pl);
+            }
+        }
         if (capeID == null || capeID.equals("pending")) return null;
         if(capeID.equals("none")) {
             if (pl.equals(Minecraft.getMinecraft().thePlayer.getGameProfile().getName())) {

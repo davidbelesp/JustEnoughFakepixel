@@ -1,6 +1,7 @@
 package com.jef.justenoughfakepixel.features.capes;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.jef.justenoughfakepixel.JefMod;
 import com.jef.justenoughfakepixel.core.JefConfig;
@@ -15,16 +16,19 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CapeManager {
 
-    public static HashMap<String,Cape> capes = new HashMap<>();
-    public static HashMap<String,String> activeCapes = new HashMap<>();
+    public static final Map<String, Cape> capes = new ConcurrentHashMap<>();
+    public static final Map<String, String> activeCapes = new ConcurrentHashMap<>();
 
-    private static Long lastFetched = 0L;
+    private static long lastFetched = 0L;
 
     private static long POLL_INTERVAL_MS = 900000;
 
@@ -32,48 +36,54 @@ public class CapeManager {
 
     public static String CLIENT_SIDE_CAPE_ID = "";
 
+    private static final AtomicBoolean isFetching = new AtomicBoolean(false);
+    private static final Gson gson = new Gson();
+
+    private static final ExecutorService networkExecutor = Executors.newSingleThreadExecutor(r -> {
+        Thread t = new Thread(r, "JEF-CapeNetworkThread");
+        t.setDaemon(true);
+        return t;
+    });
+
     public static void equipCape(String playerName, Cape cape) {
         activeCapes.put(playerName, cape.id);
         lastFetched = System.currentTimeMillis();
 
         CLIENT_SIDE_CAPE_ID = cape.id;
-        new Thread(() -> {
-            boolean success = pushCapeToAPI(playerName, cape.id);
-            if (!success) {
+        networkExecutor.execute(() -> {
+            if (!pushCapeToAPI(playerName, cape.id)) {
                 JefMod.logger.info("[CapeManager] Failed to push cape for " + playerName);
                 activeCapes.put(playerName, "none");
             }
-        }, "CapePush-" + playerName).start();
+        });
     }
 
     public static void removeCape(String playerName) {
         activeCapes.put(playerName, "none");
-        lastFetched =  System.currentTimeMillis();
-
-        new Thread(() -> deleteCapeFromAPI(playerName), "CapeDelete-" + playerName).start();
+        networkExecutor.execute(() -> deleteCapeFromAPI(playerName));
     }
 
     public static void fetchCapeAsync(String playerName) {
+        if (!JefConfig.feature.cosmetics.capes.capesEnabled) return;
         String existing = activeCapes.get(playerName);
         long now = System.currentTimeMillis();
-
-        boolean neverFetched = existing == null;
-        boolean pollDue = !neverFetched
-                && lastFetched != null
-                && !"pending".equals(existing)
-                && (now - lastFetched) > POLL_INTERVAL_MS;
-
-        if (!neverFetched && !pollDue) return;
-
-        if (neverFetched) activeCapes.put(playerName, "pending");
-
-        lastFetched = now;
-
-        new Thread(CapeManager::fetchIDFromAPI, "CapeFetch-" + playerName).start();
+        if (existing != null && !existing.equals("pending") && (now - lastFetched) < POLL_INTERVAL_MS) {
+            return;
+        }
+        if (existing == null) activeCapes.put(playerName, "pending");
+        if (isFetching.compareAndSet(false, true)) {
+            networkExecutor.execute(() -> {
+                try {
+                    fetchIDFromAPI();
+                } finally {
+                    isFetching.set(false);
+                }
+            });
+        }
     }
 
     public static void refreshAll() {
-        new Thread(CapeManager::fetchIDFromAPI, "CapeRefreshAll").start();
+        networkExecutor.execute(CapeManager::fetchIDFromAPI);
     }
 
 
@@ -86,17 +96,16 @@ public class CapeManager {
             conn.setRequestProperty("Accept", "application/json");
             conn.setConnectTimeout(5000);
             conn.setReadTimeout(5000);
-
-            if (conn.getResponseCode() != 200) return;
-
-            String json = readResponse(conn);
-
-            Type type = new TypeToken<Map<String, String>>(){}.getType();
-            Map<String,String> map = new Gson().fromJson(json, type);
-            activeCapes.putAll(map);
-            lastFetched = System.currentTimeMillis();
+            if (conn.getResponseCode() == 200) {
+                String json = readResponse(conn);
+                Type type = new TypeToken<Map<String, String>>(){}.getType();
+                Map<String, String> map = gson.fromJson(json, type);
+                activeCapes.clear();
+                activeCapes.putAll(map);
+                lastFetched = System.currentTimeMillis();
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            JefMod.logger.info("Failed to fetch capes: " + e.getMessage());
         }
     }
 
@@ -108,18 +117,14 @@ public class CapeManager {
             conn.setRequestProperty("x-mod-secret", MOD_SECRET);
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
 
-            String body = "{\"player_name\":\"" + playerName.toLowerCase()
-                    + "\",\"cape_id\":\"" + capeId + "\"}";
-
+            JsonObject body = new JsonObject();
+            body.addProperty("player_name", playerName.toLowerCase());
+            body.addProperty("cape_id", capeId);
             try (OutputStream os = conn.getOutputStream()) {
-                os.write(body.getBytes(StandardCharsets.UTF_8));
+                os.write(gson.toJson(body).getBytes(StandardCharsets.UTF_8));
             }
-
             return conn.getResponseCode() == 200;
-
         } catch (Exception e) {
             e.printStackTrace();
             return false;
@@ -132,8 +137,6 @@ public class CapeManager {
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("DELETE");
             conn.setRequestProperty("x-mod-secret", MOD_SECRET);
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
             conn.getResponseCode();
         } catch (Exception e) {
             e.printStackTrace();
@@ -141,14 +144,29 @@ public class CapeManager {
     }
 
     private static String readResponse(HttpURLConnection conn) throws Exception {
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(conn.getInputStream())
-        );
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) sb.append(line);
-        reader.close();
-        return sb.toString().trim();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) sb.append(line);
+            return sb.toString().trim();
+        }
+    }
+    public static Cape getCapeForPlayer(String pl) {
+        String capeID = activeCapes.get(pl);
+
+        if (capeID == null || (System.currentTimeMillis() - lastFetched > POLL_INTERVAL_MS)) {
+            fetchCapeAsync(pl);
+        }
+        if (capeID == null || capeID.equals("pending")) return null;
+        if (capeID.equals("none")) {
+            String ownName = Minecraft.getMinecraft().thePlayer.getGameProfile().getName();
+            if (pl.equals(ownName) && !CLIENT_SIDE_CAPE_ID.isEmpty()) {
+                return getCape(CLIENT_SIDE_CAPE_ID);
+            }
+            return null;
+        }
+        Cape cape = capes.get(capeID);
+        return (cape != null && cape.isLoaded()) ? cape : null;
     }
 
     public static boolean doesntHaveCape(String user) {
@@ -159,26 +177,6 @@ public class CapeManager {
 
     public static void applyCape(String player,Cape cape){
         activeCapes.put(player,cape.id);
-    }
-
-    public static Cape getCapeForPlayer(String pl) {
-        String capeID = activeCapes.get(pl);
-        if(capeID == null){
-            if(System.currentTimeMillis() - lastFetched > POLL_INTERVAL_MS) {
-                CapeManager.fetchCapeAsync(pl);
-                capeID = activeCapes.get(pl);
-            }
-        }
-        if (capeID == null || capeID.equals("pending")) return null;
-        if(capeID.equals("none")) {
-            if (pl.equals(Minecraft.getMinecraft().thePlayer.getGameProfile().getName())) {
-                return getCape(CLIENT_SIDE_CAPE_ID);
-            }
-            return null;
-        }
-        Cape cape = capes.get(capeID);
-        if (cape == null || !cape.isLoaded()) return null;
-        return cape;
     }
 
     public static void initialise(boolean force) {

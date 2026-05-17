@@ -124,7 +124,7 @@ public class DungeonStats extends Overlay {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END || ++tickCounter % 10 != 0) return;
-        if (JefConfig.feature == null || !JefConfig.feature.dungeons.dungeonOverlay.dungeonStats) return;
+        if (JefConfig.feature == null) return;
         if (mc.thePlayer == null) return;
 
         if (!timers.isInDungeon()) {
@@ -142,7 +142,7 @@ public class DungeonStats extends Overlay {
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
         if (ChatUtils.isFromServer(event)) return;
-        if (JefConfig.feature == null || !JefConfig.feature.dungeons.dungeonOverlay.dungeonStats) return;
+        if (JefConfig.feature == null) return;
         if (!timers.isInDungeon()) return;
 
         String clean = ChatUtils.clean(event);
@@ -150,7 +150,7 @@ public class DungeonStats extends Overlay {
         if (!timers.isRunEnded()) {
             boolean handled = phaseDetector.handleGeneralEvents(clean);
             if (handled && timers.isRunEnded()) {
-                statsPrinter.printEndStats();
+                if (JefConfig.feature.dungeons.dungeonOverlay.dungeonStats) statsPrinter.printEndStats();
                 return;
             }
             phaseDetector.handleFloorPhases(clean);

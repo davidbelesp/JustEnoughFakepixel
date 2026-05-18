@@ -1,6 +1,7 @@
 package com.jef.justenoughfakepixel.features.profile.viewer.ui.modules;
 
 import com.jef.justenoughfakepixel.features.profile.viewer.ui.ProfileViewerGUI;
+import com.jef.justenoughfakepixel.features.profile.viewer.ui.util.StringDrawer;
 import com.jef.justenoughfakepixel.utils.render.NineSliceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -25,16 +26,10 @@ public class PVButton extends GuiButton {
             GlStateManager.blendFunc(770, 771);
             NineSliceUtils.draw(ProfileViewerGUI.CONTAINER_BG,xPosition,yPosition,width,height,6,18);
             this.mouseDragged(mc, mouseX, mouseY);
-            int j = 14737632;
-            if (this.packedFGColour != 0) {
-                j = this.packedFGColour;
-            } else if (!this.enabled) {
-                j = 10526880;
-            } else if (this.hovered) {
-                j = 16777120;
-            }
+            float centerX = this.xPosition + (this.width / 2.0f);
+            float centerY = this.yPosition + (this.height / 2.0f);
 
-            this.drawCenteredString(fontrenderer, this.displayString, this.xPosition + this.width / 2, this.yPosition + (this.height - 8) / 2, j);
+            StringDrawer.drawCenteredString(this.displayString, centerX, centerY, (ProfileViewerGUI.uiScale * 2f), false);
         }
     }
 }

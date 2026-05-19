@@ -2,6 +2,7 @@ package com.jef.justenoughfakepixel.features.profile.viewer.ui;
 
 import com.jef.justenoughfakepixel.core.JefConfig;
 import com.jef.justenoughfakepixel.core.config.gui.GuiTextures;
+import com.jef.justenoughfakepixel.core.config.utils.TextRenderUtils;
 import com.jef.justenoughfakepixel.features.profile.data.ProfileData;
 import com.jef.justenoughfakepixel.features.profile.viewer.PlayerProfile;
 import com.jef.justenoughfakepixel.features.profile.viewer.ProfileViewerAPI;
@@ -127,6 +128,10 @@ public class ProfileViewerGUI extends GuiScreen {
     public void onGuiClosed() {
         super.onGuiClosed();
         Keyboard.enableRepeatEvents(false);
+    }
+
+    public void drawTooltip(List<String> textLines, int x, int y) {
+        TextRenderUtils.drawHoveringText(textLines, x, y,fontRendererObj);
     }
 
     @Override

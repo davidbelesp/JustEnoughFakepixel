@@ -107,6 +107,7 @@ public class Config {
             case "openItemInvincibilityEditor": JefConfig.openItemInvincibilityEditor(); break;
             case "openItemAbilityTimerEditor": JefConfig.openItemAbilityTimerEditor(); break;
             case "openBpsEditor": JefConfig.openBpsEditor(); break;
+            case "openUptimeEditor": JefConfig.openUptimeEditor(); break;
             case "reloadCapes": CapeManager.reload(); break;
             case "openWebsite": openUrl("https://justenoughfakepixel.github.io"); break;
             case "openDiscord": openUrl("https://discord.gg/tdMFbmhFTb"); break;

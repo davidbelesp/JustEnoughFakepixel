@@ -236,6 +236,14 @@ public class JefConfig {
         com.jef.justenoughfakepixel.features.mining.pristine.PristineStats.getInstance().reset();
     }
 
+
+    public static void openUptimeEditor() {
+        if (feature == null) return;
+        com.jef.justenoughfakepixel.features.misc.timer.UptimeOverlay overlay = com.jef.justenoughfakepixel.features.misc.timer.UptimeOverlay.getInstance();
+        if (overlay == null) return;
+        screenToOpen = new GuiPositionEditor(feature.misc.uptimeConfig.uptimePos, overlay::getOverlayWidth, overlay::getOverlayHeight, () -> overlay.render(true), JefConfig::saveConfig, JefConfig::saveConfig).withOverlayScale(feature.misc.uptimeConfig.uptimeScale).withParent(Minecraft.getMinecraft().currentScreen);
+    }
+
     @SubscribeEvent
     public void onClientTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;

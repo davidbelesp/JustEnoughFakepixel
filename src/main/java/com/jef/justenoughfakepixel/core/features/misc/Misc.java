@@ -85,4 +85,9 @@ public class Misc {
     @ConfigOption(name = "DVD Size", desc = "Size of the DVD logo (width in pixels)")
     @ConfigEditorSliderAnnotation(minValue = 50, maxValue = 300, minStep = 10)
     public int dvdSize = 80;
+
+    @Expose
+    @Category(name = "Timer", desc = "Countdown timer overlay & /jeftimer command")
+    public UptimeConfig uptimeConfig = new UptimeConfig();
+
 }

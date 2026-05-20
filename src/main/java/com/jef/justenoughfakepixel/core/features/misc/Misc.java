@@ -87,7 +87,7 @@ public class Misc {
     public int dvdSize = 80;
 
     @Expose
-    @Category(name = "Coleweight Timer", desc = "Countdown timer overlay & /jeftimer command")
+    @Category(name = "Timer", desc = "Countdown timer overlay & /jeftimer command")
     public UptimeConfig uptimeConfig = new UptimeConfig();
 
 }

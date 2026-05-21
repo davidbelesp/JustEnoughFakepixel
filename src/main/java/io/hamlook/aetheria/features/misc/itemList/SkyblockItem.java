@@ -1,4 +1,4 @@
-package io.hamlook.aetheria.features.itemList;
+package io.hamlook.aetheria.features.misc.itemList;
 
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.JsonObject;

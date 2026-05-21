@@ -1,4 +1,4 @@
-package io.hamlook.aetheria.features.itemList;
+package io.hamlook.aetheria.features.misc.itemList;
 
 import io.hamlook.aetheria.core.ATHRConfig;
 import io.hamlook.aetheria.core.config.gui.GuiTextures;

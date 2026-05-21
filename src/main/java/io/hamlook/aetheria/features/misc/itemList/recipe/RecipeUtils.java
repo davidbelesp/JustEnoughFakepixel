@@ -1,7 +1,7 @@
-package io.hamlook.aetheria.features.itemList.recipe;
+package io.hamlook.aetheria.features.misc.itemList.recipe;
 
-import io.hamlook.aetheria.features.itemList.ItemRegistry;
-import io.hamlook.aetheria.features.itemList.SkyblockItem;
+import io.hamlook.aetheria.features.misc.itemList.ItemRegistry;
+import io.hamlook.aetheria.features.misc.itemList.SkyblockItem;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
 import io.hamlook.aetheria.core.config.gui.GuiTextures;
 import net.minecraft.client.gui.FontRenderer;

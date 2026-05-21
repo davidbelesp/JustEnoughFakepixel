@@ -1,8 +1,8 @@
-package io.hamlook.aetheria.features.itemList;
+package io.hamlook.aetheria.features.misc.itemList;
 
 import io.hamlook.aetheria.core.config.gui.GuiTextures;
-import io.hamlook.aetheria.features.itemList.recipe.Recipe;
-import io.hamlook.aetheria.features.itemList.recipe.RecipeFactory;
+import io.hamlook.aetheria.features.misc.itemList.recipe.Recipe;
+import io.hamlook.aetheria.features.misc.itemList.recipe.RecipeFactory;
 import io.hamlook.aetheria.utils.render.ItemRenderUtils;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
 import io.hamlook.aetheria.utils.render.TextRenderUtils;

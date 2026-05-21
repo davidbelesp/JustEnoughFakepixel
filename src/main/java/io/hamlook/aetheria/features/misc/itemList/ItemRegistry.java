@@ -1,4 +1,4 @@
-package io.hamlook.aetheria.features.itemList;
+package io.hamlook.aetheria.features.misc.itemList;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

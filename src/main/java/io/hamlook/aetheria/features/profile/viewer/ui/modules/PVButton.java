@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.features.profile.viewer.ui.modules;
 
 import io.hamlook.aetheria.features.profile.viewer.ui.ProfileViewerGUI;
-import io.hamlook.aetheria.features.profile.viewer.ui.util.StringRenderUtils;
+import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
@@ -29,7 +29,7 @@ public class PVButton extends GuiButton {
             float centerX = this.xPosition + (this.width / 2.0f);
             float centerY = this.yPosition + (this.height / 2.0f);
 
-            StringRenderUtils.drawCenteredString(this.displayString, centerX, centerY, (ProfileViewerGUI.uiScale * 2f), false);
+            TextRenderUtils.drawCenteredStringScaleAware(this.displayString, centerX, centerY, (ProfileViewerGUI.uiScale * 2f), false);
         }
     }
 }

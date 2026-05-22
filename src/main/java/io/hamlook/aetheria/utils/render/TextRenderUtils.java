@@ -1,6 +1,7 @@
 package io.hamlook.aetheria.utils.render;
 
 import io.hamlook.aetheria.features.misc.ScrollableTooltips;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
@@ -29,6 +30,44 @@ public final class TextRenderUtils {
         float factor = Math.min(1, len / (float) strLen);
         int newLen = Math.min(strLen, len);
         drawStringScaled(str, fr, x - newLen / 2f, y - 8 * factor / 2f, shadow, colour, factor);
+    }
+
+    public static void drawStringScaleAware(String text, float xPos, float yPos, float uiScale, boolean displayScale) {
+        GlStateManager.pushMatrix();
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlpha();
+
+        float scaleDisplay = displayScale ? ResolutionUtils.getXStatic(1) : 1f;
+        float finalScale = Math.max(0.25f, uiScale * scaleDisplay);
+
+        GlStateManager.translate(xPos, yPos, 0);
+        GlStateManager.scale(finalScale, finalScale, 1f);
+        Minecraft.getMinecraft().fontRendererObj.drawString(text, 0, 0, -1);
+        GlStateManager.popMatrix();
+    }
+
+    public static void drawStringScaleAware(String text, float xPos, float yPos, float uiScale) {
+        drawStringScaleAware(text, xPos, yPos, uiScale, true);
+    }
+
+    public static void drawCenteredStringScaleAware(String text, float xPos, float yPos, float uiScale, boolean displayScale) {
+        GlStateManager.pushMatrix();
+        GlStateManager.disableBlend();
+        GlStateManager.enableAlpha();
+
+        float scaleDisplay = displayScale ? ResolutionUtils.getXStatic(1) : 1f;
+        float finalScale = Math.max(0.25f, uiScale * scaleDisplay);
+
+        GlStateManager.translate(xPos, yPos, 0);
+        GlStateManager.scale(finalScale, finalScale, 1f);
+
+        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+        fr.drawString(text, -fr.getStringWidth(text) / 2f, -fr.FONT_HEIGHT / 2f, -1, false);
+        GlStateManager.popMatrix();
+    }
+
+    public static void drawCenteredStringScaleAware(String text, float xPos, float yPos, float uiScale) {
+        drawCenteredStringScaleAware(text, xPos, yPos, uiScale, true);
     }
 
     public static void drawHoveringText(List<String> textLines, int mouseX, int mouseY, int screenWidth, int screenHeight, int maxTextWidth, FontRenderer font) {
@@ -111,20 +150,20 @@ public final class TextRenderUtils {
     }
 
     public static void drawHoveringText(List<String> textLines, int mouseX, int mouseY, FontRenderer font) {
-        net.minecraft.client.gui.ScaledResolution sr = new net.minecraft.client.gui.ScaledResolution(net.minecraft.client.Minecraft.getMinecraft());
+        net.minecraft.client.gui.ScaledResolution sr = new net.minecraft.client.gui.ScaledResolution(Minecraft.getMinecraft());
         drawHoveringText(textLines, mouseX, mouseY, sr.getScaledWidth(), sr.getScaledHeight(), -1, font);
     }
 
     public static void drawHoveringText(String text, int mouseX, int mouseY, FontRenderer font) {
-        java.util.List<String> lines = new java.util.ArrayList<>();
+        List<String> lines = new ArrayList<>();
         lines.add(text);
         drawHoveringText(lines, mouseX, mouseY, font);
     }
 
     public static void drawItemTooltip(net.minecraft.item.ItemStack stack, int mouseX, int mouseY, FontRenderer font) {
         if (stack == null) return;
-        net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getMinecraft();
-        java.util.List<String> tooltip = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
+        Minecraft mc = Minecraft.getMinecraft();
+        List<String> tooltip = stack.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
         drawHoveringText(tooltip, mouseX, mouseY, font);
     }
 }

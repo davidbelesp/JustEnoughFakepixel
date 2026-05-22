@@ -6,7 +6,7 @@ import io.hamlook.aetheria.features.profile.data.collection.CollectionBase;
 import io.hamlook.aetheria.features.profile.data.collection.CollectionData;
 import io.hamlook.aetheria.features.profile.data.collection.CollectionType;
 import io.hamlook.aetheria.features.profile.viewer.ui.ProfileViewerGUI;
-import io.hamlook.aetheria.features.profile.viewer.ui.util.StringRenderUtils;
+import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import io.hamlook.aetheria.utils.render.ItemRenderUtils;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
 import net.minecraft.client.Minecraft;
@@ -54,7 +54,7 @@ public class CollectionInfoTab extends Tab {
 
         NineSliceUtils.draw(ProfileViewerGUI.CONTAINER_BG, (int) btnX, (int) btnY, (int) btnW, (int) topBarH, 6, 18);
         String triggerText = "§a" + formatEnumName(currentCategory.name()) + " §7▼";
-        StringRenderUtils.drawCenteredString(triggerText, btnX + (btnW / 2f), btnY + (topBarH / 2f), textScale * 0.9f, false);
+        TextRenderUtils.drawCenteredStringScaleAware(triggerText, btnX + (btnW / 2f), btnY + (topBarH / 2f), textScale * 0.9f, false);
 
         float gridY = btnY + topBarH + pad;
         float gridH = height - (gridY - yPos) - pad;
@@ -166,21 +166,21 @@ public class CollectionInfoTab extends Tab {
         float textYTop = y + pad + ProfileViewerGUI.getScaledF(2);
         float textYBottom = y + (h / 2f) + ProfileViewerGUI.getScaledF(1);
 
-        StringRenderUtils.drawString("§e" + type.itemName, textStartX, textYTop, textScale * 0.95f, false);
+        TextRenderUtils.drawStringScaleAware("§e" + type.itemName, textStartX, textYTop, textScale * 0.95f, false);
 
         if (notUnlocked) {
-            StringRenderUtils.drawString("§8Not Unlocked", textStartX, textYBottom, textScale * 0.8f, false);
+            TextRenderUtils.drawStringScaleAware("§8Not Unlocked", textStartX, textYBottom, textScale * 0.8f, false);
         } else if (isMaxed) {
-            StringRenderUtils.drawString("§dMAXED §7" +(cData.curProgress > 0 ? "(" + StringUtils.formatNumber(cData.curProgress) + ")" : ""), textStartX, textYBottom, textScale * 0.8f, false);
+            TextRenderUtils.drawStringScaleAware("§dMAXED §7" +(cData.curProgress > 0 ? "(" + StringUtils.formatNumber(cData.curProgress) + ")" : ""), textStartX, textYBottom, textScale * 0.8f, false);
         } else {
             String progressText = "§b" + StringUtils.formatNumber(cData.curProgress) + " §7/ §3" + StringUtils.formatNumber(cData.maxProgress);
-            StringRenderUtils.drawString(progressText, textStartX, textYBottom, textScale * 0.8f, false);
+            TextRenderUtils.drawStringScaleAware(progressText, textStartX, textYBottom, textScale * 0.8f, false);
         }
 
         if (!notUnlocked) {
             String lvlText = (isMaxed ? "§d" : "§a") + "LVL " + cData.level;
             float lvlWidth = mc.fontRendererObj.getStringWidth(lvlText) * textScale * 0.95f;
-            StringRenderUtils.drawString(lvlText, x + w - pad - lvlWidth, textYTop, textScale * 0.95f, false);
+            TextRenderUtils.drawStringScaleAware(lvlText, x + w - pad - lvlWidth, textYTop, textScale * 0.95f, false);
         }
     }
 
@@ -302,7 +302,7 @@ public class CollectionInfoTab extends Tab {
             float centerX = dropX + (dropW / 2.0f);
             float centerY = itemY + (itemHeight / 2.0f);
             String prefix = (base == currentCategory) ? "§a> §f" : "§7";
-            StringRenderUtils.drawCenteredString(prefix + formatEnumName(base.name()), centerX, centerY, textScale * 0.85f, false);
+            TextRenderUtils.drawCenteredStringScaleAware(prefix + formatEnumName(base.name()), centerX, centerY, textScale * 0.85f, false);
         }
     }
 

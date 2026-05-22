@@ -2,8 +2,8 @@ package io.hamlook.aetheria.features.profile.viewer.ui.modules;
 
 import io.hamlook.aetheria.features.profile.viewer.ProfileViewerAPI;
 import io.hamlook.aetheria.features.profile.viewer.ui.ProfileViewerGUI;
-import io.hamlook.aetheria.features.profile.viewer.ui.util.StringRenderUtils;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
+import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
@@ -12,15 +12,18 @@ import net.minecraft.util.ChatAllowedCharacters;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchBar {
+public class PVSearchBar {
     public int x, y, width, height;
     public String text = "";
     public String placeholder = "Search Player...";
     public boolean isFocused = false;
     public List<String> suggestions = new ArrayList<>();
 
-    public SearchBar(int x, int y, int width, int height) {
-        this.x = x; this.y = y; this.width = width; this.height = height;
+    public PVSearchBar(int x, int y, int width, int height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
     public void draw(int mouseX, int mouseY, float uiScale) {
@@ -35,35 +38,34 @@ public class SearchBar {
         float startX = x + ProfileViewerGUI.getScaledF(12);
 
         if (text.isEmpty() && !isFocused) {
-            StringRenderUtils.drawString("§7" + placeholder, startX, textY - ((Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * textScale) / 2f), textScale, false);
+            TextRenderUtils.drawStringScaleAware("§7" + placeholder, startX, textY - ((Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * textScale) / 2f), textScale, false);
         } else {
             String displayText = "§f" + text + (showCursor ? "§7|" : "");
             float fontOffset = (Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * textScale) / 2f;
-            StringRenderUtils.drawString(displayText, startX, textY - fontOffset, textScale, false);
+            TextRenderUtils.drawStringScaleAware(displayText, startX, textY - fontOffset, textScale, false);
         }
 
         // Draw the Auto-complete Dropdown if suggestions exist and search is active
         GlStateManager.pushMatrix();
-        GlStateManager.translate(0,0,1000f);
+        GlStateManager.translate(0, 0, 1000f);
         if (isFocused && !suggestions.isEmpty()) {
             float itemH = ProfileViewerGUI.getScaledF(22);
             float dropH = itemH * suggestions.size();
             float dropY = y + height;
 
-            NineSliceUtils.draw(ProfileViewerGUI.CONTAINER_BG, x, (int)dropY, width, (int)dropH, 6, 18);
+            NineSliceUtils.draw(ProfileViewerGUI.CONTAINER_BG, x, (int) dropY, width, (int) dropH, 6, 18);
 
             for (int i = 0; i < suggestions.size(); i++) {
                 String sug = suggestions.get(i);
                 float itemY = dropY + (i * itemH);
 
-                boolean isHovered = mouseX >= x && mouseX <= x + width &&
-                        mouseY >= itemY && mouseY <= itemY + itemH;
+                boolean isHovered = mouseX >= x && mouseX <= x + width && mouseY >= itemY && mouseY <= itemY + itemH;
 
                 if (isHovered) {
                     Gui.drawRect(x + 4, (int) itemY, x + width - 4, (int) (itemY + itemH), 0x30FFFFFF);
                 }
 
-                StringRenderUtils.drawString("§f" + sug, startX, itemY + (itemH / 2f) - ((Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * textScale) / 2f), textScale, false);
+                TextRenderUtils.drawStringScaleAware("§f" + sug, startX, itemY + (itemH / 2f) - ((Minecraft.getMinecraft().fontRendererObj.FONT_HEIGHT * textScale) / 2f), textScale, false);
             }
         }
         GlStateManager.popMatrix();

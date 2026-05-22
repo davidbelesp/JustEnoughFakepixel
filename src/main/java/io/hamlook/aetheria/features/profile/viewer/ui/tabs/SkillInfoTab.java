@@ -5,7 +5,7 @@ import io.hamlook.aetheria.features.profile.data.ProfileData;
 import io.hamlook.aetheria.features.profile.data.skills.Skill;
 import io.hamlook.aetheria.features.profile.data.skills.SkillData;
 import io.hamlook.aetheria.features.profile.viewer.ui.ProfileViewerGUI;
-import io.hamlook.aetheria.features.profile.viewer.ui.util.StringRenderUtils;
+import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import io.hamlook.aetheria.utils.render.ItemRenderUtils;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
 import net.minecraft.client.Minecraft;
@@ -102,19 +102,19 @@ public class SkillInfoTab extends Tab {
         float textYTop = y + pad + ProfileViewerGUI.getScaledF(2);
         float textYBottom = y + (h / 2f) + ProfileViewerGUI.getScaledF(1);
 
-        StringRenderUtils.drawString("§e§l" + skillName.toUpperCase(), textStartX, textYTop, textScale, false);
+        TextRenderUtils.drawStringScaleAware("§e§l" + skillName.toUpperCase(), textStartX, textYTop, textScale, false);
 
         if (isMaxed) {
             String overflow = currentXp > 0 ? " §7(+" + StringUtils.formatNumber(currentXp) + ")" : "";
-            StringRenderUtils.drawString("§dMAXED" + overflow, textStartX, textYBottom, textScale * 0.85f, false);
+            TextRenderUtils.drawStringScaleAware("§dMAXED" + overflow, textStartX, textYBottom, textScale * 0.85f, false);
         } else {
             String xpText = "§b" + StringUtils.formatNumber(currentXp) + " §7/ §3" + StringUtils.formatNumber(requiredXp);
-            StringRenderUtils.drawString(xpText, textStartX, textYBottom, textScale * 0.85f, false);
+            TextRenderUtils.drawStringScaleAware(xpText, textStartX, textYBottom, textScale * 0.85f, false);
         }
 
         String lvlText = (isMaxed ? "§d" : "§a") + "LVL " + currentLevel;
         float lvlWidth = mc.fontRendererObj.getStringWidth(lvlText) * textScale;
-        StringRenderUtils.drawString(lvlText, x + w - pad - lvlWidth, textYTop, textScale, false);
+        TextRenderUtils.drawStringScaleAware(lvlText, x + w - pad - lvlWidth, textYTop, textScale, false);
     }
 
     private ItemStack getSkillItem(String skillName) {

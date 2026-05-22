@@ -5,7 +5,7 @@ import io.hamlook.aetheria.features.profile.data.ProfileData;
 import io.hamlook.aetheria.features.profile.data.slayer.Slayer;
 import io.hamlook.aetheria.features.profile.data.slayer.SlayerData;
 import io.hamlook.aetheria.features.profile.viewer.ui.ProfileViewerGUI;
-import io.hamlook.aetheria.features.profile.viewer.ui.util.StringRenderUtils;
+import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import io.hamlook.aetheria.utils.render.ItemRenderUtils;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
 import net.minecraft.client.Minecraft;
@@ -92,29 +92,29 @@ public class SlayerInfoTab extends Tab {
         float lineSpc = textScale * mc.fontRendererObj.FONT_HEIGHT + ProfileViewerGUI.getScaledF(3);
 
         String colorPrefix = getTitleColor(slayer);
-        StringRenderUtils.drawString(colorPrefix + "§l" + slayer.itemName.toUpperCase(), textStartX, currentY, textScale * 1.1f, false);
+        TextRenderUtils.drawStringScaleAware(colorPrefix + "§l" + slayer.itemName.toUpperCase(), textStartX, currentY, textScale * 1.1f, false);
         currentY += lineSpc + ProfileViewerGUI.getScaledF(2);
 
         if (!hasData || sData.curLevel == 0 && sData.curExp == 0) {
-            StringRenderUtils.drawString("§8Not Started", textStartX, currentY, textScale, false);
+            TextRenderUtils.drawStringScaleAware("§8Not Started", textStartX, currentY, textScale, false);
             return;
         }
 
         String lvlText = (isMaxed ? "§d" : "§a") + "LVL " + sData.curLevel;
         String xpText = isMaxed ? "§dMAXED" : "§b" + StringUtils.formatNumber(sData.curExp) + " §7/ §3" + StringUtils.formatNumber(sData.reqExp);
 
-        StringRenderUtils.drawString(lvlText + "  §8-  " + xpText, textStartX, currentY, textScale * 0.9f, false);
+        TextRenderUtils.drawStringScaleAware(lvlText + "  §8-  " + xpText, textStartX, currentY, textScale * 0.9f, false);
         currentY += lineSpc + ProfileViewerGUI.getScaledF(4);
 
         float statScale = textScale * 0.85f;
         float killSpc = statScale * mc.fontRendererObj.FONT_HEIGHT + ProfileViewerGUI.getScaledF(2);
 
         String killsRow1 = "§7T1: §a" + sData.t1Kills + "  §7T2: §a" + sData.t2Kills + "  §7T3: §a" + sData.t3Kills;
-        StringRenderUtils.drawString(killsRow1, textStartX, currentY, statScale, false);
+        TextRenderUtils.drawStringScaleAware(killsRow1, textStartX, currentY, statScale, false);
         currentY += killSpc;
 
         String killsRow2 = "§7T4: §a" + sData.t4Kills + "  §7T5: §a" + sData.t5Kills;
-        StringRenderUtils.drawString(killsRow2, textStartX, currentY, statScale, false);
+        TextRenderUtils.drawStringScaleAware(killsRow2, textStartX, currentY, statScale, false);
     }
 
     private ItemStack getSlayerItem(Slayer slayer) {

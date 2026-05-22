@@ -7,9 +7,8 @@ import io.hamlook.aetheria.features.profile.viewer.PlayerProfile;
 import io.hamlook.aetheria.features.profile.viewer.ProfileViewerAPI;
 import io.hamlook.aetheria.features.profile.viewer.ui.modules.PVButton;
 import io.hamlook.aetheria.features.profile.viewer.ui.modules.PlayerModule;
-import io.hamlook.aetheria.features.profile.viewer.ui.modules.SearchBar;
+import io.hamlook.aetheria.features.profile.viewer.ui.modules.PVSearchBar;
 import io.hamlook.aetheria.features.profile.viewer.ui.tabs.*;
-import io.hamlook.aetheria.features.profile.viewer.ui.util.StringRenderUtils;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -61,7 +60,7 @@ public class ProfileViewerGUI extends GuiScreen {
     // Buttons & Inputs
     public PVButton profileButton;
     public PVButton tabButton;
-    public SearchBar searchBar;
+    public PVSearchBar searchBar;
 
     public ProfileViewerGUI(String username) {
         this.username = username;
@@ -237,7 +236,7 @@ public class ProfileViewerGUI extends GuiScreen {
         int searchY = topEdgeY + getScaled(12);
 
         if (searchBar == null) {
-            searchBar = new SearchBar(searchX, searchY, searchW, searchH);
+            searchBar = new PVSearchBar(searchX, searchY, searchW, searchH);
         } else {
             searchBar.x = searchX;
             searchBar.y = searchY;
@@ -274,7 +273,7 @@ public class ProfileViewerGUI extends GuiScreen {
             float centerY = itemY + (itemHeight / 2.0f);
 
             String displayPrefix = (i == profileIndex) ? "§a> §f" : "§7";
-            StringRenderUtils.drawCenteredString(displayPrefix + pName, centerX, centerY, (uiScale * 1.8f), false);
+            TextRenderUtils.drawCenteredStringScaleAware(displayPrefix + pName, centerX, centerY, (uiScale * 1.8f), false);
         }
     }
 
@@ -307,7 +306,7 @@ public class ProfileViewerGUI extends GuiScreen {
             float centerY = itemY + (tabItemHeight / 2.0f);
 
             String displayPrefix = (t.tabIndex == tab) ? "§a> §f" : "§7";
-            StringRenderUtils.drawCenteredString(displayPrefix + t.name, centerX, centerY, (uiScale * 1.8f), false);
+            TextRenderUtils.drawCenteredStringScaleAware(displayPrefix + t.name, centerX, centerY, (uiScale * 1.8f), false);
         }
     }
 
@@ -444,21 +443,21 @@ public class ProfileViewerGUI extends GuiScreen {
         NineSliceUtils.draw(CONTAINER_BG, boxX, boxY, leftBoxWidth, boxH, 6, 18);
         NineSliceUtils.draw(CONTAINER_BG, rightBoxX, boxY, boxW, boxH, 6, 18);
 
-        StringRenderUtils.drawString(name, textX, nameY, textScale, false);
+        TextRenderUtils.drawStringScaleAware(name, textX, nameY, textScale, false);
 
         float textHeight = fontRendererObj.FONT_HEIGHT * labelScale;
 
         boolean hoverUpd = mouseX >= textX && mouseX <= textX + fullUpdWidth && mouseY >= updateY && mouseY <= updateY + textHeight;
         boolean hoverSync = mouseX >= textX && mouseX <= textX + fullSyncWidth && mouseY >= syncY && mouseY <= syncY + textHeight;
 
-        StringRenderUtils.drawString(updateDate, textX, updateY, labelScale, false);
+        TextRenderUtils.drawStringScaleAware(updateDate, textX, updateY, labelScale, false);
         if (hoverUpd) {
-            StringRenderUtils.drawString(updateHour, textX + updDateWidth + getScaled(5), updateY + (textHeight - fontRendererObj.FONT_HEIGHT * hourScale), hourScale, false);
+            TextRenderUtils.drawStringScaleAware(updateHour, textX + updDateWidth + getScaled(5), updateY + (textHeight - fontRendererObj.FONT_HEIGHT * hourScale), hourScale, false);
         }
 
-        StringRenderUtils.drawString(syncDate, textX, syncY, labelScale, false);
+        TextRenderUtils.drawStringScaleAware(syncDate, textX, syncY, labelScale, false);
         if (hoverSync) {
-            StringRenderUtils.drawString(syncHour, textX + syncDateWidth + getScaled(5), syncY + (textHeight - fontRendererObj.FONT_HEIGHT * hourScale), hourScale, false);
+            TextRenderUtils.drawStringScaleAware(syncHour, textX + syncDateWidth + getScaled(5), syncY + (textHeight - fontRendererObj.FONT_HEIGHT * hourScale), hourScale, false);
         }
 
         return leftBoxWidth;

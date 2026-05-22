@@ -13,6 +13,11 @@ public abstract class SimpleCommand extends CommandBase {
 
     protected SimpleCommand() {
         SLASH_ONLY.add(getName().toLowerCase(Locale.ROOT));
+        if (getAliases() != null) {
+            for (String alias : getAliases()) {
+                SLASH_ONLY.add(alias.toLowerCase(Locale.ROOT));
+            }
+        }
     }
 
     public abstract String getName();

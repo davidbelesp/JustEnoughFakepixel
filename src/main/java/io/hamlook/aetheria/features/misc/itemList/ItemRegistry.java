@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
@@ -77,7 +76,7 @@ public class ItemRegistry {
                         if (remoteVersion != null) remoteVersion = remoteVersion.replace("\"", "").trim();
 
                         if (remoteVersion != null && remoteVersion.equals(localVersion) && dataFile.exists()) {
-                            Aetheria.logger.info("[ATHR-DEBUG] Local cache is up-to-date! Skipping 73s download.");
+                            Aetheria.logger.info("[ATHR-DEBUG] Local cache is up-to-date! Skipping download.");
                             requiresDownload = false;
                         }
 
@@ -114,9 +113,9 @@ public class ItemRegistry {
                     long parseStart = System.currentTimeMillis();
                     Type type = new TypeToken<Map<String, SkyblockItem>>(){}.getType();
                     Map<String, SkyblockItem> items;
-                    
+
                     try (java.io.InputStreamReader reader = new java.io.InputStreamReader(
-                            new java.io.FileInputStream(dataFile), java.nio.charset.StandardCharsets.UTF_8)) {
+                            Files.newInputStream(dataFile.toPath()), java.nio.charset.StandardCharsets.UTF_8)) {
                         items = GSON.fromJson(reader, type);
                     }
                     Aetheria.logger.info("[ATHR-DEBUG] Actual GSON parse took " + (System.currentTimeMillis() - parseStart) + "ms.");
@@ -136,6 +135,10 @@ public class ItemRegistry {
                                 String firstLore = item.baseLore.get(0);
                                 if (firstLore.trim().length() > 2) {
                                     item.displayName = firstLore.trim();
+                                    // Remove the duplicate name from the lore so it doesn't render twice!
+                                    List<String> mutableLore = new ArrayList<>(item.baseLore);
+                                    mutableLore.remove(0);
+                                    item.baseLore = mutableLore;
                                 }
                             }
 
@@ -295,7 +298,7 @@ public class ItemRegistry {
 
         familyRegistry = pending;
         isLoaded = true;
-        Aetheria.logger.info("[JEF] Built " + familyRegistry.size() + " item families. Initialization Complete!");
+        Aetheria.logger.info("[ATHR-DEBUG] Built " + familyRegistry.size() + " item families. Initialization Complete!");
     }
 
     private static String stripRomanNumeral(String name) {

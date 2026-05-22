@@ -214,6 +214,8 @@ public class ItemPaneRenderer {
             boolean overParent = mouseX >= hoverSlotX && mouseX < hoverSlotX + S() && mouseY >= hoverSlotY && mouseY < hoverSlotY + S();
             if (!overDropdown && !overParent) {
                 hoverFamilyId = null;
+                dropDw = 0;
+                dropDh = 0;
             }
         }
 
@@ -258,11 +260,18 @@ public class ItemPaneRenderer {
                 GlStateManager.disableDepth();
                 Gui.drawRect(sx, sy, sx + S(), sy + S(), 0x80FFFFFF);
                 GlStateManager.enableDepth();
-                nowHovered = fam.familyId;
-                nowHovX = sx;
-                nowHovY = sy;
-                if (!fam.hasDropdown()) tooltipItem = rep;
-                else tooltipFamily = fam;
+
+                if (fam.hasDropdown()) {
+                    nowHovered = fam.familyId;
+                    nowHovX = sx;
+                    nowHovY = sy;
+                    tooltipFamily = fam;
+                } else {
+                    tooltipItem = rep;
+                    hoverFamilyId = null; // Forces stale dropdowns to close immediately
+                    dropDw = 0;
+                    dropDh = 0;
+                }
             }
         }
 

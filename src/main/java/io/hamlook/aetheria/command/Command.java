@@ -6,31 +6,38 @@ import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 
 public class Command extends SimpleCommand {
 
     @Override
-    public String getName() { return "ATHR"; }
+    public String getName() { return "athr"; }
 
     @Override
-    public String getUsage() { return "/ATHR | /ATHR config | /ATHR <category> | /ATHR reload"; }
+    public String getUsage() { return "/athr | /athr config | /athr <category> | /athr reload"; }
 
     @Override
-    public List<String> getAliases() { return Collections.singletonList("aetheria"); }
+    public List<String> getAliases() { return Arrays.asList("aetheria","jef","asm"); }
 
     @Override
     public void execute(ICommandSender sender, String[] args) throws CommandException {
-        if (args.length > 0 && args[0].equalsIgnoreCase("reload")) {
-            ATHRConfig.reloadRepo();
-            ChatUtils.sendMessage("§a[ATHR] §fRepo refresh triggered.");
-        } else if (args.length > 0 && args[0].equalsIgnoreCase("config")) {
-            ATHRConfig.openGui();
-        } else if (args.length == 0) {
-            ATHRConfig.openOptionsGui();
+        if (args.length > 0) {
+            switch (args[0].toLowerCase()) {
+                case "reload":
+                    ATHRConfig.reloadRepo();
+                    ChatUtils.sendMessage("§a[ATHR] §fRepo refresh triggered.");
+                    break;
+                case "config":
+                    ATHRConfig.openGui();
+                    break;
+                default:
+                    ATHRConfig.openCategory(StringUtils.join(args, " "));
+                    break;
+            }
+            return;
         } else {
-            ATHRConfig.openCategory(StringUtils.join(args, " "));
+            ATHRConfig.openOptionsGui();
         }
     }
 }

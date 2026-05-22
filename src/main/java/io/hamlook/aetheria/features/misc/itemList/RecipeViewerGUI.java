@@ -17,9 +17,7 @@ import java.util.List;
 public class RecipeViewerGUI extends GuiScreen {
 
     private static final int MIN_W = 220;
-    private static final int MAX_W = 360;
     private static final int MIN_H = 130;
-    private static final int MAX_H = 260;
     static final int HEADER_H = 36;
     static final int NAV_H = 20;
 
@@ -41,17 +39,31 @@ public class RecipeViewerGUI extends GuiScreen {
 
     private void computeBox() {
         int contentW, contentH;
+
         if (!recipes.isEmpty()) {
             Recipe r = recipes.get(recipeIndex);
             int[] sz = r.preferredSize();
             contentW = sz[0];
             contentH = sz[1];
         } else {
-            contentW = 160;
-            contentH = 80;
+            // Dynamically scale the box based on the actual length and width of the lore
+            contentH = (item.baseLore != null ? item.baseLore.size() * 10 : 0) + 10;
+            contentW = 200;
+
+            if (this.fontRendererObj != null) {
+                if (item.displayName != null) contentW = Math.max(contentW, this.fontRendererObj.getStringWidth(item.displayName));
+                if (item.baseLore != null) {
+                    for (String line : item.baseLore) {
+                        contentW = Math.max(contentW, this.fontRendererObj.getStringWidth(line));
+                    }
+                }
+            }
         }
-        boxW = Math.max(MIN_W, Math.min(MAX_W, contentW + 20));
-        boxH = Math.max(MIN_H, Math.min(MAX_H, HEADER_H + contentH + NAV_H + 10));
+
+        // Remove the arbitrary MAX_H and MAX_W limits so huge lores fit, but cap it to screen boundaries
+        boxW = Math.max(MIN_W, Math.min(this.width - 20, contentW + 40));
+        boxH = Math.max(MIN_H, Math.min(this.height - 20, HEADER_H + contentH + NAV_H + 10));
+
         boxX = (width  - boxW) / 2;
         boxY = (height - boxH) / 2;
     }
@@ -69,14 +81,12 @@ public class RecipeViewerGUI extends GuiScreen {
         int contentY = boxY + HEADER_H;
         int contentH = boxH - HEADER_H - NAV_H;
 
-        // Give the recipe priority to consume the click (for things like NPC Shop pages)
         if (!recipes.isEmpty()) {
             if (recipes.get(recipeIndex).mouseClicked(mx, my, btn, contentX, contentY, boxW, contentH, scrollY)) {
                 return;
             }
         }
 
-        // Global Recipe Nav Arrows
         if (recipes.size() <= 1) return;
         int arrowY = boxY + boxH - NAV_H;
         if (my >= arrowY && my <= arrowY + NAV_H) {
@@ -123,7 +133,11 @@ public class RecipeViewerGUI extends GuiScreen {
 
             if (item.baseLore != null) {
                 int ly = boxY + 32;
-                for (int i = 0; i < Math.min(item.baseLore.size(), 8); i++) {
+                // Removed the Math.min(item.baseLore.size(), 8) limit!
+                for (int i = 0; i < item.baseLore.size(); i++) {
+                    // Prevent text from overflowing out the bottom of the screen if it exceeds screen height
+                    if (ly + 10 > boxY + boxH - NAV_H) break;
+
                     drawCenteredString(fontRendererObj, item.baseLore.get(i), cx, ly, 0xFFFFFF);
                     ly += 10;
                 }
@@ -140,8 +154,7 @@ public class RecipeViewerGUI extends GuiScreen {
             int iconW = stack != null ? 18 : 0;
 
             int totalW = typeW + (iconW > 0 ? 4 + iconW : 0) + 4 + nameW;
-            int startX = cx - totalW / 2;
-            int currentX = startX;
+            int currentX = cx - totalW / 2;
             int textY = boxY + 12;
 
             fontRendererObj.drawStringWithShadow(typeLabel, currentX, textY, current.typeLabelColor());

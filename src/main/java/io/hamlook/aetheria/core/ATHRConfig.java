@@ -46,7 +46,7 @@ public class ATHRConfig {
 
     public static final KeyBinding openGuiKey = new KeyBinding("Open ATHR GUI", Keyboard.KEY_P, "aetheria");
     public static Config feature;
-    public static File configDirectory = new File("config/aetheria");
+    public static File configDirectory = new File("config/Aetheria");
     public static GuiScreen screenToOpen = null;
     private static File configFile;
     private static int screenTicks = 0;
@@ -71,7 +71,14 @@ public class ATHRConfig {
     }
 
     public static void init() {
-        if (!configDirectory.exists()) configDirectory.mkdirs();
+        if (!configDirectory.exists()){
+            File oldConfigFolder = new File("config/JustEnoughFakepixel");
+            if(oldConfigFolder.exists()){
+                oldConfigFolder.renameTo(configDirectory);
+            }else {
+                configDirectory.mkdirs();
+            }
+        }
         configFile = new File(configDirectory, "config.json");
         loadConfig();
     }

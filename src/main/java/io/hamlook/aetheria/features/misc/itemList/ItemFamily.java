@@ -1,5 +1,7 @@
 package io.hamlook.aetheria.features.misc.itemList;
 
+import io.hamlook.aetheria.utils.RomanNumeralParser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,9 +19,23 @@ public class ItemFamily {
     public ItemFamily(String familyId, String displayName, FamilyType type) {
         this.familyId    = familyId;
         this.type        = type;
-        updateDisplayName(displayName);
+        updateDisplayName(cleanEnchantLevel(displayName));
     }
 
+    public String cleanEnchantLevel(String str) {
+        String[] words = str.split(" ");
+        if(words.length < 2) return str;
+        String enchantWord = words[words.length - 1];
+        if(RomanNumeralParser.isValid(enchantWord)){
+            StringBuilder builder = new StringBuilder();
+            for(String s : words){
+                if(s.equals(enchantWord)) continue;
+                builder.append(s).append(" ");
+            }
+            return builder.toString();
+        };
+        return str;
+    }
     public void updateDisplayName(String newName) {
         this.displayName = newName;
         this.cleanDisplayName = newName != null ? newName.replaceAll("§.", "") : "";

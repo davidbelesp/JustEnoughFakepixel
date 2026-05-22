@@ -114,8 +114,9 @@ public class ItemRegistry {
                     long parseStart = System.currentTimeMillis();
                     Type type = new TypeToken<Map<String, SkyblockItem>>(){}.getType();
                     Map<String, SkyblockItem> items;
-
-                    try (FileReader reader = new FileReader(dataFile)) {
+                    
+                    try (java.io.InputStreamReader reader = new java.io.InputStreamReader(
+                            new java.io.FileInputStream(dataFile), java.nio.charset.StandardCharsets.UTF_8)) {
                         items = GSON.fromJson(reader, type);
                     }
                     Aetheria.logger.info("[ATHR-DEBUG] Actual GSON parse took " + (System.currentTimeMillis() - parseStart) + "ms.");

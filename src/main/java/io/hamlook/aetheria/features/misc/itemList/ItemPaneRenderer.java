@@ -388,7 +388,8 @@ public class ItemPaneRenderer {
             return;
         }
 
-        if (!Mouse.getEventButtonState() || Mouse.getEventButton() != 0) return;
+        if (!Mouse.getEventButtonState()) return;
+if (Mouse.getEventButton() != 0 && Mouse.getEventButton() != 1) return;
 
         if (mouseX < paneX || mouseX >= paneX + paneW || mouseY < paneY || mouseY >= paneY + paneH) {
             return;
@@ -448,7 +449,11 @@ public class ItemPaneRenderer {
                     int sx = dropDx + PAD + c * (S() + 2);
                     int sy = dropDy + PAD + r * (S() + 2);
                     if (mouseX >= sx && mouseX < sx + S() && mouseY >= sy && mouseY < sy + S()) {
-                        mc.displayGuiScreen(new RecipeViewerGUI(fam.members.get(i)));
+                        if (Mouse.getEventButton() == 1) {
+                            WikiPane.open(fam.members.get(i));
+                        } else {
+                            mc.displayGuiScreen(new RecipeViewerGUI(fam.members.get(i)));
+                        }
                         event.setCanceled(true);
                         return;
                     }
@@ -464,7 +469,9 @@ public class ItemPaneRenderer {
             int sx = gridX + (i % COLUMNS) * S(), sy = gridY + (i / COLUMNS) * S();
 
             if (mouseX >= sx && mouseX < sx + S() && mouseY >= sy && mouseY < sy + S()) {
-                if (!fam.hasDropdown() && fam.representative() != null) {
+                if (Mouse.getEventButton() == 1) {
+                    WikiPane.open(fam.representative());
+                } else if (!fam.hasDropdown() && fam.representative() != null) {
                     mc.displayGuiScreen(new RecipeViewerGUI(fam.representative()));
                 }
                 event.setCanceled(true);

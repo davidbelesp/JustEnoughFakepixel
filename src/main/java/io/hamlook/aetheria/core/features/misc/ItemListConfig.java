@@ -6,6 +6,11 @@ import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations;
 public class ItemListConfig {
 
     @Expose
+    @ConfigAnnotations.ConfigOption(name = "Item List UI", desc = "Show the Item List overlay on container screens")
+    @ConfigAnnotations.ConfigEditorBoolean
+    public boolean enabled = true;
+
+    @Expose
     @ConfigAnnotations.ConfigOption(name = "Use Global SearchBar", desc = "If enabled, the item list search bar is removed, and the global search bar is used")
     @ConfigAnnotations.ConfigEditorBoolean
     public boolean searchItemList = true;

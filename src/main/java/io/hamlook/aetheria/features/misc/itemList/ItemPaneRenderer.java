@@ -102,6 +102,7 @@ public class ItemPaneRenderer {
 
     private boolean shouldntShow() {
         if (ATHRConfig.feature == null) return true;
+        if (!ATHRConfig.feature.misc.itemList.enabled) return true;
         return !ItemRegistry.isLoaded || ItemRegistry.familyRegistry.isEmpty();
     }
 
@@ -148,7 +149,7 @@ public class ItemPaneRenderer {
         }
 
         if (shouldntShow()) return;
-        if (ItemRegistry.isLoaded && !wasLoaded) {
+        if (ItemRegistry.isLoaded && !wasLoaded && ATHRConfig.feature.misc.itemList.enabled) {
             wasLoaded = true;
             updateSearch(lastSearchText);
         }
@@ -399,7 +400,7 @@ public class ItemPaneRenderer {
         }
 
         if (!Mouse.getEventButtonState()) return;
-if (Mouse.getEventButton() != 0 && Mouse.getEventButton() != 1) return;
+        if (Mouse.getEventButton() != 0 && Mouse.getEventButton() != 1) return;
 
         handleClick(screenW, screenH, mouseX, mouseY, Mouse.getEventButton(), event);
     }

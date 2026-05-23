@@ -104,7 +104,7 @@ public class ItemPaneRenderer {
     private boolean shouldntShow() {
         if (ATHRConfig.feature == null) return true;
         if (!ATHRConfig.feature.misc.itemList.enabled) return true;
-        if(StorageManager.isOverlayActive()) return false;
+        if(StorageManager.isOverlayActive()) return true;
         return !ItemRegistry.isLoaded || ItemRegistry.familyRegistry.isEmpty();
     }
 

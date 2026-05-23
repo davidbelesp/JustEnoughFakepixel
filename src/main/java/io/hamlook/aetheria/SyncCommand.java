@@ -1,4 +1,4 @@
-package io.hamlook.aetheria.features.misc;
+package io.hamlook.aetheria;
 
 import io.hamlook.aetheria.command.SimpleCommand;
 import io.hamlook.aetheria.init.RegisterCommand;

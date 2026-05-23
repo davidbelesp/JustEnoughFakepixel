@@ -2,6 +2,7 @@ package io.hamlook.aetheria;
 
 import io.hamlook.aetheria.command.SimpleCommand;
 import io.hamlook.aetheria.init.RegisterCommand;
+import io.hamlook.aetheria.repo.CapeAPI;
 import io.hamlook.aetheria.utils.chat.ChatUtils;
 import io.hamlook.aetheria.utils.data.SkyblockData;
 import net.minecraft.client.Minecraft;
@@ -18,7 +19,6 @@ import java.util.Base64;
 @RegisterCommand
 public class SyncCommand extends SimpleCommand {
 
-    private static final String API_URL = "https://capeapi.qzz.io/pending-sync";
     private static final String MOD_SECRET = "a7c0e73c-3b0b-4789-8c80-741dd09ba1bc";
 
     @Override
@@ -45,11 +45,13 @@ public class SyncCommand extends SimpleCommand {
 
         new Thread(() -> {
             try {
-                URL url = new URL(API_URL);
+                URL url = new URL(CapeAPI.getAPIUrl("pending-sync"));
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("x-playername", playerName);
+                conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
+                conn.setRequestProperty("Accept", "*/*");
                 conn.setRequestProperty("x-code", syncCode);
                 conn.setRequestProperty("x-mod-secret", MOD_SECRET);
                 conn.setDoOutput(true);

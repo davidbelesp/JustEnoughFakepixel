@@ -102,9 +102,10 @@ public class ItemPaneRenderer {
     }
 
     private boolean shouldntShow() {
-        return ATHRConfig.feature != null &&
-                ATHRConfig.feature.misc.itemList.enabled && !StorageManager.isOverlayActive() &&
-                !ItemRegistry.isLoaded && !ItemRegistry.familyRegistry.isEmpty();
+        if (ATHRConfig.feature == null) return true;
+        if (!ATHRConfig.feature.misc.itemList.enabled) return true;
+        if(StorageManager.isOverlayActive()) return false;
+        return !ItemRegistry.isLoaded || ItemRegistry.familyRegistry.isEmpty();
     }
 
     private int totalPages() {

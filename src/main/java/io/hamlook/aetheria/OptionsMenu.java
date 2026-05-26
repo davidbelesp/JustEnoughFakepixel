@@ -22,7 +22,7 @@ import java.util.Random;
 
 public class OptionsMenu extends GuiScreen {
 
-    private static final String TITLE = "Aetheria";
+    private static final String TITLE = "Aetheria's Skyblock Mod";
     private static final Random RNG = new Random();
     private static final int PARTICLE_COUNT = 55;
 
@@ -82,7 +82,7 @@ public class OptionsMenu extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         globalTime += 0.018f;
-        splashBounce = (splashBounce + 0.04f) % (float) (Math.PI * 2);
+        splashBounce = (splashBounce + 0.02f) % (float) (Math.PI * 2);
         openProgress = Math.min(1f, openProgress + 0.045f);
 
         drawDefaultBackground();

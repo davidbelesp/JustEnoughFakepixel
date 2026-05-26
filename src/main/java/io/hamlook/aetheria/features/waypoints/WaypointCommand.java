@@ -1,8 +1,5 @@
 package io.hamlook.aetheria.features.waypoints;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import io.hamlook.aetheria.command.SimpleCommand;
 import io.hamlook.aetheria.core.ATHRConfig;
 import io.hamlook.aetheria.init.RegisterCommand;
@@ -15,17 +12,16 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 
-import java.lang.reflect.Type;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @RegisterCommand
 public class WaypointCommand extends SimpleCommand {
 
     public static final String PREFIX = "§3[ATHRW]§b ";
-
     private static final Minecraft mc = Minecraft.getMinecraft();
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-
     private static final List<String> SUBCOMMANDS = Arrays.asList("list", "load", "unload", "setup", "reset", "skip", "unskip", "skipto", "enable", "disable", "create", "delete", "add", "insert", "remove", "rename", "export", "import", "range", "time", "save", "info", "manage", "guide");
 
     @Override
@@ -43,8 +39,6 @@ public class WaypointCommand extends SimpleCommand {
         return "/athrw <subcommand>";
     }
 
-    // execute
-
     @Override
     public void execute(ICommandSender sender, String[] args) throws net.minecraft.command.CommandException {
         WaypointState state = WaypointState.getInstance();
@@ -56,8 +50,6 @@ public class WaypointCommand extends SimpleCommand {
         }
 
         switch (args[0].toLowerCase()) {
-
-            // navigation
 
             case "load": {
                 if (args.length < 2) {
@@ -130,8 +122,6 @@ public class WaypointCommand extends SimpleCommand {
                 success(sender, "Reset to waypoint 1");
                 break;
 
-            //  group management
-
             case "list":
                 showGroupList(sender);
                 break;
@@ -187,15 +177,12 @@ public class WaypointCommand extends SimpleCommand {
                 break;
             }
 
-            //  waypoint editing
-
             case "add": {
                 WaypointGroup target = state.loadedGroup;
                 if (target == null) {
                     error(sender, "No group loaded. Use /athrw load <n> first");
                     return;
                 }
-                // detect: /athrw add x y z [name]  vs  /athrw add [name]
                 if (args.length >= 4 && isDouble(args[1]) && isDouble(args[2]) && isDouble(args[3])) {
                     double x = parseDoubleSafe(args[1], 0);
                     double y = parseDoubleSafe(args[2], 0);
@@ -225,13 +212,13 @@ public class WaypointCommand extends SimpleCommand {
                     error(sender, "Index out of range (1–" + (state.size() + 1) + ")");
                     return;
                 }
-                String JWName = args.length >= 3 ? args[2] : String.valueOf(idx);
+                String wpName = args.length >= 3 ? args[2] : String.valueOf(idx);
                 double bx = Math.floor(mc.thePlayer.posX), by = Math.floor(mc.thePlayer.posY) - 1, bz = Math.floor(mc.thePlayer.posZ);
-                state.loadedGroup.waypoints.add(idx - 1, new WaypointPoint(bx, by, bz, JWName));
+                state.loadedGroup.waypoints.add(idx - 1, new WaypointPoint(bx, by, bz, wpName));
                 renumberNumericNames(state.loadedGroup, idx);
                 storage.markDirty();
                 storage.saveIfDirty();
-                success(sender, "Inserted &e" + JWName + " &aat index &e" + idx + " &7(" + (int) bx + ", " + (int) by + ", " + (int) bz + ")");
+                success(sender, "Inserted &e" + wpName + " &aat index &e" + idx + " &7(" + (int) bx + ", " + (int) by + ", " + (int) bz + ")");
                 break;
             }
 
@@ -255,8 +242,6 @@ public class WaypointCommand extends SimpleCommand {
                 success(sender, "Removed &e" + (removed.name != null ? removed.name : String.valueOf(idx)));
                 break;
             }
-
-            //  import / export
 
             case "export": {
                 if (args.length < 2) {
@@ -284,21 +269,19 @@ public class WaypointCommand extends SimpleCommand {
                     error(sender, "Clipboard is empty");
                     return;
                 }
-                List<WaypointPoint> JWs = parseSoopy(clip.trim());
-                if (JWs == null) {
+                List<WaypointPoint> wps = parseSoopy(clip.trim());
+                if (wps == null) {
                     error(sender, "Could not parse clipboard as soopy waypoints");
                     return;
                 }
                 WaypointGroup g = storage.getGroup(name);
                 if (g == null) g = new WaypointGroup(name);
-                g.waypoints = JWs;
+                g.waypoints = wps;
                 storage.putGroup(g);
                 storage.saveIfDirty();
-                success(sender, "Imported &e" + JWs.size() + " &awaypoints into &e" + name);
+                success(sender, "Imported &e" + wps.size() + " &awaypoints into &e" + name);
                 break;
             }
-
-            // settings
 
             case "setup":
                 state.setupMode = !state.setupMode;
@@ -349,8 +332,6 @@ public class WaypointCommand extends SimpleCommand {
                 storage.saveForce();
                 success(sender, "Saved all groups to config");
                 break;
-
-            // info / gui
 
             case "info": {
                 if (!state.hasGroup()) {
@@ -404,8 +385,6 @@ public class WaypointCommand extends SimpleCommand {
         }
     }
 
-    //group list
-
     private void showGroupList(ICommandSender sender) {
         Map<String, WaypointGroup> groups = WaypointStorage.getInstance().getGroups();
         blank(sender);
@@ -418,7 +397,7 @@ public class WaypointCommand extends SimpleCommand {
         for (WaypointGroup g : groups.values()) {
             ChatComponentText root = new ChatComponentText("");
 
-            ChatComponentText name = new ChatComponentText(EnumChatFormatting.AQUA + g.name + EnumChatFormatting.GRAY + " (" + g.waypoints.size() + " JWs)");
+            ChatComponentText name = new ChatComponentText(EnumChatFormatting.AQUA + g.name + EnumChatFormatting.GRAY + " (" + g.waypoints.size() + " wps)");
             if (g.description != null && !g.description.isEmpty())
                 name.appendText(EnumChatFormatting.DARK_GRAY + " – " + g.description);
             root.appendSibling(name);
@@ -439,8 +418,6 @@ public class WaypointCommand extends SimpleCommand {
         }
         blank(sender);
     }
-
-    //  helpers
 
     private void addWaypoint(ICommandSender sender, WaypointGroup group, String name) {
         double bx = Math.floor(mc.thePlayer.posX), by = Math.floor(mc.thePlayer.posY) - 1, bz = Math.floor(mc.thePlayer.posZ);
@@ -475,77 +452,12 @@ public class WaypointCommand extends SimpleCommand {
     }
 
     private String exportSoopy(WaypointGroup group) {
-        List<Map<String, Object>> list = new ArrayList<>();
-
-        for (WaypointPoint waypoint : group.waypoints) {
-            Map<String, Object> map = new LinkedHashMap<>();
-
-            map.put("x", waypoint.x);
-            map.put("y", waypoint.y);
-            map.put("z", waypoint.z);
-
-            map.put("r", 0);
-            map.put("g", 1);
-            map.put("b", 0);
-
-            Map<String, Object> options = new LinkedHashMap<>();
-            options.put("name", waypoint.name != null ? waypoint.name : "");
-
-            map.put("options", options);
-
-            list.add(map);
-        }
-
-        return GSON.toJson(list);
+        return WaypointGroupGui.exportSoopy(group);
     }
 
     private List<WaypointPoint> parseSoopy(String json) {
-        try {
-            if (json.startsWith("[")) {
-                Type type = new TypeToken<List<Map<String, Object>>>() {
-                }.getType();
-                List<Map<String, Object>> raw = GSON.fromJson(json, type);
-                List<WaypointPoint> JWs = new ArrayList<>();
-                for (int i = 0; i < raw.size(); i++) {
-                    Map<String, Object> m = raw.get(i);
-                    double x = toDouble(m.get("x")), y = toDouble(m.get("y")), z = toDouble(m.get("z"));
-                    String name = String.valueOf(i + 1);
-                    if (m.containsKey("options")) {
-                        @SuppressWarnings("unchecked") Map<String, Object> opts = (Map<String, Object>) m.get("options");
-                        if (opts != null && opts.containsKey("name")) name = String.valueOf(opts.get("name"));
-                    }
-                    JWs.add(new WaypointPoint(x, y, z, name));
-                }
-                JWs.sort((a, b) -> {
-                    try {
-                        return Integer.compare(Integer.parseInt(a.name), Integer.parseInt(b.name));
-                    } catch (NumberFormatException e) {
-                        return 0;
-                    }
-                });
-                return JWs;
-            }
-            if (json.matches("(?s).*\\d.*")) {
-                List<WaypointPoint> JWs = new ArrayList<>();
-                String[] rows = json.split("[\\r\\n]+");
-                for (int i = 0; i < rows.length; i++) {
-                    String[] parts = rows[i].trim().split("\\s+");
-                    if (parts.length >= 3)
-                        JWs.add(new WaypointPoint(Double.parseDouble(parts[0]), Double.parseDouble(parts[1]), Double.parseDouble(parts[2]), String.valueOf(i + 1)));
-                }
-                return JWs.isEmpty() ? null : JWs;
-            }
-        } catch (Exception ignored) {
-        }
-        return null;
+        return WaypointGroupGui.parseSoopy(json);
     }
-
-    private double toDouble(Object o) {
-        if (o instanceof Number) return ((Number) o).doubleValue();
-        return Double.parseDouble(String.valueOf(o));
-    }
-
-    //  output
 
     private void header(ICommandSender s, String text) {
         s.addChatMessage(new ChatComponentText(color(PREFIX + "&6" + text)));
@@ -600,12 +512,7 @@ public class WaypointCommand extends SimpleCommand {
     }
 
     private String joinFrom(String[] args, int from) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = from; i < args.length; i++) {
-            if (i > from) sb.append(' ');
-            sb.append(args[i]);
-        }
-        return sb.toString();
+        return String.join(" ", Arrays.copyOfRange(args, from, args.length));
     }
 
 
@@ -615,7 +522,7 @@ public class WaypointCommand extends SimpleCommand {
         if (args.length == 2) {
             String sub = args[0].toLowerCase();
             if (sub.equals("load") || sub.equals("delete") || sub.equals("export") || sub.equals("rename") || sub.equals("import"))
-                return getListOfStringsMatchingLastWord(args, new ArrayList<>(WaypointStorage.getInstance().getGroups().keySet()));
+                return getListOfStringsMatchingLastWord(args, WaypointStorage.getInstance().getGroups().keySet());
         }
         return Collections.emptyList();
     }

@@ -20,8 +20,14 @@ public class WaypointRenderer {
 
     private static final Minecraft mc = Minecraft.getMinecraft();
 
-    private static Color argbToColor(int argb) {
+    private Color argbToColor(int argb) {
         return new Color((argb >> 16) & 0xFF, (argb >> 8) & 0xFF, argb & 0xFF, (argb >> 24) & 0xFF);
+    }
+
+    private int resolveColor(String chromaField, int fallback) {
+        if (ATHRConfig.feature == null) return fallback;
+        try { return ChromaColour.specialToChromaRGB(chromaField); }
+        catch (Exception e) { return fallback; }
     }
 
     @SubscribeEvent
@@ -115,12 +121,13 @@ public class WaypointRenderer {
         String nameStr = StringUtils.stripControlCodes(text);
         String distStr = (int) Math.round(dist) + "m";
 
-        int nameW = mc.fontRendererObj.getStringWidth(nameStr);
-        int distW = mc.fontRendererObj.getStringWidth(distStr);
-        int totalW = nameW + mc.fontRendererObj.getStringWidth(" ") + distW;
+        int nameW  = mc.fontRendererObj.getStringWidth(nameStr);
+        int spaceW = mc.fontRendererObj.getStringWidth(" ");
+        int distW  = mc.fontRendererObj.getStringWidth(distStr);
+        int totalW = nameW + spaceW + distW;
 
-        int nameColor = labelColor() | 0xFF000000;
-        int distColor = distanceLabelColor() | 0xFF000000;
+        int nameColor = labelColor();
+        int distColor = distanceLabelColor();
 
         GL11.glPushMatrix();
         GL11.glTranslated(wx, wy, wz);
@@ -133,7 +140,7 @@ public class WaypointRenderer {
 
         float sx = -totalW / 2f;
         mc.fontRendererObj.drawString(nameStr, sx, 0f, nameColor, false);
-        mc.fontRendererObj.drawString(distStr, sx + nameW + mc.fontRendererObj.getStringWidth(" "), 0f, distColor, false);
+        mc.fontRendererObj.drawString(distStr, sx + nameW + spaceW, 0f, distColor, false);
 
         GlStateManager.enableDepth();
         GL11.glPopMatrix();
@@ -144,30 +151,18 @@ public class WaypointRenderer {
     }
 
     private Color boxColor() {
-        if (ATHRConfig.feature == null) return Color.YELLOW;
-        return argbToColor(ChromaColour.specialToChromaRGB(ATHRConfig.feature.waypoints.colors.boxColour));
+        return argbToColor(resolveColor(ATHRConfig.feature != null ? ATHRConfig.feature.waypoints.colors.boxColour : null, 0xFFFFFF00));
     }
 
     private Color tracerColor() {
-        if (ATHRConfig.feature == null) return Color.YELLOW;
-        return argbToColor(ChromaColour.specialToChromaRGB(ATHRConfig.feature.waypoints.colors.tracerColour));
+        return argbToColor(resolveColor(ATHRConfig.feature != null ? ATHRConfig.feature.waypoints.colors.tracerColour : null, 0xFFFFFF00));
     }
 
     private int labelColor() {
-        if (ATHRConfig.feature == null) return 0xFFFFFFFF;
-        try {
-            return ChromaColour.specialToChromaRGB(ATHRConfig.feature.waypoints.colors.labelColour);
-        } catch (Exception e) {
-            return 0xFFFFFFFF;
-        }
+        return resolveColor(ATHRConfig.feature != null ? ATHRConfig.feature.waypoints.colors.labelColour : null, 0xFFFFFFFF);
     }
 
     private int distanceLabelColor() {
-        if (ATHRConfig.feature == null) return 0xFF55FFFF;
-        try {
-            return ChromaColour.specialToChromaRGB(ATHRConfig.feature.waypoints.colors.distanceLabelColour);
-        } catch (Exception e) {
-            return 0xFF55FFFF;
-        }
+        return resolveColor(ATHRConfig.feature != null ? ATHRConfig.feature.waypoints.colors.distanceLabelColour : null, 0xFF55FFFF);
     }
 }

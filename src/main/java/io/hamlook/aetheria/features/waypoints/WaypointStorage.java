@@ -89,7 +89,6 @@ public class WaypointStorage implements StorageManager.Managed, StorageManager.A
         dirty.set(false);
     }
 
-    /** Called by the 60s auto-save timer; only flushes if dirty. */
     @Override
     public void autoSave() {
         saveIfDirty();

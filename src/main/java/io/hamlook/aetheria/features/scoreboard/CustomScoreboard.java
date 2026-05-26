@@ -330,10 +330,9 @@ public class CustomScoreboard extends Overlay {
         }
 
         // ── transform: build ordered display list ─────────────────────────────
+        // Note: title is NOT added here — render fetches it fresh every frame
+        // so animation updates smoothly.
         List<String> lines = new ArrayList<>();
-
-        String title = SkyblockData.getScoreboardTitle();
-        if (title != null && !title.isEmpty()) lines.add(title);
 
         for (int id : getLineOrder()) {
             switch (id) {
@@ -456,9 +455,19 @@ public class CustomScoreboard extends Overlay {
         if (!preview && !extraGuard()) return;
         if (!preview && ATHRConfig.feature.scoreboard.hideOnTab && OverlayUtils.shouldHide()) return;
 
-        // getLines() is now a pure cache read — zero cost
+        // getLines() is a pure cache read — zero cost.
+        // Title is fetched fresh every frame so chroma animation stays smooth.
         List<String> lines = getLines(preview);
-        if (lines.isEmpty()) return;
+        String title = SkyblockData.getScoreboardTitle();
+        List<String> displayLines;
+        if (title != null && !title.isEmpty()) {
+            displayLines = new ArrayList<>(lines.size() + 1);
+            displayLines.add(title);
+            displayLines.addAll(lines);
+        } else {
+            displayLines = lines;
+        }
+        if (displayLines.isEmpty()) return;
 
         boolean down = Keyboard.isKeyDown(ATHRConfig.feature.debug.scoreboardDebugConfig.scoreboardDebugKey);
         if (down && !wasDown && ATHRConfig.feature.debug.scoreboardDebugConfig.scoreboardDebug)
@@ -473,11 +482,11 @@ public class CustomScoreboard extends Overlay {
         int minWidth   = ATHRConfig.feature.scoreboard.minWidth;
 
         int maxW = minWidth;
-        for (String line : lines)
+        for (String line : displayLines)
             maxW = Math.max(maxW, mc.fontRendererObj.getStringWidth(line));
 
         int boxW = maxW + PAD_X * 2;
-        int boxH = lines.size() * lh + PAD_Y * 2 - LINE_GAP;
+        int boxH = displayLines.size() * lh + PAD_Y * 2 - LINE_GAP;
         lastW = boxW;
         lastH = boxH;
 
@@ -505,22 +514,22 @@ public class CustomScoreboard extends Overlay {
         int textY = PAD_Y;
         if (SkyblockData.isOnSkyblock()) {
             // Line 0 is the Skyblock title — always centered
-            String firstLine = lines.get(0);
+            String firstLine = displayLines.get(0);
             int titleX = (boxW - mc.fontRendererObj.getStringWidth(firstLine)) / 2;
             mc.fontRendererObj.drawStringWithShadow(firstLine, titleX, textY, -1);
             textY += lh;
-            for (int i = 1; i < lines.size(); i++) {
-                String line = lines.get(i);
+            for (int i = 1; i < displayLines.size(); i++) {
+                String line = displayLines.get(i);
                 mc.fontRendererObj.drawStringWithShadow(line, xFor(line, boxW, alignment), textY, 0xFFFFFF);
                 textY += lh;
             }
         } else {
-            String firstLine = lines.get(0);
+            String firstLine = displayLines.get(0);
             int titleX = (boxW - mc.fontRendererObj.getStringWidth(firstLine)) / 2;
             mc.fontRendererObj.drawStringWithShadow(firstLine, titleX, textY, -1);
             textY += lh;
-            for (int i = 1; i < lines.size(); i++) {
-                String line = lines.get(i);
+            for (int i = 1; i < displayLines.size(); i++) {
+                String line = displayLines.get(i);
                 mc.fontRendererObj.drawStringWithShadow(line, xFor(line, boxW, alignment), textY, 0xFFFFFF);
                 textY += lh;
             }

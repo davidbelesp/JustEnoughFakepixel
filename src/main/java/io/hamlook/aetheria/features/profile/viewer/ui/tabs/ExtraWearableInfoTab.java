@@ -24,6 +24,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ExtraWearableInfoTab extends Tab {
@@ -104,10 +105,14 @@ public class ExtraWearableInfoTab extends Tab {
                 parsedPets.add(new RenderablePet(p));
             }
         }
+
         parsedPets.sort((a, b) -> {
-            if (a.rarityScore != b.rarityScore) return Integer.compare(b.rarityScore, a.rarityScore);
-            return a.active ? -1 : 1;
+            if (a.rarityScore != b.rarityScore) {
+                return Integer.compare(b.rarityScore, a.rarityScore);
+            }
+            return Boolean.compare(b.active, a.active);
         });
+
 
         // --- 2. DRAW SECTIONS ---
         float petGridY = yPos + topBarH + pad * 4;

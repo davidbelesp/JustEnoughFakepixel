@@ -1,10 +1,12 @@
 package io.hamlook.aetheria.features.misc;
 
 import io.hamlook.aetheria.core.ATHRConfig;
+import io.hamlook.aetheria.core.config.gui.GuiTextures;
 import io.hamlook.aetheria.features.storage.StorageManager;
 import io.hamlook.aetheria.init.RegisterEvents;
 import io.hamlook.aetheria.utils.CalculatorUtils;
 import io.hamlook.aetheria.utils.Position;
+import io.hamlook.aetheria.utils.render.NineSliceUtils;
 import io.hamlook.aetheria.utils.render.RenderUtils;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -15,6 +17,7 @@ import net.minecraft.client.gui.inventory.GuiChest;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import org.lwjgl.input.Keyboard;
@@ -32,6 +35,12 @@ public class SearchBar {
     private static final SearchBar INSTANCE = new SearchBar();
     private static final int BAR_WIDTH = 170;
     private static final int BAR_HEIGHT = 20;
+    private static final int TOGGLE_BTN_W = 22;
+    private static final int TOGGLE_BTN_GAP = 3;
+
+    private static final ResourceLocation SEARCH_ICON =
+            new ResourceLocation("aetheria", "search.png");
+
     private static GuiTextField searchBar;
     private static String searchText = "";
     private static String lastCalcInput = "";
@@ -41,11 +50,21 @@ public class SearchBar {
     @Getter
     private static String storageSearchText = "";
 
+    private static int toggleBtnX, toggleBtnY;
+
+    @Getter
+    private static boolean sendToItemList = true;
+
     public static SearchBar getInstance() {
         return INSTANCE;
     }
 
     public static String getSearchText() {
+        return isCalcMode() ? "" : searchText;
+    }
+
+    public static String getItemListSearchText() {
+        if (!sendToItemList) return "";
         return isCalcMode() ? "" : searchText;
     }
 
@@ -105,11 +124,11 @@ public class SearchBar {
         boolean useGoldTexture = suffix != null;
 
         if (useGoldTexture) {
-            int x = field.xPosition, y = field.yPosition;
-            int w = field.width, h = field.height;
-
-            GlStateManager.color(1f, 1f, 1f, 1f);
-            RenderUtils.drawSearchBar(createTempFieldWithText(field, text + " " + suffix), true, true);
+            RenderUtils.drawSearchBar(
+                    createTempFieldWithText(field, text + " " + suffix),
+                    true,
+                    true
+            );
         } else {
             RenderUtils.drawSearchBar(field, true, false);
         }
@@ -130,6 +149,77 @@ public class SearchBar {
             lastCalcResult = CalculatorUtils.calculateAndFormat(text);
         }
         return lastCalcResult == null ? null : "§e= §a" + lastCalcResult;
+    }
+
+    private static boolean isItemListActive() {
+        return ATHRConfig.feature != null
+                && ATHRConfig.feature.misc.itemList.enabled
+                && ATHRConfig.feature.misc.itemList.searchItemList;
+    }
+
+    private static void drawToggleButton(int barX, int barY) {
+        toggleBtnX = barX + BAR_WIDTH + TOGGLE_BTN_GAP;
+        toggleBtnY = barY;
+
+        NineSliceUtils.draw(
+                GuiTextures.storageBackground(1),
+                toggleBtnX,
+                toggleBtnY,
+                TOGGLE_BTN_W,
+                BAR_HEIGHT,
+                6,
+                18
+        );
+
+        Minecraft mc = Minecraft.getMinecraft();
+        ScaledResolution sr = new ScaledResolution(mc);
+
+        int mouseX = Mouse.getX() * sr.getScaledWidth() / mc.displayWidth;
+        int mouseY = sr.getScaledHeight() - Mouse.getY() * sr.getScaledHeight() / mc.displayHeight - 1;
+
+        boolean hovered =
+                mouseX >= toggleBtnX &&
+                        mouseX < toggleBtnX + TOGGLE_BTN_W &&
+                        mouseY >= toggleBtnY &&
+                        mouseY < toggleBtnY + BAR_HEIGHT;
+
+        if (hovered) {
+            Gui.drawRect(
+                    toggleBtnX,
+                    toggleBtnY,
+                    toggleBtnX + TOGGLE_BTN_W,
+                    toggleBtnY + BAR_HEIGHT,
+                    0x33FFFFFF
+            );
+        }
+
+        if (sendToItemList) {
+            MC.getTextureManager().bindTexture(SEARCH_ICON);
+
+            GlStateManager.color(1f, 1f, 1f, 1f);
+
+            int size = 12;
+
+            Gui.drawModalRectWithCustomSizedTexture(
+                    toggleBtnX + (TOGGLE_BTN_W - size) / 2,
+                    toggleBtnY + (BAR_HEIGHT - size) / 2,
+                    0,
+                    0,
+                    size,
+                    size,
+                    size,
+                    size
+            );
+        } else {
+            String icon = "\u2261";
+
+            mc.fontRendererObj.drawStringWithShadow(
+                    icon,
+                    toggleBtnX + TOGGLE_BTN_W / 2f - mc.fontRendererObj.getStringWidth(icon) / 2f,
+                    toggleBtnY + BAR_HEIGHT / 2f - 4,
+                    0xFFFFFF
+            );
+        }
     }
 
     public int getOverlayWidth() {
@@ -157,7 +247,6 @@ public class SearchBar {
     public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
         if (!isEnabled() || !isSupportedGui(event.gui)) return;
 
-        // Enable keyboard repeat for text field
         Keyboard.enableRepeatEvents(true);
 
         int w = BAR_WIDTH, h = BAR_HEIGHT;
@@ -182,7 +271,6 @@ public class SearchBar {
         if (!isEnabled() || !(event.gui instanceof GuiContainer)) return;
         if (searchBar == null || !searchBar.isFocused()) return;
 
-        // Only process key press and repeat events, not release
         if (!Keyboard.getEventKeyState()) return;
 
         char typedChar = Keyboard.getEventCharacter();
@@ -207,7 +295,21 @@ public class SearchBar {
         boolean inside = mouseX >= searchBar.xPosition && mouseX <= searchBar.xPosition + searchBar.width && mouseY >= searchBar.yPosition && mouseY <= searchBar.yPosition + searchBar.height;
 
         searchBar.setFocused(inside);
-        if (inside) searchBar.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
+
+        if (inside) {
+            searchBar.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
+        }
+
+        if (isItemListActive() && Mouse.getEventButton() == 0 && !inside) {
+            if (mouseX >= toggleBtnX &&
+                    mouseX < toggleBtnX + TOGGLE_BTN_W &&
+                    mouseY >= toggleBtnY &&
+                    mouseY < toggleBtnY + BAR_HEIGHT) {
+
+                sendToItemList = !sendToItemList;
+                event.setCanceled(true);
+            }
+        }
     }
 
     @SubscribeEvent
@@ -219,6 +321,11 @@ public class SearchBar {
         }
 
         searchBar.updateCursorCounter();
+
         drawSearchBar(searchBar, searchBar.getText());
+
+        if (isItemListActive()) {
+            drawToggleButton(searchBar.xPosition, searchBar.yPosition);
+        }
     }
 }

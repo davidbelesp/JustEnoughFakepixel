@@ -172,7 +172,7 @@ public class ItemPaneRenderer {
             }
         }
 
-        String cur = useGlobalSearch ? SearchBar.getSearchText() : SearchBar.getStorageSearchText();
+        String cur = useGlobalSearch ? SearchBar.getItemListSearchText() : SearchBar.getStorageSearchText();
         if (cur == null) cur = "";
 
         if (!cur.equals(lastSearchText)) {

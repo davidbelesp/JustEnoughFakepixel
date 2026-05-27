@@ -24,9 +24,7 @@ public class PickobulusPreview {
 
     private static final int RADIUS = 3;
     private static final double REACH = 30.0;
-
     private static final String PICKOBULUS_LORE_MARKER = "Ability: Pickobulus";
-
     private static final double PICKOBULUS_EYE_OFFSET = 0.53625;
 
     private static final Color COLOR_READY = new Color(255, 100, 200, 160);
@@ -35,30 +33,53 @@ public class PickobulusPreview {
     private static final Color COLOR_FILL_CD = new Color(255, 60, 60, 30);
 
     private boolean onCooldown = false;
-
     private AxisAlignedBB previewBox = null;
 
-    private static boolean isHoldingPickobulus() {
-        Minecraft mc = Minecraft.getMinecraft();
-        if (mc.thePlayer == null) return false;
-        return ItemUtils.getLoreLines(mc.thePlayer.getHeldItem()).stream().anyMatch(line -> ColorUtils.stripColor(line).contains(PICKOBULUS_LORE_MARKER));
+    private boolean cachedIsHoldingPickobulus = false;
+    private int lastHeldItemHash = 0;
+    private int tickCounter = 0;
+
+    private boolean isEnabled() {
+        return ATHRConfig.feature != null && ATHRConfig.feature.mining.pickobulusPreview;
     }
 
-    private static BlockPos raycast(EntityPlayer player) {
+    private boolean isHoldingPickobulus() {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.thePlayer == null) return false;
+
+        int currentHash = System.identityHashCode(mc.thePlayer.getHeldItem());
+        if (currentHash != lastHeldItemHash) {
+            lastHeldItemHash = currentHash;
+            if (mc.thePlayer.getHeldItem() == null) {
+                cachedIsHoldingPickobulus = false;
+            } else {
+                for (String line : ItemUtils.getLoreLines(mc.thePlayer.getHeldItem())) {
+                    if (ColorUtils.stripColor(line).contains(PICKOBULUS_LORE_MARKER)) {
+                        cachedIsHoldingPickobulus = true;
+                        return true;
+                    }
+                }
+                cachedIsHoldingPickobulus = false;
+            }
+        }
+        return cachedIsHoldingPickobulus;
+    }
+
+    private BlockPos raycast(EntityPlayer player) {
         double eyeY = player.posY + PICKOBULUS_EYE_OFFSET + (player.isSneaking() ? 1.54 : 1.62);
         Vec3 eyes = new Vec3(player.posX, eyeY, player.posZ);
         Vec3 look = player.getLookVec();
         return RaycastUtils.raycastBlock(eyes, look, REACH);
     }
 
-    private boolean isEnabled() {
-        return ATHRConfig.feature == null || !ATHRConfig.feature.mining.pickobulusPreview;
-    }
-
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
-        if (isEnabled() || !isHoldingPickobulus() || onCooldown) {
+
+        tickCounter++;
+        if (tickCounter % 2 != 0) return;
+
+        if (!isEnabled() || !isHoldingPickobulus() || onCooldown) {
             previewBox = null;
             return;
         }
@@ -75,13 +96,12 @@ public class PickobulusPreview {
             return;
         }
 
-        // 6×6×6 blast box centred on the hit block
-        previewBox = new AxisAlignedBB(hit.getX() - RADIUS, hit.getY() - RADIUS, hit.getZ() - RADIUS, hit.getX() + RADIUS, hit.getY() + RADIUS, hit.getZ() + RADIUS);
+        previewBox = new AxisAlignedBB(hit.getX() - RADIUS, hit.getY() - RADIUS, hit.getZ() - RADIUS, hit.getX() + RADIUS + 1, hit.getY() + RADIUS + 1, hit.getZ() + RADIUS + 1);
     }
 
     @SubscribeEvent
     public void onChat(ClientChatReceivedEvent event) {
-        if (isEnabled()) return;
+        if (!isEnabled()) return;
         String text = StringUtils.stripControlCodes(event.message.getFormattedText()).trim();
 
         if ("You used your Pickobulus Pickaxe Ability!".equals(text) || text.startsWith("Your Pickaxe ability is on cooldown for ")) {
@@ -93,7 +113,7 @@ public class PickobulusPreview {
 
     @SubscribeEvent
     public void onRenderWorld(RenderWorldLastEvent event) {
-        if (isEnabled() || previewBox == null) return;
+        if (!isEnabled() || previewBox == null) return;
 
         Color outline = onCooldown ? COLOR_COOLDOWN : COLOR_READY;
         Color fill = onCooldown ? COLOR_FILL_CD : COLOR_FILL;

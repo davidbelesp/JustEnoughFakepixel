@@ -6,7 +6,7 @@ import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations;
 public class ChatFilterConfig {
 
     @Expose
-    @ConfigAnnotations.ConfigOption(name = "Enable ChatFilters", desc = "Enable the ChatFilters feture")
+    @ConfigAnnotations.ConfigOption(name = "Enable ChatFilters", desc = "Enable the ChatFilters")
     @ConfigAnnotations.ConfigEditorBoolean
     public boolean chatFilters = false;
 

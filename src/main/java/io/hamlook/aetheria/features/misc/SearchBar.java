@@ -132,7 +132,7 @@ public class SearchBar {
     }
 
     private static String calcSuffix(String text) {
-        if (sendToItemList || text == null || text.isEmpty()) return null;
+        if (sendToItemList || text == null || text.isEmpty() || CalculatorUtils.isPlainNumber(text)) return null;
         if (!text.equals(lastCalcInput)) {
             lastCalcInput = text;
             lastCalcResult = CalculatorUtils.calculateAndFormat(text);

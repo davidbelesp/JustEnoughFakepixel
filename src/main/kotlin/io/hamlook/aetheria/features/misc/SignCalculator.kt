@@ -71,7 +71,7 @@ class SignCalculator {
         if (source == lastSource) return
         lastSource = source
 
-        if (source.isEmpty()) {
+        if (source.isEmpty() || CalculatorUtils.isPlainNumber(source)) {
             lastResult = null
             lastError = null
             return

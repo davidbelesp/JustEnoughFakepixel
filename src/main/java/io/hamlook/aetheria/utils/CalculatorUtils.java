@@ -19,6 +19,24 @@ public class CalculatorUtils {
         CONSTANTS.put("e", new BigDecimal(Math.E));
     }
 
+    public static boolean isPlainNumber(String s) {
+        if (s == null || s.isEmpty()) return false;
+        boolean hasDot = false;
+        boolean hasDigit = false;
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            if (c == '.') {
+                if (hasDot) return false;
+                hasDot = true;
+            } else if (c >= '0' && c <= '9') {
+                hasDigit = true;
+            } else {
+                return false;
+            }
+        }
+        return hasDigit;
+    }
+
     // Calculate and format result
     public static String calculateAndFormat(String expression) {
         if (expression == null || expression.isEmpty()) return null;

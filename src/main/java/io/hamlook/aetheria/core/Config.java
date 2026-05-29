@@ -117,7 +117,7 @@ public class Config {
             case "reloadCapes": CapeManager.reload(); break;
             case "openWebsite": openUrl("https://aetheria.github.io"); break;
             case "openDiscord": openUrl("https://discord.gg/tdMFbmhFTb"); break;
-            case "openGithub": openUrl("https://github.com/aetheria/aetheria"); break;
+            case "openGithub": openUrl("https://github.com/aetheria-org/Aetheria"); break;
             case "openLicenseForge": openUrl("https://github.com/MinecraftForge/MinecraftForge"); break;
             case "openLicenseMixin": openUrl("https://github.com/SpongePowered/Mixin/"); break;
             case "openLicenseMoulConfig": openUrl("https://github.com/NotEnoughUpdates/MoulConfig"); break;

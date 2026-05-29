@@ -72,9 +72,9 @@ public class ItemRegistry {
 
                 try {
                     Aetheria.logger.info("[ATHR-DEBUG] Checking GitHub for updates...");
-                    URL url = new URL("https://raw.githubusercontent.com/JustEnoughFakepixel/JustEnoughFakepixel-REPO/refs/heads/main/itemData/itemData.json");
+                    URL url = new URL("https://raw.githubusercontent.com/aetheria-org/aetheria-repo/refs/heads/main/itemData/itemData.json");
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestProperty("User-Agent", "JustEnoughFakepixel");
+                    conn.setRequestProperty("User-Agent", "Aetheria");
                     conn.setConnectTimeout(5000);
                     conn.setReadTimeout(15000);
 

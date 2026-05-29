@@ -41,4 +41,4 @@
 - All commands with prefixes were changed to have aliases asm,athr, jef for backwards compatibility, you can use /asmprotect, /jefprotect, athrprotect for the same thing.
 - Added installer and autoupdater, run the mod jar to update fakepixel mods.
 
-The full changelog can be found [here](https://github.com/JustEnoughFakepixel/JustEnoughFakepixel/commits/main/)
+The full changelog can be found [here](https://github.com/aetheria-org/Aetheria/commits/main/)

@@ -82,7 +82,7 @@ public class ModInstaller {
             titleBar.setBackground(TITLE_BG);
             titleBar.setPreferredSize(new Dimension(frame.getWidth(), 35));
 
-            JLabel titleLabel = new JLabel("  Aetheria Installer & Updater");
+            JLabel titleLabel = new JLabel("Fakepixel Mod Installer | Aetheria's Skyblock Mod");
             titleLabel.setForeground(FG_COLOR);
             titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
             titleBar.add(titleLabel, BorderLayout.WEST);
@@ -330,7 +330,7 @@ public class ModInstaller {
 
             new Thread(() -> {
                 try {
-                    String modLinksUrl = "https://raw.githubusercontent.com/JustEnoughFakepixel/JustEnoughFakepixel-REPO/refs/heads/main/data/modLinks.json";
+                    String modLinksUrl = "https://raw.githubusercontent.com/aetheria-org/aetheria-repo/refs/heads/main/data/modLinks.json";
                     HttpURLConnection conn = (HttpURLConnection) new URL(modLinksUrl).openConnection();
                     conn.setRequestProperty("User-Agent", "Aetheria-Installer");
                     InputStreamReader reader = new InputStreamReader(conn.getInputStream());
@@ -422,8 +422,16 @@ public class ModInstaller {
                         List<File> toDelete = new ArrayList<>();
                         List<ReleaseItem> toDownload = new ArrayList<>();
 
+                        boolean hasAetheria = false;
+                        for (String name : modLinks.keySet()) {
+                            if (name.equalsIgnoreCase("Aetheria")) {
+                                hasAetheria = true;
+                                break;
+                            }
+                        }
+
                         for (String modName : modLinks.keySet()) {
-                            if (modName.equalsIgnoreCase("JustEnoughFakepixel")) continue;
+                            if (modName.equalsIgnoreCase("JustEnoughFakepixel") && hasAetheria) continue;
 
                             List<ReleaseItem> releases = fetchReleasesForMod(modName);
                             if (releases.isEmpty()) continue;
@@ -740,7 +748,7 @@ public class ModInstaller {
                         item.fileName = fileName;
                         item.publishedAt = sdf.parse(publishedAt);
 
-                        if (repoUrl.contains("JustEnoughFakepixel/JustEnoughFakepixel")) {
+                        if (repoUrl.contains("aetheria-org/Aetheria")) {
                             boolean isJef = name.toLowerCase().contains("justenoughfakepixel");
                             if (modName.equals("JustEnoughFakepixel") && isJef) {
                                 items.add(item);
@@ -751,7 +759,7 @@ public class ModInstaller {
                             items.add(item);
                         }
                     }
-                    if (items.size() >= 20 && !repoUrl.contains("JustEnoughFakepixel/JustEnoughFakepixel")) break;
+                    if (items.size() >= 20 && !repoUrl.contains("aetheria-org/Aetheria")) break;
                 }
             }
             Collections.sort(items);

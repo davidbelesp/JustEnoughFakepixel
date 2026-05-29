@@ -10,10 +10,10 @@ Aetheria's Skyblock Mod
 
 
 [![Discord](https://img.shields.io/discord/1479556885769093192?label=discord&color=008b8b&logo=discord&logoColor=white&style=for-the-badge)](https://discord.gg/4zKq2RkSZS)
-[![GitHub Downloads](https://img.shields.io/github/downloads/JustEnoughFakepixel/JustEnoughFakepixel/total?label=downloads&color=008b8b&logo=github&style=for-the-badge)](https://github.com/JustEnoughFakepixel/JustEnoughFakepixel/releases)
+[![GitHub Downloads](https://img.shields.io/github/downloads/aetheria-org/Aetheria/total?label=downloads&color=008b8b&logo=github&style=for-the-badge)](https://github.com/aetheria-org/Aetheria/releases)
 [![Modrinth Downloads](https://img.shields.io/modrinth/dt/justenoughfakepixel?label=modrinth&color=008b8b&logo=modrinth&logoColor=white&style=for-the-badge)](https://modrinth.com/mod/justenoughfakepixel)
 [![Made with Java](https://img.shields.io/badge/Made%20With-Java-008b8b?style=for-the-badge&logo=coffeescript&logoColor=white)](https://www.java.com)
-[![GitHub Stars](https://img.shields.io/github/stars/JustEnoughFakepixel/JustEnoughFakepixel?label=stars&color=008b8b&logo=github&style=for-the-badge)](https://github.com/JustEnoughFakepixel/JustEnoughFakepixel/stargazers)
+[![GitHub Stars](https://img.shields.io/github/stars/aetheria-org/Aetheria?label=stars&color=008b8b&logo=github&style=for-the-badge)](https://github.com/aetheria-org/Aetheria/stargazers)
 
 </div>
 

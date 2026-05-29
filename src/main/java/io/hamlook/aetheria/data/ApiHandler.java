@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class ApiHandler {
 
-    private static final String API_URL = "https://raw.githubusercontent.com/hamlook/JustEnoughFakepixel/main/data/repo.json";
+    private static final String API_URL = "https://raw.githubusercontent.com/aetheria-org/Aetheria/main/data/repo.json";
     private static final Gson GSON = new Gson();
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadExecutor(r -> {
         Thread t = new Thread(r, "ATHR-Analytics");

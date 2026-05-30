@@ -9,6 +9,11 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.event.ClickEvent;
+import net.minecraft.event.HoverEvent;
+import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.ChatStyle;
+import net.minecraft.util.IChatComponent;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -64,7 +69,16 @@ public class SyncCommand extends SimpleCommand {
                 int responseCode = conn.getResponseCode();
 
                 if (responseCode >= 200 && responseCode < 300) {
-                    Minecraft.getMinecraft().addScheduledTask(() -> ChatUtils.sendMultilineMessage("§a[SkyAtlas] Your sync code is: §e§l" + syncCode + "§r\n§aPlease paste this code in the §9#sync§a channel on Discord within 5 minutes!"));
+                    IChatComponent text = new ChatComponentText("§a[SkyAtlas] Your sync code is: §e§l" + syncCode);
+                    text.setChatStyle(new ChatStyle().setChatClickEvent(
+                            new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, syncCode)
+                    ).setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new ChatComponentText("§aClick to show in chat"))));
+                    Minecraft.getMinecraft().addScheduledTask(() -> {
+                                Minecraft.getMinecraft().thePlayer.addChatMessage(text);
+                                ChatUtils.sendMessage(
+                                        "§r§aPlease paste this code in the §9#sync§a channel on Discord within 5 minutes!");
+                            }
+                        );
                 } else {
                     Minecraft.getMinecraft().addScheduledTask(() -> ChatUtils.sendMessage("§c[SkyAtlas] Failed to generate sync code. API returned status " + responseCode));
                 }

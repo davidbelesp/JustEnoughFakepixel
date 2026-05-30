@@ -11,13 +11,14 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CapeLoader {
 
     private static final String RAW_BASE =
-            "https://github.com/aetheria-org/Aetheria-REPO/main";
+            "https://raw.githubusercontent.com/aetheria-org/Aetheria-REPO/refs/heads/main/";
 
     private static final String CONTENTS_API =
             "https://api.github.com/repos/aetheria-org/Aetheria-REPO/contents/capes";
@@ -126,7 +127,7 @@ public class CapeLoader {
             if (status != 200) return null;
 
             BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream(), "UTF-8")
+                    new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8)
             );
             StringBuilder sb = new StringBuilder();
             String line;

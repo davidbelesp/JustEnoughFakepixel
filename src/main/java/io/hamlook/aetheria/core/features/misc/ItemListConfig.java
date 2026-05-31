@@ -26,6 +26,11 @@ public class ItemListConfig {
     public boolean itemListSOnly = true;
 
     @Expose
+    @ConfigAnnotations.ConfigOption(name = "Inventory Only", desc = "Only show the Item List when in your own inventory, not in chests or other containers")
+    @ConfigAnnotations.ConfigEditorBoolean
+    public boolean inventoryOnly = false;
+
+    @Expose
     @ConfigAnnotations.ConfigOption(name = "Wiki Source", desc = "Which wiki opens when you right-click an item")
     @ConfigAnnotations.ConfigEditorDropdown(values = {"hysb.wiki", "Hypixel Wiki (Official)"})
     public int wikiSource = 0;

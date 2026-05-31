@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.GuiScreenEvent;
@@ -45,6 +46,7 @@ public class ItemPaneRenderer {
     private int typeFilterIdx = 0;
     private int paneX, paneY, paneW, paneH, itemsPerPage;
     private int cachedTotalPages = 1;
+
     public ItemPaneRenderer() {
         INSTANCE = this;
     }
@@ -112,7 +114,8 @@ public class ItemPaneRenderer {
         if (ATHRConfig.feature == null) return true;
         if (!ATHRConfig.feature.misc.itemList.enabled) return true;
         if (StorageManager.isOverlayActive()) return true;
-        if(ATHRConfig.feature.misc.itemList.itemListSOnly && ATHRConfig.feature.misc.itemList.searchItemList) return !SearchBar.isSendToItemList();
+        if (ATHRConfig.feature.misc.itemList.inventoryOnly && !(Minecraft.getMinecraft().currentScreen instanceof GuiInventory)) return true;
+        if (ATHRConfig.feature.misc.itemList.itemListSOnly && isGlobalSearch()) return !SearchBar.isSendToItemList();
         return !ItemRegistry.isLoaded || ItemRegistry.familyRegistry.isEmpty();
     }
 

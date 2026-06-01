@@ -2,6 +2,7 @@ package io.hamlook.aetheria.utils.chat;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ChatComponentText;
+import net.minecraft.util.IChatComponent;
 import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 
@@ -11,10 +12,13 @@ import java.util.regex.Pattern;
 
 public class ChatUtils {
 
+    public static final Pattern PLAYER_MSG_STRIPPED = Pattern.compile("^(?:\\[\\d+\\]\\s*)?" + "(?:\\S\\s+)?" + "(?:\\[[^\\]]*\\]\\s*)?" + "(\\w{1,16})" + "[^\\w:]*" + ":\\s*" + "(.+)$");
     private static final Pattern PARTY_MSG = Pattern.compile("^Party > (?:\\[[^]]*])?\\s*(\\w{1,16}):\\s*(.+)$");
-    private static final Pattern PLAYER_MSG = Pattern.compile("^(?:§.\\[[^\\]]*\\] )?§.(\\w{1,16})§.: (.+)§r$");
+    private static final Pattern GUILD_MSG = Pattern.compile("^Guild > (?:\\[[^]]*])?\\s*(\\w{1,16}):\\s*(.+)$");
     private static final Pattern MSG_RECEIVED = Pattern.compile("^§.From (?:§.\\[[^\\]]*\\] )?§.(\\w{1,16}) §.to Me§.: §.(.+)§r$");
     private static final Pattern MSG_SENT = Pattern.compile("^§.From Me §.to (?:§.\\[[^\\]]*\\] )?§.(\\w{1,16})§.: §.(.+)§r$");
+    private static final Pattern MSG_RECEIVED_STRIPPED = Pattern.compile("^From (?:\\[[^\\]]*\\] )?(\\w{1,16}) to Me: (.+)$");
+    private static final Pattern MSG_SENT_STRIPPED = Pattern.compile("^From Me to (?:\\[[^\\]]*\\] )?(\\w{1,16}): (.+)$");
 
     private ChatUtils() {
     }
@@ -32,7 +36,7 @@ public class ChatUtils {
     }
 
     public static boolean isPlayerMessage(String msg) {
-        return PLAYER_MSG.matcher(msg).matches();
+        return PLAYER_MSG_STRIPPED.matcher(msg).matches();
     }
 
     public static boolean isMsgReceived(String msg) {
@@ -54,18 +58,54 @@ public class ChatUtils {
     }
 
     public static String getPlayerMessageSender(String msg) {
-        Matcher m = PLAYER_MSG.matcher(msg);
+        Matcher m = PLAYER_MSG_STRIPPED.matcher(msg);
         return m.matches() ? m.group(1) : null;
     }
 
+    public static String getPlayerMessageBody(String msg) {
+        Matcher m = PLAYER_MSG_STRIPPED.matcher(msg);
+        return m.matches() ? m.group(2).trim() : null;
+    }
+
+    public static String getGuildSender(String msg) {
+        Matcher m = GUILD_MSG.matcher(msg);
+        return m.matches() ? m.group(1) : null;
+    }
+
+    public static String getGuildBody(String msg) {
+        Matcher m = GUILD_MSG.matcher(msg);
+        return m.matches() ? m.group(2).trim() : null;
+    }
+
+    public static String getMsgReceivedBody(String msg) {
+        Matcher m = MSG_RECEIVED_STRIPPED.matcher(msg);
+        return m.matches() ? m.group(2).trim() : null;
+    }
+
+    public static String getMsgSentBody(String msg) {
+        Matcher m = MSG_SENT_STRIPPED.matcher(msg);
+        return m.matches() ? m.group(2).trim() : null;
+    }
+
     public static String getMsgReceivedSender(String msg) {
-        Matcher m = MSG_RECEIVED.matcher(msg);
+        Matcher m = MSG_RECEIVED_STRIPPED.matcher(msg);
         return m.matches() ? m.group(1) : null;
     }
 
     public static String getMsgSentRecipient(String msg) {
-        Matcher m = MSG_SENT.matcher(msg);
+        Matcher m = MSG_SENT_STRIPPED.matcher(msg);
         return m.matches() ? m.group(1) : null;
+    }
+
+    public static IChatComponent ensureSiblings(IChatComponent component) {
+        if (component.getSiblings().isEmpty()) {
+            ChatComponentText root = new ChatComponentText("");
+            ChatComponentText child = new ChatComponentText(component.getUnformattedTextForChat());
+            child.setChatStyle(component.getChatStyle().createDeepCopy());
+            root.appendSibling(child);
+            return root;
+        }
+        return component;
     }
 
     public static void sendMessage(String message) {

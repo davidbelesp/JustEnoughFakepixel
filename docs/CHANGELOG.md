@@ -1,47 +1,18 @@
-# JEF 1.2.7 - Aetheria 1.0.0 Changelog
+# Aetheria 1.0.1 - 1.0.2 Changelog
 
-## Just Enough Fakepixel (JEF) has been rebranded to Aetheria (Aetheria's Skyblock Mod / ASM)
-
-- Added in-game Profile Viewer powered by SkyAtlas
-- Added timer (stopwatch) `/asmtimer`
-- Added in-game Item List and Recipe Viewer
-- Added SkyAtlas button in the Options menu
-- Added Hide Dungeon Blessing Messages
-- Added Pickobulus Preview
-- Added Anvil Combine Helper
-- Added `/sync` command to sync with SkyAtlas
-- Added Player Join/Leave Notifier
-- Added Better Containers (Improved SkyBlock menus)
-- Added filled Buy/Sell Order Highlights
-- Added Slot Binds
-- Added Chat Filters (`/chatfilters`)
-- Added Damage Formatter
-- Added Chat Compacting
-- Added Chat Timestamps
-- Added Chat Heads
-- Added Chat Copy
-- Added Transparent Chat
-- Added Chat Animation
+### Additions
+- Added chat ping feature
+- Added option to restrict Item List to inventory only
+- Clicking items in the Item List now opens their information panel
 
 ### Improvements
-- Significantly optimized capes
-- Optimized Dungeon features
-- Optimized Ordered Waypoints
-- Reworked Current Pet with major performance improvements
-- Improved Waypoint Manager GUI
-- Search Bar now has buttons to toggle between Item List and Search modes
-- Cleaned up and optimized Search Bar
-- Overall massive performance increase
+- Container and inventory text now use black instead of vanilla grey when a dark Better Containers theme is active
+- Search bar, Item List search bar, and Storage search bar now have separate options to persist text when moving between GUIs
 
 ### Fixes
-- Fixed Chest Case animation not working when Dungeon Timers were disabled
-- Fixed Current Pet showing no head or level after relaunch
-- Fixed calculators showing calculations for plain text
-
-## Important Changelog
-- All commands now support `asm`, `athr`, and `jef` prefixes for backwards compatibility.
-  - Examples: `/asmprotect`, `/athrprotect`, and `/jefprotect` all perform the same action.
-- Added installer and auto-updater.
-  - Run the mod JAR directly to update Fakepixel mods.
+- Fixed Current Pet autopet detection not working for non-skinned pets
+- Fixed Item List breaking server connection when opening a recipe while a container is open
+- Fixed Esc/E not returning to the previous GUI when the Info Panel or Recipe Viewer is open
+- Fixed Storage Overlay not scrolling back down when past the maximum scroll position
 
 The full changelog can be found [here](https://github.com/aetheria-org/Aetheria/commits/main/).

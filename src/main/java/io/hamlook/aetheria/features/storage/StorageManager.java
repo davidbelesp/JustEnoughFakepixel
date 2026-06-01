@@ -1,8 +1,8 @@
 package io.hamlook.aetheria.features.storage;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.features.storage.data.StorageData;
 import io.hamlook.aetheria.features.farming.mouse.LockMouse;
+import io.hamlook.aetheria.features.storage.data.StorageData;
 import io.hamlook.aetheria.features.storage.render.StorageRenderer;
 import io.hamlook.aetheria.features.storage.utils.SContainer;
 import io.hamlook.aetheria.features.storage.utils.StorageListener;
@@ -31,6 +31,7 @@ public class StorageManager {
     private static boolean isTransitioning = false;
     private static boolean wasMouseLocked = false;
     private static boolean switchInitiatedFromOverlay = false;
+    private static long lastValidChestTime = 0;
 
     public static void setActiveContainer(String containerId) {
         activeContainerId = containerId;
@@ -75,6 +76,7 @@ public class StorageManager {
 
         StorageData.containers = containers;
 
+        lastValidChestTime = System.currentTimeMillis();
         renderer = new StorageRenderer(containers);
         overlayActive = true;
 
@@ -87,9 +89,26 @@ public class StorageManager {
     }
 
     public static void renderOverlay(int mouseX, int mouseY) {
+        if (Minecraft.getMinecraft().currentScreen instanceof GuiChest) {
+            lastValidChestTime = System.currentTimeMillis();
+        }
         if (renderer == null && !StorageData.containers.isEmpty()) {
             renderer = new StorageRenderer(StorageData.containers);
             overlayActive = true;
+            lastValidChestTime = System.currentTimeMillis();
+
+
+        }
+
+        // Check if overlay has been active without a storage container for too long
+        if (overlayActive && !(Minecraft.getMinecraft().currentScreen instanceof GuiChest)) {
+            long elapsed = System.currentTimeMillis() - lastValidChestTime;
+
+            if (elapsed > TRANSITION_TIMEOUT) {
+                System.out.println("[ATHR DEBUG] No valid chest GUI for " + TRANSITION_TIMEOUT / 1000 + "s - closing overlay");
+                closeOverlay();
+                return;
+            }
         }
 
         if (isTransitioning) {
@@ -193,6 +212,7 @@ public class StorageManager {
         activeContainerId = null;
         renderer = null;
         overlayActive = false;
+        lastValidChestTime = 0;
         if (isTransitioning && !wasMouseLocked) {
             setMouseLockedSilent(false);
         }

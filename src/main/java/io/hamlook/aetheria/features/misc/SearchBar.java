@@ -81,6 +81,7 @@ public class SearchBar {
         storageSearchBar.setMaxStringLength(50);
         storageSearchBar.setEnableBackgroundDrawing(false);
         storageSearchBar.setFocused(false);
+        if (ATHRConfig.feature != null && !ATHRConfig.feature.misc.searchBarConfig.persistStorageSearch) storageSearchText = "";
         storageSearchBar.setText(storageSearchText);
         return storageSearchBar;
     }
@@ -91,10 +92,23 @@ public class SearchBar {
         storageSearchText = field.getText();
     }
 
+    public static void drawStorageSearchBar(GuiTextField field, String[] textHolder) {
+        if (field == null) return;
+        RenderUtils.drawSearchBar(field, true);
+        textHolder[0] = field.getText();
+    }
+
     public static boolean handleStorageKeyTyped(GuiTextField field, char typedChar, int keyCode) {
         if (field == null || !field.isFocused()) return false;
         boolean consumed = field.textboxKeyTyped(typedChar, keyCode);
         storageSearchText = field.getText();
+        return consumed;
+    }
+
+    public static boolean handleStorageKeyTyped(GuiTextField field, char typedChar, int keyCode, String[] textHolder) {
+        if (field == null || !field.isFocused()) return false;
+        boolean consumed = field.textboxKeyTyped(typedChar, keyCode);
+        textHolder[0] = field.getText();
         return consumed;
     }
 
@@ -221,6 +235,7 @@ public class SearchBar {
         searchBar.setMaxStringLength(100);
         searchBar.setEnableBackgroundDrawing(false);
         searchBar.setFocused(false);
+        if (!ATHRConfig.feature.misc.searchBarConfig.persistSearchText) searchText = "";
         searchBar.setText(searchText);
     }
 

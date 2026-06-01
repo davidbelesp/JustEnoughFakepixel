@@ -37,6 +37,7 @@ public class ItemPaneRenderer {
     private List<ItemFamily> filteredFamilies = new ArrayList<>();
     private GuiTextField searchField;
     private String lastSearchText = "";
+    private final String[] localSearchText = new String[]{""};
     private int currentPage = 0;
     private boolean wasLoaded = false;
     private String hoverFamilyId = null;
@@ -55,8 +56,8 @@ public class ItemPaneRenderer {
         return ATHRConfig.feature != null && ATHRConfig.feature.misc.itemList.searchItemList;
     }
 
-    private static String currentSearchQuery() {
-        return isGlobalSearch() ? SearchBar.getItemListSearchText() : SearchBar.getStorageSearchText();
+    private String currentSearchQuery() {
+        return isGlobalSearch() ? SearchBar.getItemListSearchText() : localSearchText[0];
     }
 
     private static boolean isInBounds(int mouseX, int mouseY, int x, int y, int w, int h) {
@@ -188,7 +189,12 @@ public class ItemPaneRenderer {
         if (!globalSearch) {
             int sbY = paneH - 20 - PAD;
             if (searchField == null) {
-                searchField = SearchBar.createStorageSearchBar(paneX + PAD, sbY, paneW - PAD * 2);
+                searchField = new GuiTextField(2, mc.fontRendererObj, paneX + PAD, sbY, paneW - PAD * 2, 20);
+                searchField.setCanLoseFocus(true);
+                searchField.setMaxStringLength(50);
+                searchField.setEnableBackgroundDrawing(false);
+                searchField.setFocused(false);
+                searchField.setText(localSearchText[0]);
             } else {
                 searchField.xPosition = paneX + PAD;
                 searchField.yPosition = sbY;
@@ -304,7 +310,7 @@ public class ItemPaneRenderer {
 
         if (!globalSearch && searchField != null) {
             searchField.updateCursorCounter();
-            SearchBar.drawStorageSearchBar(searchField);
+            SearchBar.drawStorageSearchBar(searchField, localSearchText);
         }
 
         SkyblockItem dropdownTooltipItem = null;
@@ -499,8 +505,8 @@ public class ItemPaneRenderer {
 
     private boolean processKeyInput() {
         if (!isGlobalSearch() && searchField != null && searchField.isFocused() && Keyboard.getEventKeyState()) {
-            if (SearchBar.handleStorageKeyTyped(searchField, Keyboard.getEventCharacter(), Keyboard.getEventKey())) {
-                updateSearch(SearchBar.getStorageSearchText());
+            if (SearchBar.handleStorageKeyTyped(searchField, Keyboard.getEventCharacter(), Keyboard.getEventKey(), localSearchText)) {
+                updateSearch(localSearchText[0]);
                 return true;
             }
         }
@@ -517,5 +523,16 @@ public class ItemPaneRenderer {
     public void handleKeyInput() {
         if (shouldntShow()) return;
         processKeyInput();
+    }
+
+    @SubscribeEvent
+    public void onGuiInit(GuiScreenEvent.InitGuiEvent.Post event) {
+        if (!(event.gui instanceof GuiContainer)) return;
+        if (ATHRConfig.feature == null) return;
+        if (StorageManager.isOverlayActive()) return;
+        if (isGlobalSearch()) return;
+        if (ATHRConfig.feature.misc.searchBarConfig.persistItemListSearch) return;
+        localSearchText[0] = "";
+        if (searchField != null) searchField.setText("");
     }
 }

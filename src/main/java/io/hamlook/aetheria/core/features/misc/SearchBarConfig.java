@@ -23,4 +23,19 @@ public class SearchBarConfig {
 
     @Expose
     public Position searchBarPos = new Position(0, -30, true, false);
+
+    @Expose
+    @ConfigOption(name = "Persist Search", desc = "Keep main searchbar text between GUI opens")
+    @ConfigEditorBoolean
+    public boolean persistSearchText = true;
+
+    @Expose
+    @ConfigOption(name = "Persist Item List Search", desc = "Keep Item List local search text between GUI opens (only applies when not using global search)")
+    @ConfigEditorBoolean
+    public boolean persistItemListSearch = false;
+
+    @Expose
+    @ConfigOption(name = "Persist Storage Search", desc = "Keep Storage Overlay search text between GUI opens")
+    @ConfigEditorBoolean
+    public boolean persistStorageSearch = false;
 }

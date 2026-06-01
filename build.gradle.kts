@@ -88,8 +88,8 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
-
     runtimeOnly("me.djtheredstoner:DevAuth-forge-legacy:1.2.1")
+    shadowImpl("com.google.code.gson:gson:2.10.1") { isTransitive = false }
 
     shadowImpl("org.reflections:reflections:0.9.12") {
         isTransitive = false
@@ -106,6 +106,7 @@ tasks.withType(JavaCompile::class) {
 tasks.withType(org.gradle.jvm.tasks.Jar::class) {
     archiveBaseName.set(modid)
     manifest.attributes.run {
+        this["Main-Class"] = "io.hamlook.aetheria.ModInstaller"
         this["FMLCorePluginContainsFMLMod"] = "true"
         this["ForceLoadAsMod"] = "true"
 

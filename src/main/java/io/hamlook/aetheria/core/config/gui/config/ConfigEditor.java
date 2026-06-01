@@ -35,7 +35,7 @@ import static io.hamlook.aetheria.core.config.gui.GuiTextures.SEARCH_ICON;
 
 public class ConfigEditor extends GuiElement {
     private static final ResourceLocation[] socialsIco = new ResourceLocation[]{DISCORD, GITHUB};
-    private static final String[] socialsLink = new String[]{"https://discord.gg/4zKq2RkSZS", "https://github.com/JustEnoughFakepixel/JustEnoughFakepixel"};
+    private static final String[] socialsLink = new String[]{"https://discord.gg/4zKq2RkSZS", "https://github.com/aetheria-org/Aetheria"};
     public static ConfigEditor editor = new ConfigEditor(ATHRConfig.feature);
     private final long openedMillis;
     private final LerpingInteger optionsScroll = new LerpingInteger(0, 150);

@@ -8,6 +8,7 @@ import io.hamlook.aetheria.utils.CalculatorUtils;
 import io.hamlook.aetheria.utils.Position;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
 import io.hamlook.aetheria.utils.render.RenderUtils;
+import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -80,6 +81,7 @@ public class SearchBar {
         storageSearchBar.setMaxStringLength(50);
         storageSearchBar.setEnableBackgroundDrawing(false);
         storageSearchBar.setFocused(false);
+        if (ATHRConfig.feature != null && !ATHRConfig.feature.misc.searchBarConfig.persistStorageSearch) storageSearchText = "";
         storageSearchBar.setText(storageSearchText);
         return storageSearchBar;
     }
@@ -90,10 +92,23 @@ public class SearchBar {
         storageSearchText = field.getText();
     }
 
+    public static void drawStorageSearchBar(GuiTextField field, String[] textHolder) {
+        if (field == null) return;
+        RenderUtils.drawSearchBar(field, true);
+        textHolder[0] = field.getText();
+    }
+
     public static boolean handleStorageKeyTyped(GuiTextField field, char typedChar, int keyCode) {
         if (field == null || !field.isFocused()) return false;
         boolean consumed = field.textboxKeyTyped(typedChar, keyCode);
         storageSearchText = field.getText();
+        return consumed;
+    }
+
+    public static boolean handleStorageKeyTyped(GuiTextField field, char typedChar, int keyCode, String[] textHolder) {
+        if (field == null || !field.isFocused()) return false;
+        boolean consumed = field.textboxKeyTyped(typedChar, keyCode);
+        textHolder[0] = field.getText();
         return consumed;
     }
 
@@ -160,9 +175,14 @@ public class SearchBar {
         int[] mouse = getMouseCoords();
         boolean hovered = mouse[0] >= toggleBtnX && mouse[0] < toggleBtnX + TOGGLE_BTN_W && mouse[1] >= toggleBtnY && mouse[1] < toggleBtnY + BAR_HEIGHT;
 
-        if (hovered)
+        if (hovered) {
             Gui.drawRect(toggleBtnX, toggleBtnY, toggleBtnX + TOGGLE_BTN_W, toggleBtnY + BAR_HEIGHT, 0x33FFFFFF);
-
+            if (sendToItemList) {
+                TextRenderUtils.drawHoveringText("§aSearch Item List", mouse[0], mouse[1], MC.fontRendererObj);
+            } else {
+                TextRenderUtils.drawHoveringText("§aSearch Inventory & Calculator", mouse[0], mouse[1], MC.fontRendererObj);
+            }
+        }
         if (sendToItemList) {
             MC.getTextureManager().bindTexture(GuiTextures.SEARCH_ICON);
             GlStateManager.color(1f, 1f, 1f, 1f);
@@ -215,6 +235,7 @@ public class SearchBar {
         searchBar.setMaxStringLength(100);
         searchBar.setEnableBackgroundDrawing(false);
         searchBar.setFocused(false);
+        if (!ATHRConfig.feature.misc.searchBarConfig.persistSearchText) searchText = "";
         searchBar.setText(searchText);
     }
 

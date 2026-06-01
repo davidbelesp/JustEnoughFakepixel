@@ -22,10 +22,10 @@ public class ModUpdater {
         new Thread(() -> {
             try {
                 // 1. Target the specific GitHub API for Aetheria
-                URL url = new URL("https://api.github.com/repos/JustEnoughFakepixel/JustEnoughFakepixel/releases/latest");
+                URL url = new URL("https://api.github.com/repos/aetheria-org/Aetheria/releases/latest");
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                conn.setRequestProperty("User-Agent", "JustEnoughFakepixel-Updater");
+                conn.setRequestProperty("User-Agent", "Aetheria-Updater");
 
                 if (conn.getResponseCode() != 200) return;
 
@@ -64,7 +64,7 @@ public class ModUpdater {
 
                 URL downloadURL = new URL(downloadUrl);
                 HttpURLConnection downloadConn = (HttpURLConnection) downloadURL.openConnection();
-                downloadConn.setRequestProperty("User-Agent", "JustEnoughFakepixel-Updater");
+                downloadConn.setRequestProperty("User-Agent", "Aetheria-Updater");
 
                 try (InputStream in = downloadConn.getInputStream();
                      FileOutputStream out = new FileOutputStream(newModFile)) {

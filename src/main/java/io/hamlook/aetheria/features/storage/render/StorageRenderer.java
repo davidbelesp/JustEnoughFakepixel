@@ -232,6 +232,10 @@ public class StorageRenderer extends Gui {
         }
         searchText = newSearchText;
 
+        int max = getMaxScroll();
+        scrollTarget = Math.max(0, Math.min(scrollTarget, max));
+        scrollOffset = Math.max(0, Math.min(scrollOffset, max));
+
         SearchBar.drawStorageSearchBar(searchField);
 
         drawPanelBackground(boxX, boxY, boxW, boxH);
@@ -418,8 +422,6 @@ public class StorageRenderer extends Gui {
 
     public void handleScroll(int dWheel) {
         int maxScroll = getMaxScroll();
-        if (maxScroll <= 0) return;
-
         float step = (containerH + PADDING) * scrollSpeed;
         scrollTarget -= dWheel > 0 ? step : -step;
         scrollTarget = Math.max(0, Math.min(scrollTarget, maxScroll));

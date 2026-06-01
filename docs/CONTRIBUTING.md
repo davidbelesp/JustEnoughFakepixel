@@ -1,6 +1,6 @@
-# How to Contribute to JustEnoughFakepixel
+# How to Contribute to Aetheria's skyblock mod
 
-This guide helps Kotlin and Java developers understand how JustEnoughFakepixel (JEF) works, and gives new contributors the steps to get started.
+This guide helps Kotlin and Java developers understand how Aetheria (ASM) works, and gives new contributors the steps to get started.
 
 ---
 
@@ -16,7 +16,7 @@ Before you begin, make sure you have the following installed:
 
 ## Step 1 — Fork the Repository
 
-1. Go to [https://github.com/JustEnoughFakepixel/JustEnoughFakepixel](https://github.com/JustEnoughFakepixel/JustEnoughFakepixel)
+1. Go to [https://github.com/aetheria-org/Aetheria](https://github.com/aetheria-org/Aetheria)
 2. Click **Fork** in the top-right corner.
 3. Leave all settings as default and click **Create fork**.
 
@@ -45,8 +45,8 @@ Once your fork is created and Git is authenticated, clone it to your machine.
 **Option B — via terminal (do Alt+F12 OR press on the icon in the bottom left)**
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/JustEnoughFakepixel.git
-cd JustEnoughFakepixel
+git clone https://github.com/YOUR_USERNAME/Aetheria.git
+cd Aetheria
 ```
 
 Then open the cloned folder in IntelliJ: **File → Open → select the folder → OK**.
@@ -91,12 +91,12 @@ This compiles the mod and produces a `.jar` in `build/libs/`. This is the file y
 ---
 ## Project Structure
 
-Here's how the JEF source code is laid out so you know where to put things:
+Here's how the ASM source code is laid out so you know where to put things:
 
 ```
 src/main/
-├── java/com/jef/justenoughfakepixel/
-│   ├── JefMod.java              ← Mod entry point
+├──java/io/hamlook/aetheria/
+│   ├── Aetheria.java              ← Mod entry point
 │   ├── core/                    ← Core systems
 │   ├── data/                    ← Data holders
 │   ├── events/                  ← Custom events (Java side)
@@ -111,7 +111,7 @@ src/main/
 │   ├── repo/                    ← Repo/data loading
 │   └── utils/                   ← Utility methods
 │
-└── kotlin/com/jef/justenoughfakepixel/
+└── kotlin/io/hamlook/aetheria/
     ├── events/                  ← Custom events (Kotlin side)
     └── features/                ← New features go here (Kotlin preferred)
         ├── misc/
@@ -149,7 +149,7 @@ Once you're confident everything works:
 Then open the Pull Request on GitHub:
 
 7. Go to your fork on GitHub — you'll see a banner saying your branch had recent changes with a **Compare & pull request** button. Click it.
-8. Make sure the base repository is `JustEnoughFakepixel/JustEnoughFakepixel` and the base branch is `main`.
+8. Make sure the base repository is `aetheria-org/Aetheria` and the base branch is `main`.
 9. Give your PR a clear title with a prefix — `Feature`, `Fix`, `Improvement`, `Refactor`, etc.
 10. Fill out the description template fully and click **Create pull request**.
 
@@ -210,15 +210,15 @@ Full wipe and rebuild. Run this if something seems broken and a normal build doe
 - Do **not** use `e.printStackTrace()`. Use the mod's existing logging system (`DebugLogger`) instead.
 - Avoid Kotlin's `!!` operator where possible. Prefer `?:` (Elvis operator) for null safety.
 - Use existing utility methods in the `utils` package before writing new ones.
-- All Mixin classes → `src/main/java/com/jef/justenoughfakepixel/mixins/`
+- All Mixin classes → `src/main/io/hamlook/aetheria/mixins/`
 
 ---
 
 ## Additional Notes
 
-- JEF targets **Minecraft 1.8.9 Forge**. Many modern Fabric/Forge APIs are not available.
-- The mod entry point is `JefMod.java`. Initialization logic is in the `init/` package.
+- ASM targets **Minecraft 1.8.9 Forge**. Many modern Fabric/Forge APIs are not available.
+- The mod entry point is `Aetheria.java`. Initialization logic is in the `init/` package.
 - The `repo/` package handles loading remote data. If you add new remotely-configurable data, wire it through there.
-- On server join, JEF sends only your Minecraft username and installed mod list to JEF's servers for analytics. Some features (like capes) send additional minimal data strictly necessary for that feature to function. See the README for the full privacy note.
+- On server join, Aetheria sends only your Minecraft username and installed mod list to Aetheria's servers for analytics. Some features (like capes) send additional minimal data strictly necessary for that feature to function. See the README for the full privacy note.
 
 ---

@@ -5,12 +5,9 @@ import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations.*;
 
 public class ChatConfig {
 
-
-    // ── Chat Filters ──────────────────────────────────────────────────────
     @Expose
     @Category(name = "Chat Filters",desc = "Edit various parts of the Chat Filters Feature")
     public final ChatFilterConfig chatFilterConfig = new  ChatFilterConfig();
-    // ── Chat Compacting ──────────────────────────────────────────────────────
 
     @Expose
     @ConfigOption(name = "Chat Compacting", desc = "Collapse repeated identical chat messages into one with a counter")
@@ -26,8 +23,6 @@ public class ChatConfig {
     @ConfigOption(name = "Consecutive Only", desc = "Only compact messages that appear back-to-back with no other messages in between")
     @ConfigEditorBoolean
     public boolean consecutiveOnly = false;
-
-    // ── Timestamps ────────────────────────────────────────────────────────────
 
     @Expose
     @ConfigOption(name = "Timestamps", desc = "Prepend a timestamp to every incoming chat message")
@@ -46,10 +41,8 @@ public class ChatConfig {
 
     @Expose
     @ConfigOption(name = "Timestamp Style", desc = "Style of the timestamp bracket. 0 = [HH:mm]  1 = <HH:mm>")
-    @ConfigEditorDropdown(values = {"[HH:mm]", "<HH:mm>"}, initialIndex = 0)
+    @ConfigEditorDropdown(values = {"[HH:mm]", "<HH:mm>"}, initialIndex = 1)
     public int timestampStyle = 0;
-
-    // ── Chat Heads ───────────────────────────────────────────────────────────
 
     @Expose
     @ConfigOption(name = "Chat Heads", desc = "Show a small player head next to chat messages sent by players")
@@ -66,8 +59,6 @@ public class ChatConfig {
     @ConfigEditorBoolean
     public boolean hideHeadOnConsecutive = false;
 
-    // ── Visual ────────────────────────────────────────────────────────────────
-
     @Expose
     @ConfigOption(name = "Transparent Chat", desc = "Make the chat background fully transparent")
     @ConfigEditorBoolean
@@ -78,8 +69,6 @@ public class ChatConfig {
     @ConfigEditorBoolean
     public boolean animatedChat = false;
 
-    // ── Copy ─────────────────────────────────────────────────────────────────
-
     @Expose
     @ConfigOption(name = "Chat Copy", desc = "Click on a chat line while chat is open to copy it. CTRL+Click copies the line, SHIFT+Click copies the full original message")
     @ConfigEditorBoolean
@@ -89,4 +78,8 @@ public class ChatConfig {
     @ConfigOption(name = "Copy with Formatting", desc = "Includes §ccolour codes when copying chat lines")
     @ConfigEditorBoolean
     public boolean chatCopyFormatted = false;
+
+    @Expose
+    @Category(name = "Chat Ping", desc = "Play sounds and highlight messages when your name is mentioned in chat")
+    public final ChatPingConfig chatPingConfig = new ChatPingConfig();
 }

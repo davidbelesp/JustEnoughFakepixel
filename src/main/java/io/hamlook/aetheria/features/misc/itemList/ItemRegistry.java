@@ -72,9 +72,9 @@ public class ItemRegistry {
 
                 try {
                     Aetheria.logger.info("[ATHR-DEBUG] Checking GitHub for updates...");
-                    URL url = new URL("https://raw.githubusercontent.com/JustEnoughFakepixel/JustEnoughFakepixel-REPO/refs/heads/main/itemData/itemData.json");
+                    URL url = new URL("https://raw.githubusercontent.com/aetheria-org/Aetheria-REPO/refs/heads/main/itemData/itemData.json");
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestProperty("User-Agent", "JustEnoughFakepixel");
+                    conn.setRequestProperty("User-Agent", "Aetheria");
                     conn.setConnectTimeout(5000);
                     conn.setReadTimeout(15000);
 
@@ -389,6 +389,9 @@ public class ItemRegistry {
         if (data.lore != null && !data.lore.isEmpty()) item.baseLore = data.lore;
         item.enchanted = data.enchanted;
         if (data.displayName != null && !data.displayName.isEmpty()) item.displayName = data.displayName;
+        if(data.amount > 0){
+            item.amount = data.amount;
+        }
         return item;
     }
 }

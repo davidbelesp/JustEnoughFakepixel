@@ -1,6 +1,6 @@
 package io.hamlook.aetheria;
 
-import io.hamlook.aetheria.features.chatfilters.ChatFilterManager;
+import io.hamlook.aetheria.features.chat.chatfilters.ChatFilterManager;
 import io.hamlook.aetheria.features.misc.itemList.ItemRegistry;
 import io.hamlook.aetheria.core.ATHRConfig;
 import io.hamlook.aetheria.core.StorageManager;
@@ -28,7 +28,7 @@ public class Aetheria {
 
     public static final String MODID = "aetheria";
     public static final String NAME = "Aetheria";
-    public static final String VERSION = "1.0.1-alpha";
+    public static final String VERSION = "1.0.2-hotfix";
 
     public static ATHRConfig config;
     public static Logger logger;

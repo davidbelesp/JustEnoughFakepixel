@@ -11,16 +11,17 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CapeLoader {
 
     private static final String RAW_BASE =
-            "https://raw.githubusercontent.com/JustEnoughFakepixel/JustEnoughFakepixel-REPO/main";
+            "https://raw.githubusercontent.com/aetheria-org/Aetheria-REPO/refs/heads/main/";
 
     private static final String CONTENTS_API =
-            "https://api.github.com/repos/JustEnoughFakepixel/JustEnoughFakepixel-REPO/contents/capes";
+            "https://api.github.com/repos/aetheria-org/Aetheria-REPO/contents/capes";
 
     public static void loadAllCapes() {
         Aetheria.logger.info("[CapeLoader] Starting cape load...");
@@ -119,14 +120,14 @@ public class CapeLoader {
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(8000);
             conn.setReadTimeout(8000);
-            conn.setRequestProperty("User-Agent", "JustEnoughFakepixel/1.0");
+            conn.setRequestProperty("User-Agent", "Aetheria/1.0");
             conn.setRequestProperty("Accept", "application/vnd.github+json");
 
             int status = conn.getResponseCode();
             if (status != 200) return null;
 
             BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream(), "UTF-8")
+                    new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8)
             );
             StringBuilder sb = new StringBuilder();
             String line;
@@ -148,7 +149,7 @@ public class CapeLoader {
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(8000);
             conn.setReadTimeout(8000);
-            conn.setRequestProperty("User-Agent", "JustEnoughFakepixel/1.0");
+            conn.setRequestProperty("User-Agent", "Aetheria/1.0");
 
             int status = conn.getResponseCode();
             if (status != 200) {

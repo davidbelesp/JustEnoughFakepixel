@@ -30,6 +30,20 @@ public class SyncCommand extends SimpleCommand {
             return;
         }
 
+        if(System.currentTimeMillis() - lastUse < 240000 && !SYNC_CODE.isEmpty()) {
+            IChatComponent text = new ChatComponentText("§a[SkyAtlas] Your sync code is: §e§l" + SYNC_CODE);
+            text.setChatStyle(new ChatStyle().setChatClickEvent(
+                    new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, SYNC_CODE)
+            ).setChatHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,new ChatComponentText("§aClick to show in chat"))));
+            Minecraft.getMinecraft().addScheduledTask(() -> {
+                        Minecraft.getMinecraft().thePlayer.addChatMessage(text);
+                        ChatUtils.sendMessage(
+                                "§r§aPlease paste this code in the §9#sync§a channel on Discord within 5 minutes!");
+                    }
+            );
+            return;
+        }
+
         ChatUtils.sendMessage("§e[SkyAtlas] Sync is disabled in this build because external data submission has been removed.");
     }
 }

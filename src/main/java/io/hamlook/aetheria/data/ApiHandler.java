@@ -1,4 +1,4 @@
-package com.jef.justenoughfakepixel.data;
+package io.hamlook.aetheria.data;
 
 public class ApiHandler {
 

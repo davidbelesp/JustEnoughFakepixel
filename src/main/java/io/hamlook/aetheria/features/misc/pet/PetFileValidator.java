@@ -10,7 +10,7 @@ import java.nio.file.StandardOpenOption;
 
 final class PetFileValidator {
 
-    static final String HEADER = "// Aetheria Pet";
+    static final String HEADER = "// Aetheria Pet 1.0.2";
 
     private PetFileValidator() {
     }

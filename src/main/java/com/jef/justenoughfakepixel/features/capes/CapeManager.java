@@ -9,11 +9,9 @@ import net.minecraft.client.Minecraft;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,20 +36,11 @@ public class CapeManager {
         lastFetched = System.currentTimeMillis();
 
         CLIENT_SIDE_CAPE_ID = cape.id;
-        new Thread(() -> {
-            boolean success = pushCapeToAPI(playerName, cape.id);
-            if (!success) {
-                JefMod.logger.info("[CapeManager] Failed to push cape for " + playerName);
-                activeCapes.put(playerName, "none");
-            }
-        }, "CapePush-" + playerName).start();
     }
 
     public static void removeCape(String playerName) {
         activeCapes.put(playerName, "none");
         lastFetched =  System.currentTimeMillis();
-
-        new Thread(() -> deleteCapeFromAPI(playerName), "CapeDelete-" + playerName).start();
     }
 
     public static void fetchCapeAsync(String playerName) {
@@ -110,46 +99,6 @@ public class CapeManager {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        }
-    }
-
-    private static boolean pushCapeToAPI(String playerName, String capeId) {
-        try {
-            URL url = new URL(CapeAPI.getAPIUrl() + "/cape");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("x-mod-secret", MOD_SECRET);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
-
-            String body = "{\"player_name\":\"" + playerName.toLowerCase()
-                    + "\",\"cape_id\":\"" + capeId + "\"}";
-
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(body.getBytes(StandardCharsets.UTF_8));
-            }
-
-            return conn.getResponseCode() == 200;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private static void deleteCapeFromAPI(String playerName) {
-        try {
-            URL url = new URL(CapeAPI.getAPIUrl() + "/cape/" + URLEncoder.encode(playerName, "UTF-8"));
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("DELETE");
-            conn.setRequestProperty("x-mod-secret", MOD_SECRET);
-            conn.setConnectTimeout(5000);
-            conn.setReadTimeout(5000);
-            conn.getResponseCode();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

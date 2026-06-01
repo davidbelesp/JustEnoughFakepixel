@@ -1,7 +1,6 @@
 package io.hamlook.aetheria.features.capes;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import io.hamlook.aetheria.Aetheria;
 import io.hamlook.aetheria.core.ATHRConfig;
@@ -10,11 +9,9 @@ import net.minecraft.client.Minecraft;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -48,19 +45,11 @@ public class CapeManager {
     public static void equipCape(String playerName, Cape cape) {
         activeCapes.put(playerName, cape.id);
         lastFetched = System.currentTimeMillis();
-
         CLIENT_SIDE_CAPE_ID = cape.id;
-        networkExecutor.execute(() -> {
-            if (!pushCapeToAPI(playerName, cape.id)) {
-                Aetheria.logger.info("[CapeManager] Failed to push cape for " + playerName);
-                activeCapes.put(playerName, "none");
-            }
-        });
     }
 
     public static void removeCape(String playerName) {
         activeCapes.put(playerName, "none");
-        networkExecutor.execute(() -> deleteCapeFromAPI(playerName));
     }
 
     public static void fetchCapeAsync(String playerName) {
@@ -109,40 +98,6 @@ public class CapeManager {
         }
     }
 
-    private static boolean pushCapeToAPI(String playerName, String capeId) {
-        try {
-            URL url = new URL(CapeAPI.getAPIUrl() + "/cape");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("x-mod-secret", MOD_SECRET);
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-
-            JsonObject body = new JsonObject();
-            body.addProperty("player_name", playerName.toLowerCase());
-            body.addProperty("cape_id", capeId);
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(gson.toJson(body).getBytes(StandardCharsets.UTF_8));
-            }
-            return conn.getResponseCode() == 200;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    private static void deleteCapeFromAPI(String playerName) {
-        try {
-            URL url = new URL(CapeAPI.getAPIUrl() + "/cape/" + URLEncoder.encode(playerName, "UTF-8"));
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("DELETE");
-            conn.setRequestProperty("x-mod-secret", MOD_SECRET);
-            conn.getResponseCode();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
     private static String readResponse(HttpURLConnection conn) throws Exception {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder sb = new StringBuilder();
@@ -151,6 +106,7 @@ public class CapeManager {
             return sb.toString().trim();
         }
     }
+
     public static Cape getCapeForPlayer(String pl) {
         String capeID = activeCapes.get(pl);
 
@@ -175,8 +131,8 @@ public class CapeManager {
         return id == null || id.equals("none") || id.equals("pending");
     }
 
-    public static void applyCape(String player,Cape cape){
-        activeCapes.put(player,cape.id);
+    public static void applyCape(String player, Cape cape) {
+        activeCapes.put(player, cape.id);
     }
 
     public static void initialise(boolean force) {
@@ -187,15 +143,15 @@ public class CapeManager {
         new Thread(CapeLoader::loadAllCapes, "CapeLoader-Init").start();
     }
 
-    public static void register(Cape cape){
+    public static void register(Cape cape) {
         capes.put(cape.id, cape);
     }
 
-    public static void registerAll(List<Cape> capes){
+    public static void registerAll(List<Cape> capes) {
         capes.forEach(CapeManager::register);
     }
 
-    public static Cape getCape(String id){
+    public static Cape getCape(String id) {
         return capes.get(id);
     }
 
@@ -205,5 +161,4 @@ public class CapeManager {
         lastFetched = 0L;
         initialise(true);
     }
-
 }

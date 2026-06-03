@@ -41,6 +41,7 @@ public final class GuiTextures {
     public static final ResourceLocation INV_PRESETS_JSON = new ResourceLocation("aetheria", "invbuttons/presets.json");
     public static final ResourceLocation INV_EXTRA_ICONS_JSON = new ResourceLocation("aetheria", "invbuttons/extraicons.json");
     public static final ResourceLocation DUNGEON_ROOMS_JSON = new ResourceLocation("aetheria", "dungeonrooms/dungeonrooms.json");
+    public static final ResourceLocation SECRET_LOCATIONS_JSON = new ResourceLocation("aetheria", "dungeonrooms/secretlocations.json");
     public static final ResourceLocation CASE_FADE_SIDE = new ResourceLocation("aetheria", "textures/dungeons/caseopening/gui/fade_side.png");
     public static final ResourceLocation CASE_BLUR_SHADER = new ResourceLocation("aetheria", "shaders/post/blur.json");
     public static final ResourceLocation PROTECT_ITEM_STAR = new ResourceLocation("aetheria", "textures/gui/protect_star.png");

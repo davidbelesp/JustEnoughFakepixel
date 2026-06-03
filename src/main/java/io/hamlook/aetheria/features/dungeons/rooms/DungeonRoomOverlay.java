@@ -4,6 +4,7 @@ import io.hamlook.aetheria.core.ATHRConfig;
 import io.hamlook.aetheria.core.config.editors.ChromaColour;
 import io.hamlook.aetheria.utils.Position;
 import io.hamlook.aetheria.features.dungeons.DungeonStats;
+import io.hamlook.aetheria.features.dungeons.utils.DungeonRoomDetector;
 import io.hamlook.aetheria.init.RegisterEvents;
 import io.hamlook.aetheria.utils.data.SkyblockData;
 import io.hamlook.aetheria.utils.overlay.Overlay;
@@ -65,6 +66,8 @@ public class DungeonRoomOverlay extends Overlay {
         if (preview) {
             out.add(EnumChatFormatting.GRAY + "Category  " + EnumChatFormatting.LIGHT_PURPLE + "Puzzle");
             out.add(EnumChatFormatting.WHITE + "❖  " + EnumChatFormatting.AQUA + "Box" + EnumChatFormatting.DARK_PURPLE + "  ✿");
+            out.add(EnumChatFormatting.GRAY + "Rot  " + EnumChatFormatting.GREEN + "0°  " + EnumChatFormatting.GRAY + "Origin " + EnumChatFormatting.GREEN + "northwest");
+            out.add(EnumChatFormatting.GRAY + "Rel  " + EnumChatFormatting.WHITE + "(5, 12)");
             out.add(EnumChatFormatting.YELLOW + "✎  " + EnumChatFormatting.WHITE + "Example note about this room");
             return out;
         }
@@ -81,9 +84,34 @@ public class DungeonRoomOverlay extends Overlay {
             }
             out.add(nameLine);
 
-            // Line 3: notes — only shown when present
+            // Line 3: rotation and origin corner — only when detected
+            if (DungeonRoomDetector.roomRotation >= 0 && DungeonRoomDetector.originCorner != null) {
+                String rotColor = getRotationColor(DungeonRoomDetector.roomRotation);
+                out.add(EnumChatFormatting.GRAY + "Rot  " + rotColor + DungeonRoomDetector.roomRotation + "°" +
+                    "  " + EnumChatFormatting.GRAY + "Origin " + rotColor + DungeonRoomDetector.originCorner);
+            }
+
+            // Line 4: relative player coordinates — only when detected
+            if (DungeonRoomDetector.playerRelX != Integer.MAX_VALUE) {
+                out.add(EnumChatFormatting.GRAY + "Rel  " + EnumChatFormatting.WHITE +
+                    "(" + DungeonRoomDetector.playerRelX + ", " + DungeonRoomDetector.playerRelZ + ")");
+            }
+
+            // Line 5: notes — only shown when present
             if (currentRoomNotes != null) {
                 out.add(EnumChatFormatting.YELLOW + "✎  " + EnumChatFormatting.WHITE + currentRoomNotes);
+            }
+
+            // Line 6: secret finder debug — only when secret finder is enabled
+            if (ATHRConfig.feature.dungeons.dungeonSecretFinder.enabled && DungeonRoomDetector.originBlock != null) {
+                int sc = DungeonRoomDetector.displayedSecretCount;
+                if (sc > 0) {
+                    out.add(EnumChatFormatting.GREEN + "☐  " + EnumChatFormatting.WHITE + sc + " secret(s) loaded");
+                } else if (sc == 0) {
+                    out.add(EnumChatFormatting.RED + "☐  " + EnumChatFormatting.WHITE + "No secrets for this room");
+                } else {
+                    out.add(EnumChatFormatting.GRAY + "☐  " + EnumChatFormatting.WHITE + "Searching...");
+                }
             }
         }
 
@@ -106,6 +134,21 @@ public class DungeonRoomOverlay extends Overlay {
                 return EnumChatFormatting.YELLOW.toString();
             default:
                 return EnumChatFormatting.GREEN.toString();
+        }
+    }
+
+    private String getRotationColor(int rotation) {
+        switch (rotation) {
+            case 0:
+                return EnumChatFormatting.GREEN.toString();
+            case 90:
+                return EnumChatFormatting.YELLOW.toString();
+            case 180:
+                return EnumChatFormatting.RED.toString();
+            case 270:
+                return EnumChatFormatting.AQUA.toString();
+            default:
+                return EnumChatFormatting.WHITE.toString();
         }
     }
 }

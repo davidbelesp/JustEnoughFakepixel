@@ -435,7 +435,7 @@
       "floorhash":"8b5e6e929e8c56c9921e68adb5710f5d"
     },
     {
-      "name":"Winona-Mushroom-1",
+      "name":"Mushroom-1",
       "category":"1x1",
       "dsg":"/channels/727426780381577291/732499836091367467/733871633688690749",
       "sbp":"mushroom",
@@ -612,7 +612,7 @@
   ],
   "796d40cc1fa84b0c0c86cafada021e16":[
     {
-      "name":"Waterfall-1",
+      "name":"Waterfall-2",
       "category":"1x1",
       "dsg":"/channels/727426780381577291/733536654639235083/734330554870399048",
       "sbp":"waterfall",
@@ -867,7 +867,7 @@
   ],
   "dbe1ebc4171c29b42c2ea8d5373357ce":[
     {
-      "name":"Purple-Flags-4",
+      "name":"Purple-Flags-5",
       "category":"1x2",
       "dsg":"/channels/727426780381577291/732416718244151398/733876200761458699",
       "sbp":"purple-flags",
@@ -876,7 +876,7 @@
   ],
   "03c30fd33553f37b22b9c4b8bed33e1d":[
     {
-      "name":"Bridges-5",
+      "name":"Bridges-6",
       "category":"1x2",
       "dsg":"/channels/727426780381577291/739403470494498896/739406168253792306",
       "sbp":"bridges",
@@ -886,7 +886,7 @@
   ],
   "c979e9eda7361555ce2d75d63f5305bb":[
     {
-      "name":"Bridges-5",
+      "name":"Bridges-6",
       "category":"1x2",
       "dsg":"/channels/727426780381577291/739403470494498896/739406168253792306",
       "sbp":"bridges",
@@ -996,7 +996,7 @@
   ],
   "953002d1dc486ca8f62178e112b72558":[
     {
-      "name":"Spiral Staircase-4",
+      "name":"Stairs-4",
       "category":"2x2",
       "dsg":"/channels/727426780381577291/733291327470698546/734217944040734851",
       "sbp":"stairs",
@@ -1093,7 +1093,7 @@
   ],
   "1e395bc61becc60fcaadec3f693d51e7":[
     {
-      "name":"Flags-6",
+      "name":"Flags-7",
       "category":"2x2",
       "dsg":"/channels/727426780381577291/733046323556777988/733827872740999189",
       "sbp":"flags",

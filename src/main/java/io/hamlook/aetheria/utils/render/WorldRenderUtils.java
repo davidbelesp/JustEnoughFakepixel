@@ -154,6 +154,10 @@ public final class WorldRenderUtils {
     }
 
     public static void drawFilledBlocks(List<AxisAlignedBB> blocks, Color color) {
+        drawFilledBlocks(blocks, color, false);
+    }
+
+    public static void drawFilledBlocks(List<AxisAlignedBB> blocks, Color color, boolean solid) {
         if (blocks == null || blocks.isEmpty() || mc.getRenderManager() == null) return;
 
         double vx = mc.getRenderManager().viewerPosX;
@@ -163,7 +167,7 @@ public final class WorldRenderUtils {
         int r = color.getRed();
         int g = color.getGreen();
         int b = color.getBlue();
-        int a = color.getAlpha();
+        int a = solid ? 255 : color.getAlpha();
 
         // small expansion to avoid z-fighting
         double eps = 0.002;
@@ -172,8 +176,10 @@ public final class WorldRenderUtils {
 
         GlStateManager.disableTexture2D();
         GlStateManager.disableLighting();
-        GlStateManager.enableBlend();
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        if (!solid) {
+            GlStateManager.enableBlend();
+            GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        }
 
         GlStateManager.enableDepth();
         GL11.glDepthMask(true);
@@ -245,7 +251,9 @@ public final class WorldRenderUtils {
         GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
 
         GlStateManager.enableCull();
-        GlStateManager.disableBlend();
+        if (!solid) {
+            GlStateManager.disableBlend();
+        }
         GlStateManager.enableTexture2D();
         GlStateManager.enableLighting();
 
@@ -253,7 +261,11 @@ public final class WorldRenderUtils {
     }
 
     public static void drawFilledBlock(AxisAlignedBB aabb, Color color) {
-        drawFilledBlocks(java.util.Collections.singletonList(aabb), color);
+        drawFilledBlocks(java.util.Collections.singletonList(aabb), color, false);
+    }
+
+    public static void drawFilledBlock(AxisAlignedBB aabb, Color color, boolean solid) {
+        drawFilledBlocks(java.util.Collections.singletonList(aabb), color, solid);
     }
 
     public static void drawFilledBlock(BlockPos pos, Color color) {

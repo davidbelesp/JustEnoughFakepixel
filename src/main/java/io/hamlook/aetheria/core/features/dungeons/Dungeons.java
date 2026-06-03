@@ -40,6 +40,10 @@ public class Dungeons {
     public CaseOpeningConfig caseOpening = new CaseOpeningConfig();
 
     @Expose
+    @Category(name = "Secret Finder", desc = "Secret finder with rotation detection, secret ESP, and display options")
+    public DungeonSecretFinderConfig dungeonSecretFinder = new DungeonSecretFinderConfig();
+
+    @Expose
     @ConfigOption(name = "Hide Blessing Messages", desc = "Hides the 'DUNGEON BUFF! ... found a Blessing of ...' chat spam in dungeons")
     @ConfigEditorBoolean
     public boolean hideBlessingMessages = false;

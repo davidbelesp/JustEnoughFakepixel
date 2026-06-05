@@ -4,18 +4,15 @@ import io.hamlook.aetheria.repo.data.PlayerTagData;
 
 public class PlayerTagRepo {
 
-    private PlayerTagRepo() {}
+    private PlayerTagRepo() {
+    }
 
-    /**
-     * Returns the tag entry for a given IGN, or null if none exists.
-     * Matching is case-insensitive.
-     */
     public static PlayerTagData.Entry getTag(String ign) {
         PlayerTagData data = RepoHandler.get(ATHRRepo.KEY_TAGS, PlayerTagData.class, null);
         if (data == null || data.tags == null || ign == null) return null;
-        String lower = ign.toLowerCase();
+        String normalized = NameUtils.normalize(ign);
         for (PlayerTagData.Entry entry : data.tags) {
-            if (entry != null && lower.equals(entry.name != null ? entry.name.toLowerCase() : null)) {
+            if (entry != null && normalized.equals(NameUtils.normalize(entry.name))) {
                 return entry;
             }
         }

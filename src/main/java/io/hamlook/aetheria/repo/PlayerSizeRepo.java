@@ -17,7 +17,10 @@ public class PlayerSizeRepo {
     public static PlayerSizeData getScale(String name) {
         List<PlayerSizeData> list = RepoHandler.get(ATHRRepo.KEY_PLAYERSIZES, LIST_TYPE, null);
         if (list == null || name == null) return null;
-        for (PlayerSizeData d : list) if (d != null && name.equals(d.name)) return d;
+        String normalized = NameUtils.normalize(name);
+        for (PlayerSizeData d : list) {
+            if (d != null && normalized.equals(NameUtils.normalize(d.name))) return d;
+        }
         return null;
     }
 }

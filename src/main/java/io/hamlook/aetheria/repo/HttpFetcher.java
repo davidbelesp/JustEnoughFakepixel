@@ -10,7 +10,13 @@ public class HttpFetcher {
     private static final int TIMEOUT_MS = 5000;
     private static final String USER_AGENT = "ATHR/1.0 (Minecraft 1.8.9)";
 
-    public record FetchResult(String body, String etag, boolean modified) {}
+    private static String readAll(HttpURLConnection conn) throws Exception {
+            StringBuilder sb = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) sb.append(line).append('\n');
+            return sb.toString();
+        }
+    }
 
     public FetchResult fetch(String url, String etag) throws Exception {
         HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
@@ -31,13 +37,27 @@ public class HttpFetcher {
         return new FetchResult(body, newEtag != null ? newEtag : etag, true);
     }
 
-    private static String readAll(HttpURLConnection conn) throws Exception {
-        try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) sb.append(line).append('\n');
-            return sb.toString();
+    public static class FetchResult {
+        private final String body;
+        private final String etag;
+        private final boolean modified;
+
+        public FetchResult(String body, String etag, boolean modified) {
+            this.body = body;
+            this.etag = etag;
+            this.modified = modified;
+        }
+
+        public String body() {
+            return body;
+        }
+
+        public String etag() {
+            return etag;
+        }
+
+        public boolean modified() {
+            return modified;
         }
     }
 }

@@ -1,6 +1,7 @@
 package io.hamlook.aetheria.repo;
 
 import com.google.gson.Gson;
+
 import java.lang.reflect.Type;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -51,5 +52,13 @@ public class JsonCache {
         parsed.remove(key);
     }
 
-    private record TypedEntry(String json, Object value) {}
+    private static class TypedEntry {
+        final String json;
+        final Object value;
+
+        TypedEntry(String json, Object value) {
+            this.json = json;
+            this.value = value;
+        }
+    }
 }

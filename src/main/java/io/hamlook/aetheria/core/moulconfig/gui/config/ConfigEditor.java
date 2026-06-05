@@ -53,6 +53,7 @@ public class ConfigEditor extends GuiElement {
     private final GuiElementTextField searchField = new GuiElementTextField("", 0, 20, 0);
     private final List<String> selectedSubcategoryPath = new ArrayList<>();
     private final Map<String, Set<List<String>>> expandedSubcategoryPaths = new HashMap<>();
+    private final Set<String> categoriesWithTreeOpen = new HashSet<>();
     private final HashMap<ConfigProcessor.ProcessedOption, List<String>> optionSubcategoryPath = new HashMap<>();
     @Getter
     private String selectedCategory = null;
@@ -225,41 +226,40 @@ public class ConfigEditor extends GuiElement {
     }
 
     private void setSelectedCategory(String category) {
-        if (!java.util.Objects.equals(this.selectedCategory, category)) {
-            selectedSubcategoryPath.clear();
-        }
         selectedCategory = category;
         optionsScroll.setValue(0);
     }
 
     private void toggleTreePath(String catKey, List<String> targetPath) {
         if (targetPath.isEmpty()) {
+            ConfigProcessor.ProcessedCategory cat = processedConfig.get(catKey);
+            boolean hasSubcategories = cat != null && !cat.subcategories.isEmpty();
+
             if (selectedCategory == null || !selectedCategory.equals(catKey)) {
                 selectedCategory = catKey;
                 selectedSubcategoryPath.clear();
-            } else if (selectedSubcategoryPath.isEmpty()) {
-                selectedCategory = null;
-                selectedSubcategoryPath.clear();
+                if (hasSubcategories) {
+                    categoriesWithTreeOpen.add(catKey);
+                }
             } else {
-                selectedSubcategoryPath.clear();
+                if (hasSubcategories) {
+                    if (categoriesWithTreeOpen.contains(catKey)) {
+                        categoriesWithTreeOpen.remove(catKey);
+                        selectedSubcategoryPath.clear();
+                    } else {
+                        categoriesWithTreeOpen.add(catKey);
+                    }
+                }
             }
         } else {
             selectedCategory = catKey;
+            selectedSubcategoryPath.clear();
+            selectedSubcategoryPath.addAll(targetPath);
+            categoriesWithTreeOpen.add(catKey);
+
             Set<List<String>> expandedPaths = getExpandedPaths(catKey);
-            if (expandedPaths.contains(targetPath)) {
-                expandedPaths.removeIf(p -> p.size() >= targetPath.size() && p.subList(0, targetPath.size()).equals(targetPath));
-                if (targetPath.size() > 1) {
-                    selectedSubcategoryPath.clear();
-                    selectedSubcategoryPath.addAll(targetPath.subList(0, targetPath.size() - 1));
-                } else {
-                    selectedSubcategoryPath.clear();
-                }
-            } else {
-                for (int i = 1; i <= targetPath.size(); i++) {
-                    expandedPaths.add(new ArrayList<>(targetPath.subList(0, i)));
-                }
-                selectedSubcategoryPath.clear();
-                selectedSubcategoryPath.addAll(targetPath);
+            for (int i = 1; i <= targetPath.size(); i++) {
+                expandedPaths.add(new ArrayList<>(targetPath.subList(0, i)));
             }
         }
         optionsScroll.setValue(0);
@@ -391,14 +391,21 @@ public class ConfigEditor extends GuiElement {
             ConfigProcessor.ProcessedCategory cat = entry.getValue();
             boolean isSelectedRoot = catKey.equals(selectedCategory);
 
-            boolean catHasOptions = getOptionsInCategory(cat).values().stream().anyMatch(o -> o.editor != null);
-            String catName = isSelectedRoot && !catHasOptions && selectedSubcategoryPath.isEmpty() ? EnumChatFormatting.DARK_AQUA + "" + EnumChatFormatting.UNDERLINE + cat.name : (isSelectedRoot ? EnumChatFormatting.AQUA + cat.name : EnumChatFormatting.GRAY + cat.name);
+            boolean isViewingCategoryDirectly = selectedSubcategoryPath.isEmpty();
+            String catName;
+            if (isSelectedRoot && isViewingCategoryDirectly) {
+                catName = EnumChatFormatting.DARK_AQUA + "" + EnumChatFormatting.UNDERLINE + cat.name;
+            } else if (isSelectedRoot) {
+                catName = EnumChatFormatting.AQUA + cat.name;
+            } else {
+                catName = EnumChatFormatting.GRAY + cat.name;
+            }
             fr.drawString(catName, innerLeft + 9 + BASE_INDENT, y + 70 + catY, -1);
             catY += 15;
 
-            if (isSelectedRoot) {
-                Set<List<String>> paths = getExpandedPaths(catKey);
-                catY = renderSubTree(cat.subcategories, cat, paths, 1, catY, y, innerLeft, fr, new ArrayList<String>());
+            Set<List<String>> paths = getExpandedPaths(catKey);
+            if (categoriesWithTreeOpen.contains(catKey)) {
+                catY = renderSubTree(cat.subcategories, cat, paths, 1, catY, y, innerLeft, fr, new ArrayList<>());
             }
 
             if (catY > 0) {
@@ -551,12 +558,7 @@ public class ConfigEditor extends GuiElement {
         int parentCenterY = y + 70 + catY - parentHeight;
         int currentCatY = catY;
 
-        int firstChildCenterY = -1;
-        int lastChildCenterY = -1;
         for (Map.Entry<String, ConfigProcessor.ProcessedSubcategory> subEntry : visible) {
-            int itemCenterY = y + 70 + currentCatY;
-            if (firstChildCenterY == -1) firstChildCenterY = itemCenterY;
-            lastChildCenterY = itemCenterY;
             currentCatY += 13;
             if (isPathExpanded(expandedPaths, subEntry.getKey(), depth) && !subEntry.getValue().subcategories.isEmpty()) {
                 parentPath.add(subEntry.getKey());
@@ -567,7 +569,8 @@ public class ConfigEditor extends GuiElement {
 
         if (!visible.isEmpty()) {
             int trunkStart = parentCenterY + parentHeight / 2 + 3;
-            Gui.drawRect(lineX, trunkStart, lineX + 1, lastChildCenterY + 1, 0xff606060);
+            int trunkEnd = y + 70 + currentCatY - 12;
+            Gui.drawRect(lineX, trunkStart, lineX + 1, trunkEnd, 0xff606060);
         }
 
         currentCatY = catY;
@@ -576,16 +579,16 @@ public class ConfigEditor extends GuiElement {
             boolean inPath = isPathExpanded(expandedPaths, subEntry.getKey(), depth);
             int itemCenterY = y + 70 + currentCatY;
 
-            int hColor = inPath ? 0xff00b8b8 : 0xff606060;
-            Gui.drawRect(lineX, itemCenterY + 4, textBaseX - 2, itemCenterY + 5, hColor);
-
             parentPath.add(subEntry.getKey());
             boolean isDeepest = selectedSubcategoryPath.equals(parentPath);
             parentPath.remove(pathSize);
 
+            int hColor = isDeepest ? 0xff00b8b8 : 0xff606060;
+            Gui.drawRect(lineX, itemCenterY + 4, textBaseX - 2, itemCenterY + 5, hColor);
+
             boolean hasChildren = !subEntry.getValue().subcategories.isEmpty();
             String indicator = hasChildren ? (inPath ? "▼ " : "▶ ") : "  ";
-            String name = isDeepest ? EnumChatFormatting.DARK_AQUA + "" + EnumChatFormatting.UNDERLINE + subEntry.getValue().name : (inPath ? EnumChatFormatting.AQUA + subEntry.getValue().name : EnumChatFormatting.DARK_GRAY + subEntry.getValue().name);
+            String name = isDeepest ? EnumChatFormatting.DARK_AQUA + "" + EnumChatFormatting.UNDERLINE + subEntry.getValue().name : EnumChatFormatting.DARK_GRAY + subEntry.getValue().name;
             String prefix = hasChildren ? (inPath ? EnumChatFormatting.GRAY.toString() : EnumChatFormatting.DARK_GRAY.toString()) : EnumChatFormatting.RESET.toString();
             fr.drawString(prefix + indicator + name, textBaseX, y + 70 + currentCatY, -1);
             currentCatY += 13;
@@ -770,11 +773,11 @@ public class ConfigEditor extends GuiElement {
                 }
                 catY += 15;
 
-                if (ck.equals(selectedCategory)) {
-                    int beforeExpandedSize = getExpandedPaths(ck).size();
-                    List<String> beforePath = new ArrayList<>(selectedSubcategoryPath);
-                    catY = handleSubTreeClick(entry.getValue().subcategories, entry.getValue(), new ArrayList<>(), 1, catY, mouseX, mouseY, y, ck, innerLeft, x, innerPadding);
-                    if (!selectedSubcategoryPath.equals(beforePath) || getExpandedPaths(ck).size() != beforeExpandedSize) return true;
+                Set<List<String>> paths = getExpandedPaths(ck);
+                if (categoriesWithTreeOpen.contains(ck)) {
+                    int result = handleSubTreeClick(entry.getValue().subcategories, entry.getValue(), new ArrayList<>(), 1, catY, mouseX, mouseY, y, ck, innerLeft, x, innerPadding);
+                    if (result == -1) return true;
+                    catY = result;
                 }
             }
 
@@ -831,15 +834,16 @@ public class ConfigEditor extends GuiElement {
                 List<String> targetPath = new ArrayList<>(parentPath);
                 targetPath.add(subEntry.getKey());
                 toggleTreePath(catKey, targetPath);
-                catY += 13;
-                return catY;
+                return -1;
             }
             catY += 13;
 
             if (isPathExpanded(expandedPaths, subEntry.getKey(), depth) && !subEntry.getValue().subcategories.isEmpty()) {
                 List<String> childPath = new ArrayList<>(parentPath);
                 childPath.add(subEntry.getKey());
-                catY = handleSubTreeClick(subEntry.getValue().subcategories, subEntry.getValue(), childPath, depth + 1, catY, mouseX, mouseY, y, catKey, innerLeft, x, innerPadding);
+                int result = handleSubTreeClick(subEntry.getValue().subcategories, subEntry.getValue(), childPath, depth + 1, catY, mouseX, mouseY, y, catKey, innerLeft, x, innerPadding);
+                if (result == -1) return -1;
+                catY = result;
             }
         }
         return catY;
@@ -872,10 +876,11 @@ public class ConfigEditor extends GuiElement {
         int h = 5;
         for (Map.Entry<String, ConfigProcessor.ProcessedCategory> entry : getCurrentConfigEditing().entrySet()) {
             h += 15;
-            if (entry.getKey().equals(selectedCategory)) {
-                ConfigProcessor.ProcessedCategory cat = processedConfig.get(entry.getKey());
+            String catKey = entry.getKey();
+            if (categoriesWithTreeOpen.contains(catKey)) {
+                ConfigProcessor.ProcessedCategory cat = processedConfig.get(catKey);
                 if (cat != null) {
-                    Set<List<String>> paths = getExpandedPaths(selectedCategory);
+                    Set<List<String>> paths = getExpandedPaths(catKey);
                     h += treeSubcategoryCount(cat.subcategories, cat, paths, 1) * 13;
                 }
             }

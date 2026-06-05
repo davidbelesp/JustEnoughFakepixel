@@ -1,6 +1,6 @@
 package io.hamlook.aetheria.features.misc.itemList;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.features.misc.itemList.recipe.Recipe;
 import io.hamlook.aetheria.features.misc.itemList.recipe.RecipeFactory;
 import io.hamlook.aetheria.utils.render.ItemRenderUtils;
@@ -139,7 +139,7 @@ public class RecipeViewerGUI extends GuiScreen {
         drawRect(0, 0, width, height, 0xA0000000);
         computeBox();
 
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), boxX, boxY, boxW, boxH, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), boxX, boxY, boxW, boxH, 6, 18);
 
         int cx = boxX + boxW / 2;
 

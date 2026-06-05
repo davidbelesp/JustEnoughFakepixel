@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.features.misc.itemList;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.features.misc.SearchBar;
 import io.hamlook.aetheria.features.storage.StorageManager;
 import io.hamlook.aetheria.init.RegisterEvents;
@@ -214,13 +214,13 @@ public class ItemPaneRenderer {
 
         int rarityX = paneX + PAD;
         boolean hoverRar = isInBounds(mouseX, mouseY, rarityX, filterY, btnWidth, FILTER_H);
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), rarityX, filterY, btnWidth, FILTER_H, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), rarityX, filterY, btnWidth, FILTER_H, 6, 18);
         if (hoverRar) Gui.drawRect(rarityX, filterY, rarityX + btnWidth, filterY + FILTER_H, 0x33FFFFFF);
         drawCenteredText(mc, RARITIES[rarityFilterIdx], rarityX + btnWidth / 2, filterY + 6, 0xAAAAAA);
 
         int typeX = rarityX + btnWidth + PAD;
         boolean hoverType = isInBounds(mouseX, mouseY, typeX, filterY, btnWidth, FILTER_H);
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), typeX, filterY, btnWidth, FILTER_H, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), typeX, filterY, btnWidth, FILTER_H, 6, 18);
         if (hoverType) Gui.drawRect(typeX, filterY, typeX + btnWidth, filterY + FILTER_H, 0x33FFFFFF);
         drawCenteredText(mc, TYPES[typeFilterIdx], typeX + btnWidth / 2, filterY + 6, 0xAAAAAA);
 
@@ -232,11 +232,11 @@ public class ItemPaneRenderer {
         boolean hP = isInBounds(mouseX, mouseY, prevX, navY, navBtnW, NAV_H);
         boolean hN = isInBounds(mouseX, mouseY, nextX, navY, navBtnW, NAV_H);
 
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), prevX, navY, navBtnW, NAV_H, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), prevX, navY, navBtnW, NAV_H, 6, 18);
         if (hP) Gui.drawRect(prevX, navY, prevX + navBtnW, navY + NAV_H, 0x33FFFFFF);
         drawCenteredText(mc, "◄", prevX + navBtnW / 2, navY + 6, hP ? 0xFFFFAA : 0xFFFFFF);
 
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), nextX, navY, navBtnW, NAV_H, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), nextX, navY, navBtnW, NAV_H, 6, 18);
         if (hN) Gui.drawRect(nextX, navY, nextX + navBtnW, navY + NAV_H, 0x33FFFFFF);
         drawCenteredText(mc, "►", nextX + navBtnW / 2, navY + 6, hN ? 0xFFFFAA : 0xFFFFFF);
 
@@ -272,7 +272,7 @@ public class ItemPaneRenderer {
             int sx = gridX + col * S(), sy = gridY + row * S();
 
             GlStateManager.color(1f, 1f, 1f, 1f);
-            NineSliceUtils.draw(GuiTextures.storageSlot(1), sx, sy, S(), S(), 6, 18);
+            NineSliceUtils.draw(Resources.storageSlot(1), sx, sy, S(), S(), 6, 18);
 
             if (rep != null) renderItemInSlot(rep.getStack(), sx, sy);
 
@@ -359,7 +359,7 @@ public class ItemPaneRenderer {
         Gui.drawRect(dropDx + dropDw, dropDy, dropDx + dropDw + 1, dropDy + dropDh, 0xFFFFAA00);
 
         GlStateManager.color(1f, 1f, 1f, 1f);
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), dropDx, dropDy, dropDw, dropDh, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), dropDx, dropDy, dropDw, dropDh, 6, 18);
 
         SkyblockItem hovered = null;
         for (int i = 0; i < members; i++) {
@@ -369,7 +369,7 @@ public class ItemPaneRenderer {
             int sx = dropDx + PAD + c * (S() + 2);
             int sy = dropDy + PAD + r * (S() + 2);
 
-            NineSliceUtils.draw(GuiTextures.storageSlot(1), sx, sy, S(), S(), 6, 18);
+            NineSliceUtils.draw(Resources.storageSlot(1), sx, sy, S(), S(), 6, 18);
             renderItemInSlot(mem.getStack(), sx, sy);
 
             boolean h = isInBounds(mouseX, mouseY, sx, sy, S(), S());

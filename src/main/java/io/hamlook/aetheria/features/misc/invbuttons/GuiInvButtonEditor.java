@@ -1,8 +1,9 @@
 package io.hamlook.aetheria.features.misc.invbuttons;
 
 import com.google.gson.*;
-import io.hamlook.aetheria.core.config.gui.GlScissorStack;
-import io.hamlook.aetheria.core.config.gui.GuiElementTextField;
+import io.hamlook.aetheria.core.moulconfig.gui.GlScissorStack;
+import io.hamlook.aetheria.core.moulconfig.gui.GuiElementTextField;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -22,12 +23,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
-
 public class GuiInvButtonEditor extends GuiScreen {
 
-    private static final ResourceLocation INVENTORY_TEX = GuiTextures.INVENTORY_TEX;
-    private static final ResourceLocation EDITOR_TEX    = GuiTextures.INV_EDITOR_TEX;
+    private static final ResourceLocation INVENTORY_TEX = Resources.INVENTORY_TEX;
+    private static final ResourceLocation EDITOR_TEX    = Resources.INV_EDITOR_TEX;
 
     private static final String SHARE_PREFIX = "ATHRBUTTONS/";
     private static final Gson GSON = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
@@ -67,7 +66,7 @@ public class GuiInvButtonEditor extends GuiScreen {
         presetNames = new ArrayList<>();
         presetButtonsList = new ArrayList<>();
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(Minecraft.getMinecraft().getResourceManager().getResource(GuiTextures.INV_PRESETS_JSON).getInputStream(), StandardCharsets.UTF_8));
+            BufferedReader br = new BufferedReader(new InputStreamReader(Minecraft.getMinecraft().getResourceManager().getResource(Resources.INV_PRESETS_JSON).getInputStream(), StandardCharsets.UTF_8));
             JsonObject root = new JsonParser().parse(br).getAsJsonObject();
             for (Map.Entry<String, JsonElement> e : root.entrySet()) {
                 if (!e.getValue().isJsonArray()) continue;
@@ -90,7 +89,7 @@ public class GuiInvButtonEditor extends GuiScreen {
         if (extraIconsCache != null) return;
         extraIconsCache = new LinkedHashMap<>();
         try {
-            BufferedReader br = new BufferedReader(new InputStreamReader(Minecraft.getMinecraft().getResourceManager().getResource(GuiTextures.INV_EXTRA_ICONS_JSON).getInputStream(), StandardCharsets.UTF_8));
+            BufferedReader br = new BufferedReader(new InputStreamReader(Minecraft.getMinecraft().getResourceManager().getResource(Resources.INV_EXTRA_ICONS_JSON).getInputStream(), StandardCharsets.UTF_8));
             JsonObject root = new JsonParser().parse(br).getAsJsonObject();
             for (Map.Entry<String, JsonElement> e : root.entrySet())
                 if (e.getValue().isJsonPrimitive())

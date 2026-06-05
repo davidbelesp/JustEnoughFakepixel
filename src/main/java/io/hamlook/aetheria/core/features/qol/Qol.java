@@ -1,9 +1,9 @@
 package io.hamlook.aetheria.core.features.qol;
 
 import com.google.gson.annotations.Expose;
-import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations.Category;
-import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations.ConfigEditorBoolean;
-import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations.ConfigOption;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigAnnotations.Category;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigAnnotations.ConfigEditorBoolean;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigAnnotations.ConfigOption;
 
 public class Qol {
 

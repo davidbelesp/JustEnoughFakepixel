@@ -1,6 +1,10 @@
-package io.hamlook.aetheria.core.config.gui;
+// SPDX-License-Identifier: LGPL-3.0-only
+// Derived from MoulConfig (https://github.com/NotEnoughUpdates/MoulConfig)
 
-import io.hamlook.aetheria.core.config.editors.ChromaColour;
+package io.hamlook.aetheria.core.moulconfig.gui;
+
+import io.hamlook.aetheria.Resources;
+import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour;
 import io.hamlook.aetheria.utils.render.RenderUtils;
 import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import net.minecraft.client.Minecraft;
@@ -19,14 +23,14 @@ import java.util.function.Consumer;
 
 public class GuiElementColour extends GuiElement {
 
-    // ResourceLocations centralised in GuiTextures
-    private static final ResourceLocation colour_selector_dot           = GuiTextures.colour_selector_dot;
-    private static final ResourceLocation colour_selector_bar           = GuiTextures.colour_selector_bar;
-    private static final ResourceLocation colour_selector_bar_alpha     = GuiTextures.colour_selector_bar_alpha;
-    private static final ResourceLocation colour_selector_chroma        = GuiTextures.colour_selector_chroma;
-    private static final ResourceLocation colourPickerLocation          = GuiTextures.colourPickerLocation;
-    private static final ResourceLocation colourPickerBarValueLocation   = GuiTextures.colourPickerBarValueLocation;
-    private static final ResourceLocation colourPickerBarOpacityLocation = GuiTextures.colourPickerBarOpacityLocation;
+    // ResourceLocations centralised in Resources
+    private static final ResourceLocation colour_selector_dot           = Resources.colour_selector_dot;
+    private static final ResourceLocation colour_selector_bar           = Resources.colour_selector_bar;
+    private static final ResourceLocation colour_selector_bar_alpha     = Resources.colour_selector_bar_alpha;
+    private static final ResourceLocation colour_selector_chroma        = Resources.colour_selector_chroma;
+    private static final ResourceLocation colourPickerLocation          = Resources.colourPickerLocation;
+    private static final ResourceLocation colourPickerBarValueLocation   = Resources.colourPickerBarValueLocation;
+    private static final ResourceLocation colourPickerBarOpacityLocation = Resources.colourPickerBarOpacityLocation;
 
     private final GuiElementTextField hexField = new GuiElementTextField("",
             GuiElementTextField.SCALE_TEXT | GuiElementTextField.FORCE_CAPS | GuiElementTextField.NO_SPACE);

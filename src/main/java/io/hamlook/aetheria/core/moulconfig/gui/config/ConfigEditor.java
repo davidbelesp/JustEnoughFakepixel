@@ -1,18 +1,22 @@
-package io.hamlook.aetheria.core.config.gui.config;
+// SPDX-License-Identifier: LGPL-3.0-only
+// Derived from MoulConfig (https://github.com/NotEnoughUpdates/MoulConfig)
+
+package io.hamlook.aetheria.core.moulconfig.gui.config;
 
 import com.google.common.collect.Lists;
+import io.hamlook.aetheria.Aetheria;
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.editors.GuiOptionEditor;
-import io.hamlook.aetheria.core.config.editors.GuiOptionEditorAccordion;
-import io.hamlook.aetheria.core.config.gui.GlScissorStack;
-import io.hamlook.aetheria.core.config.gui.GuiElement;
-import io.hamlook.aetheria.core.config.gui.GuiElementTextField;
+import io.hamlook.aetheria.core.moulconfig.editors.GuiOptionEditor;
+import io.hamlook.aetheria.core.moulconfig.editors.GuiOptionEditorAccordion;
+import io.hamlook.aetheria.core.moulconfig.gui.GlScissorStack;
+import io.hamlook.aetheria.core.moulconfig.gui.GuiElement;
+import io.hamlook.aetheria.core.moulconfig.gui.GuiElementTextField;
 import io.hamlook.aetheria.utils.LerpUtils;
 import io.hamlook.aetheria.utils.LerpUtils.LerpingInteger;
-import io.hamlook.aetheria.utils.render.RenderUtils;
 import io.hamlook.aetheria.utils.StringUtils;
+import io.hamlook.aetheria.utils.render.RenderUtils;
 import io.hamlook.aetheria.utils.render.TextRenderUtils;
-import io.hamlook.aetheria.Aetheria;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -29,13 +33,15 @@ import java.net.URI;
 import java.util.*;
 import java.util.List;
 
-import static io.hamlook.aetheria.core.config.gui.GuiTextures.DISCORD;
-import static io.hamlook.aetheria.core.config.gui.GuiTextures.GITHUB;
-import static io.hamlook.aetheria.core.config.gui.GuiTextures.SEARCH_ICON;
+import static io.hamlook.aetheria.Resources.*;
 
 public class ConfigEditor extends GuiElement {
-    private static final ResourceLocation[] socialsIco = new ResourceLocation[]{DISCORD, GITHUB};
-    private static final String[] socialsLink = new String[]{"https://discord.gg/4zKq2RkSZS", "https://github.com/aetheria-org/Aetheria"};
+    private static final ResourceLocation[] socialsIco = new ResourceLocation[]{DISCORD, GITHUB, MODRINTH, SKYATLAS};
+    private static final String[] socialsLink = new String[]{"https://discord.gg/4zKq2RkSZS", "https://github.com/aetheria-org/Aetheria", "https://modrinth.com/mod/aetheriamod", "https://skyatlas.qzz.io"};
+    private static final long SEARCH_REPEAT_DELAY_MS = 500;
+    private static final long SEARCH_REPEAT_RATE_MS = 50;
+    private static final int TREE_INDENT = 14;
+    private static final int BASE_INDENT = 6;
     public static ConfigEditor editor = new ConfigEditor(ATHRConfig.feature);
     private final long openedMillis;
     private final LerpingInteger optionsScroll = new LerpingInteger(0, 150);
@@ -45,27 +51,28 @@ public class ConfigEditor extends GuiElement {
     private final HashMap<ConfigProcessor.ProcessedOption, ConfigProcessor.ProcessedCategory> categoryForOption = new HashMap<>();
     private final LerpingInteger minimumSearchSize = new LerpingInteger(0, 150);
     private final GuiElementTextField searchField = new GuiElementTextField("", 0, 20, 0);
-    private String selectedCategory = null;
     private final List<String> selectedSubcategoryPath = new ArrayList<>();
+    private final Map<String, Set<List<String>>> expandedSubcategoryPaths = new HashMap<>();
+    private final HashMap<ConfigProcessor.ProcessedOption, List<String>> optionSubcategoryPath = new HashMap<>();
+    @Getter
+    private String selectedCategory = null;
     private Set<ConfigProcessor.ProcessedCategory> searchedCategories = null;
     private Map<ConfigProcessor.ProcessedCategory, Set<String>> searchedSubcategories = null;
     private Map<ConfigProcessor.ProcessedSubcategory, Set<String>> searchedSubSubcategories = null;
     private Map<ConfigProcessor.ProcessedCategory, Set<Integer>> searchedAccordions = null;
     private Set<ConfigProcessor.ProcessedOption> searchedOptions = null;
-    private final HashMap<ConfigProcessor.ProcessedOption, List<String>> optionSubcategoryPath = new HashMap<>();
     private float optionsBarStart;
     private float optionsBarend;
     private int lastMouseX = 0;
     private int keyboardScrollXCutoff = 0;
-
-    private static final long SEARCH_REPEAT_DELAY_MS = 500;
-    private static final long SEARCH_REPEAT_RATE_MS  =  50;
-    private int  searchRepeatKey   = 0;
+    private float categoryBarSize;
+    private boolean isDraggingOptionsScroll = false;
+    private boolean isDraggingCategoryScroll = false;
+    private int dragScrollStartValue = 0;
+    private int dragMouseStartY = 0;
+    private int searchRepeatKey = 0;
     private long searchRepeatStart = 0;
-    private long searchRepeatLast  = 0;
-
-    private static final int TREE_INDENT = 14;
-    private static final int BASE_INDENT = 6;
+    private long searchRepeatLast = 0;
 
     public ConfigEditor(Object config) {
         this(config, null);
@@ -116,9 +123,7 @@ public class ConfigEditor extends GuiElement {
         editor = this;
     }
 
-    private void indexSubcategoryOptions(ConfigProcessor.ProcessedCategory category,
-                                         LinkedHashMap<String, ConfigProcessor.ProcessedSubcategory> subcategories,
-                                         List<String> parentPath) {
+    private void indexSubcategoryOptions(ConfigProcessor.ProcessedCategory category, LinkedHashMap<String, ConfigProcessor.ProcessedSubcategory> subcategories, List<String> parentPath) {
         for (Map.Entry<String, ConfigProcessor.ProcessedSubcategory> subEntry : subcategories.entrySet()) {
             ConfigProcessor.ProcessedSubcategory sub = subEntry.getValue();
             List<String> fullPath = new ArrayList<>(parentPath);
@@ -128,9 +133,8 @@ public class ConfigEditor extends GuiElement {
                 categoryForOption.put(option, category);
                 optionSubcategoryPath.put(option, fullPath);
 
-                StringBuilder combined = new StringBuilder(category.name + " " + sub.name + " " + option.name + " " + option.desc);
-                combined.append(" ").append(String.join(" ", fullPath));
-                String sc = combined.toString().replaceAll("[^a-zA-Z_ ]", "").toLowerCase();
+                String combined = category.name + " " + sub.name + " " + option.name + " " + option.desc + " " + String.join(" ", fullPath);
+                String sc = combined.replaceAll("[^a-zA-Z_ ]", "").toLowerCase();
                 for (String sw : sc.split("[ _]")) {
                     searchOptionMap.computeIfAbsent(sw, k -> new HashSet<>()).add(option);
                 }
@@ -162,8 +166,7 @@ public class ConfigEditor extends GuiElement {
         }
 
         if (searchedOptions != null) {
-            Set<ConfigProcessor.ProcessedOption> retain = new HashSet<>();
-            retain.addAll(searchedOptions);
+            Set<ConfigProcessor.ProcessedOption> retain = new HashSet<>(searchedOptions);
             if (searchedAccordions != null) {
                 Set<Integer> visibleAccordions = searchedAccordions.get(cat);
                 if (visibleAccordions != null && !visibleAccordions.isEmpty()) {
@@ -182,6 +185,34 @@ public class ConfigEditor extends GuiElement {
         return newMap;
     }
 
+    private int forEachOption(ConfigProcessor.ProcessedCategory cat, int startY, int innerLeft, int innerRight, int innerTop, int innerBottom, int innerPadding, int optionWidthDefault, OptionCallback callback) {
+        int y = startY;
+        HashMap<Integer, Integer> activeAccordions = new HashMap<>();
+        for (ConfigProcessor.ProcessedOption option : getOptionsInCategory(cat).values()) {
+            int optionWidth = optionWidthDefault;
+            if (option.accordionId >= 0) {
+                if (!activeAccordions.containsKey(option.accordionId)) continue;
+                optionWidth = optionWidthDefault - (2 * innerPadding) * (activeAccordions.get(option.accordionId) + 1);
+            }
+            GuiOptionEditor editor = option.editor;
+            if (editor == null) continue;
+            if (editor instanceof GuiOptionEditorAccordion) {
+                GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
+                if (accordion.getToggled()) {
+                    int accordionDepth = option.accordionId >= 0 ? activeAccordions.get(option.accordionId) + 1 : 0;
+                    activeAccordions.put(accordion.getAccordionId(), accordionDepth);
+                }
+            }
+            int optionHeight = editor.getHeight();
+            if (innerTop + 5 + y + optionHeight > innerTop + 1 && innerTop + 5 + y < innerBottom - 1) {
+                int x = (innerLeft + innerRight - optionWidth) / 2 - 5;
+                if (callback.apply(editor, x, innerTop + 5 + y, optionWidth)) return y;
+            }
+            y += optionHeight + 5;
+        }
+        return y;
+    }
+
     private ConfigProcessor.ProcessedSubcategory walkSubPath(ConfigProcessor.ProcessedCategory cat, List<String> path) {
         ConfigProcessor.ProcessedSubcategory current = null;
         LinkedHashMap<String, ConfigProcessor.ProcessedSubcategory> subs = cat.subcategories;
@@ -193,53 +224,45 @@ public class ConfigEditor extends GuiElement {
         return current;
     }
 
-    public String getSelectedCategory() {
-        return selectedCategory;
-    }
-
     private void setSelectedCategory(String category) {
         if (!java.util.Objects.equals(this.selectedCategory, category)) {
             selectedSubcategoryPath.clear();
         }
         selectedCategory = category;
         optionsScroll.setValue(0);
-        if (category != null) {
-            ConfigProcessor.ProcessedCategory cat = processedConfig.get(category);
-            if (cat != null) {
-                boolean hasDirectMatches = searchedOptions == null
-                    || cat.options.values().stream().anyMatch(opt -> searchedOptions.contains(opt));
-                if (!hasDirectMatches && selectedSubcategoryPath.isEmpty()) {
-                    List<Map.Entry<String, ConfigProcessor.ProcessedSubcategory>> visible = getVisibleSubcategories(cat.subcategories, cat, 1);
-                    if (!visible.isEmpty()) {
-                        selectedSubcategoryPath.add(visible.get(0).getKey());
-                    }
-                }
-            }
-        }
     }
 
     private void toggleTreePath(String catKey, List<String> targetPath) {
         if (targetPath.isEmpty()) {
-            if (selectedSubcategoryPath.isEmpty() && java.util.Objects.equals(selectedCategory, catKey)) {
-                selectedCategory = null;
-            } else {
+            if (selectedCategory == null || !selectedCategory.equals(catKey)) {
                 selectedCategory = catKey;
+                selectedSubcategoryPath.clear();
+            } else if (selectedSubcategoryPath.isEmpty()) {
+                selectedCategory = null;
+                selectedSubcategoryPath.clear();
+            } else {
                 selectedSubcategoryPath.clear();
             }
         } else {
             selectedCategory = catKey;
-            if (selectedSubcategoryPath.equals(targetPath)) {
-                selectedSubcategoryPath.remove(selectedSubcategoryPath.size() - 1);
+            Set<List<String>> expandedPaths = getExpandedPaths(catKey);
+            if (expandedPaths.contains(targetPath)) {
+                expandedPaths.removeIf(p -> p.size() >= targetPath.size() && p.subList(0, targetPath.size()).equals(targetPath));
+                if (targetPath.size() > 1) {
+                    selectedSubcategoryPath.clear();
+                    selectedSubcategoryPath.addAll(targetPath.subList(0, targetPath.size() - 1));
+                } else {
+                    selectedSubcategoryPath.clear();
+                }
             } else {
+                for (int i = 1; i <= targetPath.size(); i++) {
+                    expandedPaths.add(new ArrayList<>(targetPath.subList(0, i)));
+                }
                 selectedSubcategoryPath.clear();
                 selectedSubcategoryPath.addAll(targetPath);
             }
         }
         optionsScroll.setValue(0);
-    }
-
-    public String getSelectedCategoryName() {
-        return processedConfig.get(selectedCategory).name;
     }
 
     public void search() {
@@ -312,6 +335,8 @@ public class ConfigEditor extends GuiElement {
         int mouseX = Mouse.getX() * width / Minecraft.getMinecraft().displayWidth;
         int mouseY = height - Mouse.getY() * height / Minecraft.getMinecraft().displayHeight - 1;
 
+        handleDragScroll(mouseX, mouseY);
+
         float opacityFactor = LerpUtils.sigmoidZeroOne(delta / 500f);
         RenderUtils.drawGradientRect(0, 0, 0, width, height, (int) (0x80 * opacityFactor) << 24 | 0x101010, (int) (0x90 * opacityFactor) << 24 | 0x101010);
 
@@ -366,20 +391,22 @@ public class ConfigEditor extends GuiElement {
             ConfigProcessor.ProcessedCategory cat = entry.getValue();
             boolean isSelectedRoot = catKey.equals(selectedCategory);
 
-            String catName = isSelectedRoot && selectedSubcategoryPath.isEmpty()
-                ? EnumChatFormatting.DARK_AQUA + "" + EnumChatFormatting.UNDERLINE + cat.name
-                : (isSelectedRoot ? EnumChatFormatting.AQUA + cat.name : EnumChatFormatting.GRAY + cat.name);
-            fr.drawString(catName, innerLeft + 9 + BASE_INDENT, y + 70 + catY, -1);
+            boolean catHasOptions = getOptionsInCategory(cat).values().stream().anyMatch(o -> o.editor != null);
+            String catName = isSelectedRoot && !catHasOptions && selectedSubcategoryPath.isEmpty() ? EnumChatFormatting.DARK_AQUA + "" + EnumChatFormatting.UNDERLINE + cat.name : (isSelectedRoot ? EnumChatFormatting.AQUA + cat.name : EnumChatFormatting.GRAY + cat.name);
+            int catCenterX = (x + innerPadding + 12 + x + 189 + innerPadding - 10) / 2;
+            fr.drawString(catName, catCenterX - fr.getStringWidth(catName) / 2, y + 70 + catY, -1);
             catY += 15;
 
             if (isSelectedRoot) {
-                catY = renderSubTree(cat.subcategories, cat, selectedSubcategoryPath, 1, catY, y, innerLeft, fr);
+                Set<List<String>> paths = getExpandedPaths(catKey);
+                catY = renderSubTree(cat.subcategories, cat, paths, 1, catY, y, innerLeft, fr);
             }
 
             if (catY > 0) {
                 catBarSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (catY + 5 + categoryScroll.getValue()));
             }
         }
+        catY += 5;
 
         float catBarStart = categoryScroll.getValue() / (float) (catY + categoryScroll.getValue());
         float catBarEnd = catBarStart + catBarSize;
@@ -407,9 +434,11 @@ public class ConfigEditor extends GuiElement {
         innerRight = x + xSize - 5 - innerPadding;
         innerBottom = y + ySize - 5 - innerPadding;
 
+        float searchFieldCenterY = innerTop - (20 + innerPadding) / 2f;
+
         Minecraft.getMinecraft().getTextureManager().bindTexture(SEARCH_ICON);
         GlStateManager.color(1, 1, 1, 1);
-        RenderUtils.drawTexturedRect(innerRight - 20, innerTop - (20 + innerPadding) / 2 - 9, 18, 18, GL11.GL_NEAREST);
+        RenderUtils.drawTexturedRect(innerRight - 20, searchFieldCenterY - 9, 18, 18, GL11.GL_NEAREST);
 
         minimumSearchSize.tick();
         boolean shouldShow = !searchField.getText().trim().isEmpty() || searchField.getFocus();
@@ -428,7 +457,7 @@ public class ConfigEditor extends GuiElement {
 
             int len = Math.max(strLen, minimumSearchSize.getValue());
             searchField.setSize(len, 18);
-            searchField.render(innerRight - 25 - len, innerTop - (20 + innerPadding) / 2 - 9);
+            searchField.render(innerRight - 25 - len, (int) (searchFieldCenterY - 9));
 
             rightStuffLen += 5 + len;
         }
@@ -451,37 +480,10 @@ public class ConfigEditor extends GuiElement {
             ConfigProcessor.ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
             int optionWidthDefault = innerRight - innerLeft - 20;
             GlStateManager.enableDepth();
-            HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-            for (ConfigProcessor.ProcessedOption option : getOptionsInCategory(cat).values()) {
-                int optionWidth = optionWidthDefault;
-                if (option.accordionId >= 0) {
-                    if (!activeAccordions.containsKey(option.accordionId)) {
-                        continue;
-                    }
-                    int accordionDepth = activeAccordions.get(option.accordionId);
-                    optionWidth = optionWidthDefault - (2 * innerPadding) * (accordionDepth + 1);
-                }
-
-                GuiOptionEditor editor = option.editor;
-                if (editor == null) {
-                    continue;
-                }
-                if (editor instanceof GuiOptionEditorAccordion) {
-                    GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
-                    if (accordion.getToggled()) {
-                        int accordionDepth = 0;
-                        if (option.accordionId >= 0) {
-                            accordionDepth = activeAccordions.get(option.accordionId) + 1;
-                        }
-                        activeAccordions.put(accordion.getAccordionId(), accordionDepth);
-                    }
-                }
-                int optionHeight = editor.getHeight();
-                if (innerTop + 5 + optionY + optionHeight > innerTop + 1 && innerTop + 5 + optionY < innerBottom - 1) {
-                    editor.render((innerLeft + innerRight - optionWidth) / 2 - 5, innerTop + 5 + optionY, optionWidth);
-                }
-                optionY += optionHeight + 5;
-            }
+            optionY = forEachOption(cat, -optionsScroll.getValue(), innerLeft, innerRight, innerTop, innerBottom, innerPadding, optionWidthDefault, (ed, edX, edY, edW) -> {
+                ed.render(edX, edY, edW);
+                return false;
+            });
             GlStateManager.disableDepth();
             if (optionY > 0) {
                 barSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (optionY + 5 + optionsScroll.getValue()));
@@ -492,43 +494,15 @@ public class ConfigEditor extends GuiElement {
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST);
         if (getSelectedCategory() != null && currentConfigEditing.containsKey(getSelectedCategory())) {
-            int optionYOverlay = -optionsScroll.getValue();
             ConfigProcessor.ProcessedCategory cat = currentConfigEditing.get(getSelectedCategory());
             int optionWidthDefault = innerRight - innerLeft - 20;
 
             GlStateManager.translate(0, 0, 10);
             GlStateManager.enableDepth();
-            HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-            for (ConfigProcessor.ProcessedOption option : getOptionsInCategory(cat).values()) {
-                int optionWidth = optionWidthDefault;
-                if (option.accordionId >= 0) {
-                    if (!activeAccordions.containsKey(option.accordionId)) {
-                        continue;
-                    }
-                    int accordionDepth = activeAccordions.get(option.accordionId);
-                    optionWidth = optionWidthDefault - (2 * innerPadding) * (accordionDepth + 1);
-                }
-
-                GuiOptionEditor editor = option.editor;
-                if (editor == null) {
-                    continue;
-                }
-                if (editor instanceof GuiOptionEditorAccordion) {
-                    GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
-                    if (accordion.getToggled()) {
-                        int accordionDepth = 0;
-                        if (option.accordionId >= 0) {
-                            accordionDepth = activeAccordions.get(option.accordionId) + 1;
-                        }
-                        activeAccordions.put(accordion.getAccordionId(), accordionDepth);
-                    }
-                }
-                int optionHeight = editor.getHeight();
-                if (innerTop + 5 + optionYOverlay + optionHeight > innerTop + 1 && innerTop + 5 + optionYOverlay < innerBottom - 1) {
-                    editor.renderOverlay((innerLeft + innerRight - optionWidth) / 2 - 5, innerTop + 5 + optionYOverlay, optionWidth);
-                }
-                optionYOverlay += optionHeight + 5;
-            }
+            forEachOption(cat, -optionsScroll.getValue(), innerLeft, innerRight, innerTop, innerBottom, innerPadding, optionWidthDefault, (ed, edX, edY, edW) -> {
+                ed.renderOverlay(edX, edY, edW);
+                return false;
+            });
             GlStateManager.disableDepth();
             GlStateManager.translate(0, 0, -10);
         }
@@ -570,64 +544,64 @@ public class ConfigEditor extends GuiElement {
         GlStateManager.translate(0, 0, -2);
     }
 
-    private int renderSubTree(LinkedHashMap<String, ConfigProcessor.ProcessedSubcategory> subs,
-                              Object parent, List<String> activePath, int depth, int catY,
-                              int y, int innerLeft, FontRenderer fr) {
+    private int renderSubTree(LinkedHashMap<String, ConfigProcessor.ProcessedSubcategory> subs, Object parent, Set<List<String>> expandedPaths, int depth, int catY, int y, int innerLeft, FontRenderer fr) {
         List<Map.Entry<String, ConfigProcessor.ProcessedSubcategory>> visible = getVisibleSubcategories(subs, parent, depth);
         int lineX = innerLeft + 9 + BASE_INDENT + TREE_INDENT * (depth - 1);
         int textBaseX = innerLeft + 9 + BASE_INDENT + TREE_INDENT * depth;
         int parentHeight = depth == 1 ? 15 : 13;
         int parentCenterY = y + 70 + catY - parentHeight;
+        int currentCatY = catY;
+
         int firstChildCenterY = -1;
         int lastChildCenterY = -1;
-        int activeChildCenterY = -1;
-        int currentCatY = catY;
         for (Map.Entry<String, ConfigProcessor.ProcessedSubcategory> subEntry : visible) {
-            boolean inPath = activePath.size() >= depth && activePath.get(depth - 1).equals(subEntry.getKey());
-            boolean isDeepestSelected = inPath && activePath.size() == depth;
-            if (inPath) activeChildCenterY = y + 70 + currentCatY;
-
             int itemCenterY = y + 70 + currentCatY;
             if (firstChildCenterY == -1) firstChildCenterY = itemCenterY;
             lastChildCenterY = itemCenterY;
+            currentCatY += 13;
+            if (isPathExpanded(expandedPaths, subEntry.getKey(), depth) && !subEntry.getValue().subcategories.isEmpty()) {
+                currentCatY = renderSubTree(subEntry.getValue().subcategories, subEntry.getValue(), expandedPaths, depth + 1, currentCatY, y, innerLeft, fr);
+            }
+        }
+
+        if (!visible.isEmpty()) {
+            int trunkStart = parentCenterY + parentHeight / 2 + 3;
+            Gui.drawRect(lineX, trunkStart, lineX + 1, lastChildCenterY + 1, 0xff606060);
+        }
+
+        currentCatY = catY;
+        for (Map.Entry<String, ConfigProcessor.ProcessedSubcategory> subEntry : visible) {
+            boolean inPath = isPathExpanded(expandedPaths, subEntry.getKey(), depth);
+            boolean isDeepest = isPathDeepest(expandedPaths, subEntry.getKey(), depth);
+            int itemCenterY = y + 70 + currentCatY;
 
             int hColor = inPath ? 0xff00b8b8 : 0xff606060;
             Gui.drawRect(lineX, itemCenterY + 4, textBaseX - 2, itemCenterY + 5, hColor);
 
-            String name = isDeepestSelected
-                ? EnumChatFormatting.DARK_AQUA + "" + EnumChatFormatting.UNDERLINE + subEntry.getValue().name
-                : (inPath ? EnumChatFormatting.AQUA + subEntry.getValue().name : EnumChatFormatting.DARK_GRAY + subEntry.getValue().name);
-            fr.drawString(name, textBaseX, y + 70 + currentCatY, -1);
+            boolean hasChildren = !subEntry.getValue().subcategories.isEmpty();
+            String indicator = hasChildren ? (inPath ? "▼ " : "▶ ") : "  ";
+            String name = isDeepest ? EnumChatFormatting.DARK_AQUA + "" + EnumChatFormatting.UNDERLINE + subEntry.getValue().name : (inPath ? EnumChatFormatting.AQUA + subEntry.getValue().name : EnumChatFormatting.DARK_GRAY + subEntry.getValue().name);
+            String prefix = hasChildren ? (inPath ? EnumChatFormatting.GRAY.toString() : EnumChatFormatting.DARK_GRAY.toString()) : EnumChatFormatting.RESET.toString();
+            fr.drawString(prefix + indicator + name, textBaseX, y + 70 + currentCatY, -1);
             currentCatY += 13;
 
-            if (inPath && !subEntry.getValue().subcategories.isEmpty()) {
-                currentCatY = renderSubTree(subEntry.getValue().subcategories, subEntry.getValue(), activePath, depth + 1, currentCatY, y, innerLeft, fr);
+            if (inPath && hasChildren) {
+                currentCatY = renderSubTree(subEntry.getValue().subcategories, subEntry.getValue(), expandedPaths, depth + 1, currentCatY, y, innerLeft, fr);
             }
         }
-        if (!visible.isEmpty()) {
-            int trunkStart = parentCenterY + parentHeight / 2 + 3;
-            if (activeChildCenterY != -1) {
-                Gui.drawRect(lineX, trunkStart, lineX + 1, activeChildCenterY + 5, 0xff00b8b8);
-                if (activeChildCenterY < lastChildCenterY) {
-                    Gui.drawRect(lineX, activeChildCenterY + 5, lineX + 1, lastChildCenterY + 1, 0xff606060);
-                }
-            } else {
-                Gui.drawRect(lineX, trunkStart, lineX + 1, lastChildCenterY + 1, 0xff606060);
-            }
-        }
+
         return currentCatY;
     }
 
-    private List<Map.Entry<String, ConfigProcessor.ProcessedSubcategory>> getVisibleSubcategories(
-            LinkedHashMap<String, ConfigProcessor.ProcessedSubcategory> subs, Object parent, int depth) {
+    private List<Map.Entry<String, ConfigProcessor.ProcessedSubcategory>> getVisibleSubcategories(LinkedHashMap<String, ConfigProcessor.ProcessedSubcategory> subs, Object parent, int depth) {
         List<Map.Entry<String, ConfigProcessor.ProcessedSubcategory>> visible = new ArrayList<>();
 
         Set<String> matchedSubs = null;
         if (searchedSubcategories != null) {
             if (depth == 1) {
-                matchedSubs = searchedSubcategories.get(parent);
+                matchedSubs = searchedSubcategories.get((ConfigProcessor.ProcessedCategory) parent);
             } else if (searchedSubSubcategories != null && parent instanceof ConfigProcessor.ProcessedSubcategory) {
-                matchedSubs = searchedSubSubcategories.get(parent);
+                matchedSubs = searchedSubSubcategories.get((ConfigProcessor.ProcessedSubcategory) parent);
             }
         }
 
@@ -641,6 +615,12 @@ public class ConfigEditor extends GuiElement {
 
     public boolean mouseInput(int mouseX, int mouseY) {
         lastMouseX = mouseX;
+
+        if (!Mouse.getEventButtonState() && Mouse.getEventButton() == 0) {
+            isDraggingOptionsScroll = false;
+            isDraggingCategoryScroll = false;
+        }
+
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
         int width = scaledResolution.getScaledWidth();
         int height = scaledResolution.getScaledHeight();
@@ -658,6 +638,7 @@ public class ConfigEditor extends GuiElement {
         int innerBottom = y + ySize - 5 - innerPadding;
         int innerLeft = x + 189 + innerPadding;
         int innerRight = x + xSize - 5 - innerPadding;
+        float searchFieldCenterY = innerTop - (20 + innerPadding) / 2f;
 
         int dist = innerBottom - innerTop - 12;
         int optionsBarStartY = innerTop + 6 + (int) (dist * optionsBarStart);
@@ -665,45 +646,55 @@ public class ConfigEditor extends GuiElement {
         int optionsBarStartX = innerRight - 12;
         int optionsBarEndX = innerRight - 3;
 
-        int categoryY = -categoryScroll.getValue();
-        for (Map.Entry<String, ConfigProcessor.ProcessedCategory> _e : getCurrentConfigEditing().entrySet()) {
-            categoryY += 15;
-            if (_e.getKey().equals(selectedCategory)) {
-                ConfigProcessor.ProcessedCategory cat = processedConfig.get(_e.getKey());
-                if (cat != null) {
-                    categoryY += treeSubcategoryCount(cat.subcategories, cat, selectedSubcategoryPath, 1) * 13;
-                }
-            }
-        }
+        int categoryY = -categoryScroll.getValue() + computeCategoryHeight();
         int catDist = innerBottom - innerTop - 12;
         float catBarStart = categoryScroll.getValue() / (float) (categoryY + categoryScroll.getValue());
-        float categoryBarSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (categoryY + 5 + categoryScroll.getValue()));
+        categoryBarSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (categoryY + 5 + categoryScroll.getValue()));
         float catBarEnd = catBarStart + categoryBarSize;
         int categoryBarStartY = innerTop + 6 + (int) (catDist * catBarStart);
         int categoryBarEndY = innerTop + 6 + (int) (catDist * catBarEnd);
         int categoryBarStartX = x + innerPadding + 7;
         int categoryBarEndX = x + innerPadding + 12;
         keyboardScrollXCutoff = innerLeft - 10;
-        if (Mouse.getEventButtonState()) {
-            if ((mouseY < optionsBarStartY || mouseY > optionsBarEndY) && (mouseX >= optionsBarStartX && mouseX <= optionsBarEndX) && mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
-                optionsScroll.setTimeToReachTarget(200);
-                optionsScroll.resetTimer();
-                optionsScroll.setTarget(mouseY - innerTop);
+        if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0) {
+            if (mouseX >= optionsBarStartX && mouseX <= optionsBarEndX && mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
+                if (mouseY >= optionsBarStartY && mouseY <= optionsBarEndY) {
+                    isDraggingOptionsScroll = true;
+                    dragMouseStartY = mouseY;
+                    dragScrollStartValue = optionsScroll.getValue();
+                } else {
+                    int optionY = -optionsScroll.getValue() + computeOptionHeight();
+                    int visibleHeight = innerBottom - innerTop - 2;
+                    int maxScroll = Math.max(0, optionY + 5 + optionsScroll.getValue() - visibleHeight);
+                    int newScroll = Math.max(0, Math.min((int) ((mouseY - innerTop - 6) / (float) dist * (optionY + 5 + optionsScroll.getValue())), maxScroll));
+                    optionsScroll.setValue(newScroll);
+                    optionsScroll.setTarget(newScroll);
+                }
                 return true;
-            } else if ((mouseY < categoryBarStartY || mouseY > categoryBarEndY) && (mouseX >= categoryBarStartX && mouseX <= categoryBarEndX) && mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
-                categoryScroll.setTimeToReachTarget(200);
-                categoryScroll.resetTimer();
-                categoryScroll.setTarget(mouseY - innerTop);
+            }
+            if (mouseX >= categoryBarStartX && mouseX <= categoryBarEndX && mouseY > innerTop + 6 && mouseY < innerBottom - 6) {
+                if (mouseY >= categoryBarStartY && mouseY <= categoryBarEndY) {
+                    isDraggingCategoryScroll = true;
+                    dragMouseStartY = mouseY;
+                    dragScrollStartValue = categoryScroll.getValue();
+                } else {
+                    int catY = -categoryScroll.getValue() + computeCategoryHeight();
+                    int visibleHeight = innerBottom - innerTop - 2;
+                    int maxScroll = Math.max(0, catY + 5 + categoryScroll.getValue() - visibleHeight);
+                    int newScroll = Math.max(0, Math.min((int) ((mouseY - innerTop - 6) / (float) dist * (catY + 5 + categoryScroll.getValue())), maxScroll));
+                    categoryScroll.setValue(newScroll);
+                    categoryScroll.setTarget(newScroll);
+                }
                 return true;
             }
 
-            searchField.setFocus(mouseX >= innerRight - 20 && mouseX <= innerRight - 2 && mouseY >= innerTop - (20 + innerPadding) / 2 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2 + 9);
+            searchField.setFocus(mouseX >= innerRight - 20 && mouseX <= innerRight - 2 && mouseY >= searchFieldCenterY - 9 && mouseY <= searchFieldCenterY + 9);
 
             if (minimumSearchSize.getValue() > 1) {
                 int strLen = Minecraft.getMinecraft().fontRendererObj.getStringWidth(searchField.getText()) + 10;
                 int len = Math.max(strLen, minimumSearchSize.getValue());
 
-                if (mouseX >= innerRight - 25 - len && mouseX <= innerRight - 25 && mouseY >= innerTop - (20 + innerPadding) / 2 - 9 && mouseY <= innerTop - (20 + innerPadding) / 2 + 9) {
+                if (mouseX >= innerRight - 25 - len && mouseX <= innerRight - 25 && mouseY >= searchFieldCenterY - 9 && mouseY <= searchFieldCenterY + 9) {
                     String old = searchField.getText();
                     searchField.mouseClicked(mouseX, mouseY, Mouse.getEventButton());
 
@@ -721,34 +712,19 @@ public class ConfigEditor extends GuiElement {
                 int newTarget = categoryScroll.getTarget() - dWheel * 30;
                 if (newTarget < 0) newTarget = 0;
 
-                float catBarSize = 1;
-                int catY = -newTarget;
-                for (Map.Entry<String, ConfigProcessor.ProcessedCategory> entry : getCurrentConfigEditing().entrySet()) {
-                    if (getSelectedCategory() == null) setSelectedCategory(entry.getKey());
-
-                    catY += 15;
-                    if (entry.getKey().equals(selectedCategory)) {
-                        ConfigProcessor.ProcessedCategory cat = processedConfig.get(entry.getKey());
-                        if (cat != null) {
-                            catY += treeSubcategoryCount(cat.subcategories, cat, selectedSubcategoryPath, 1) * 13;
-                        }
-                    }
-                    if (catY > 0) {
-                        catBarSize = LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (catY + 5 + newTarget));
-                    }
-                }
-
+                int catContent = computeCategoryHeight();
+                int catY = -newTarget + catContent;
+                float catBarSize = catY > 0 ? LerpUtils.clampZeroOne((float) (innerBottom - innerTop - 2) / (catY + 5 + newTarget)) : 1;
                 int barMax = (int) Math.floor((catY + 5 + newTarget) - catBarSize * (catY + 5 + newTarget));
                 if (newTarget > barMax) newTarget = barMax;
-                categoryScroll.resetTimer();
-                categoryScroll.setTarget(newTarget);
+                categoryScroll.setValue(newTarget);
             } else {
                 int newTarget = optionsScroll.getTarget() - dWheel * 30;
                 if (newTarget < 0) newTarget = 0;
 
                 float barSize = 1;
                 int optionY = -newTarget;
-                if (getSelectedCategory() != null && getCurrentConfigEditing() != null && getCurrentConfigEditing().containsKey(getSelectedCategory())) {
+                if (getSelectedCategory() != null && getCurrentConfigEditing().containsKey(getSelectedCategory())) {
                     ConfigProcessor.ProcessedCategory cat = getCurrentConfigEditing().get(getSelectedCategory());
                     HashMap<Integer, Integer> activeAccordions = new HashMap<>();
                     for (ConfigProcessor.ProcessedOption option : getOptionsInCategory(cat).values()) {
@@ -772,114 +748,79 @@ public class ConfigEditor extends GuiElement {
 
                 int barMax = (int) Math.floor((optionY + 5 + newTarget) - barSize * (optionY + 5 + newTarget));
                 if (newTarget > barMax) newTarget = barMax;
-                optionsScroll.setTimeToReachTarget(Math.min(150, Math.max(10, 5 * Math.abs(newTarget - optionsScroll.getValue()))));
+                optionsScroll.setValue(newTarget);
                 optionsScroll.resetTimer();
-                optionsScroll.setTarget(newTarget);
             }
         } else if (Mouse.getEventButtonState() && Mouse.getEventButton() == 0) {
-            if (getCurrentConfigEditing() != null) {
-                FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
-                int catYBasis = x + 4 + innerPadding + 9 + BASE_INDENT;
-                int catY = -categoryScroll.getValue();
-                for (Map.Entry<String, ConfigProcessor.ProcessedCategory> entry : getCurrentConfigEditing().entrySet()) {
-                    if (getSelectedCategory() == null) setSelectedCategory(entry.getKey());
+            int catY = -categoryScroll.getValue();
+            for (Map.Entry<String, ConfigProcessor.ProcessedCategory> entry : getCurrentConfigEditing().entrySet()) {
+                if (getSelectedCategory() == null) setSelectedCategory(entry.getKey());
 
-                    String ck = entry.getKey();
-                    int textX = catYBasis;
-                    int textW = fr.getStringWidth(entry.getValue().name);
-                    if (mouseX >= textX - 4 && mouseX <= textX + textW + 4 && mouseY >= y + 70 + catY - 7 && mouseY <= y + 70 + catY + 7) {
-                        toggleTreePath(ck, Collections.emptyList());
-                        return true;
-                    }
-                    catY += 15;
+                String ck = entry.getKey();
+                if (mouseY >= y + 70 + catY - 7 && mouseY <= y + 70 + catY + 7 && mouseX >= x + innerPadding + 7 && mouseX <= innerLeft - 10) {
+                    toggleTreePath(ck, Collections.emptyList());
+                    return true;
+                }
+                catY += 15;
 
-                    if (ck.equals(selectedCategory)) {
-                        List<String> beforePath = new ArrayList<>(selectedSubcategoryPath);
-                        catY = handleSubTreeClick(entry.getValue().subcategories, entry.getValue(), new ArrayList<>(), 1, catY, mouseX, mouseY, x, y, ck, catYBasis);
-                        if (!selectedSubcategoryPath.equals(beforePath)) return true;
-                    }
+                if (ck.equals(selectedCategory)) {
+                    int beforeExpandedSize = getExpandedPaths(ck).size();
+                    List<String> beforePath = new ArrayList<>(selectedSubcategoryPath);
+                    catY = handleSubTreeClick(entry.getValue().subcategories, entry.getValue(), new ArrayList<>(), 1, catY, mouseX, mouseY, y, ck, innerLeft, x, innerPadding);
+                    if (!selectedSubcategoryPath.equals(beforePath) || getExpandedPaths(ck).size() != beforeExpandedSize) return true;
                 }
             }
 
             for (int socialIndex = 0; socialIndex < socialsLink.length; socialIndex++) {
                 int socialLeft = x + xSize - 23 - 18 * socialIndex;
                 if (mouseX >= socialLeft && mouseX <= socialLeft + 16 && mouseY >= y + 6 && mouseY <= y + 23) {
-                    try { Desktop.getDesktop().browse(new URI(socialsLink[socialIndex])); } catch (Exception ignored) {}
+                    try {
+                        Desktop.getDesktop().browse(new URI(socialsLink[socialIndex]));
+                    } catch (Exception ignored) {
+                    }
                     return true;
                 }
             }
         }
 
-        int optionY = -optionsScroll.getValue();
-        if (getSelectedCategory() != null && getCurrentConfigEditing() != null && getCurrentConfigEditing().containsKey(getSelectedCategory())) {
+        if (getSelectedCategory() != null && getCurrentConfigEditing().containsKey(getSelectedCategory())) {
             int optionWidthDefault = innerRight - innerLeft - 20;
             ConfigProcessor.ProcessedCategory cat = getCurrentConfigEditing().get(getSelectedCategory());
-            HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-            for (ConfigProcessor.ProcessedOption option : getOptionsInCategory(cat).values()) {
-                int optionWidth = optionWidthDefault;
-                if (option.accordionId >= 0) {
-                    if (!activeAccordions.containsKey(option.accordionId)) continue;
-                    optionWidth = optionWidthDefault - (2 * innerPadding) * (activeAccordions.get(option.accordionId) + 1);
-                }
-
-                GuiOptionEditor editor = option.editor;
-                if (editor == null) continue;
-                if (editor instanceof GuiOptionEditorAccordion) {
-                    GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
-                    if (accordion.getToggled()) {
-                        int accordionDepth = option.accordionId >= 0 ? activeAccordions.get(option.accordionId) + 1 : 0;
-                        activeAccordions.put(accordion.getAccordionId(), accordionDepth);
-                    }
-                }
-                if (editor.mouseInputOverlay((innerLeft + innerRight - optionWidth) / 2 - 5, innerTop + 5 + optionY, optionWidth, mouseX, mouseY)) {
+            boolean[] consumed = {false};
+            forEachOption(cat, -optionsScroll.getValue(), innerLeft, innerRight, innerTop, innerBottom, innerPadding, optionWidthDefault, (ed, edX, edY, edW) -> {
+                if (ed.mouseInputOverlay(edX, edY, edW, mouseX, mouseY)) {
+                    consumed[0] = true;
                     return true;
                 }
-                optionY += editor.getHeight() + 5;
-            }
+                return false;
+            });
+            if (consumed[0]) return true;
         }
 
         if (mouseX > innerLeft && mouseX < innerRight && mouseY > innerTop && mouseY < innerBottom) {
-            optionY = -optionsScroll.getValue();
-            if (getSelectedCategory() != null && getCurrentConfigEditing() != null && getCurrentConfigEditing().containsKey(getSelectedCategory())) {
+            if (getSelectedCategory() != null && getCurrentConfigEditing().containsKey(getSelectedCategory())) {
                 int optionWidthDefault = innerRight - innerLeft - 20;
                 ConfigProcessor.ProcessedCategory cat = getCurrentConfigEditing().get(getSelectedCategory());
-                HashMap<Integer, Integer> activeAccordions = new HashMap<>();
-                for (ConfigProcessor.ProcessedOption option : getOptionsInCategory(cat).values()) {
-                    int optionWidth = optionWidthDefault;
-                    if (option.accordionId >= 0) {
-                        if (!activeAccordions.containsKey(option.accordionId)) continue;
-                        optionWidth = optionWidthDefault - (2 * innerPadding) * (activeAccordions.get(option.accordionId) + 1);
-                    }
-
-                    GuiOptionEditor editor = option.editor;
-                    if (editor == null) continue;
-                    if (editor instanceof GuiOptionEditorAccordion) {
-                        GuiOptionEditorAccordion accordion = (GuiOptionEditorAccordion) editor;
-                        if (accordion.getToggled()) {
-                            int accordionDepth = option.accordionId >= 0 ? activeAccordions.get(option.accordionId) + 1 : 0;
-                            activeAccordions.put(accordion.getAccordionId(), accordionDepth);
-                        }
-                    }
-                    if (editor.mouseInput((innerLeft + innerRight - optionWidth) / 2 - 5, innerTop + 5 + optionY, optionWidth, mouseX, mouseY)) {
+                boolean[] consumed = {false};
+                forEachOption(cat, -optionsScroll.getValue(), innerLeft, innerRight, innerTop, innerBottom, innerPadding, optionWidthDefault, (ed, edX, edY, edW) -> {
+                    if (ed.mouseInput(edX, edY, edW, mouseX, mouseY)) {
+                        consumed[0] = true;
                         return true;
                     }
-                    optionY += editor.getHeight() + 5;
-                }
+                    return false;
+                });
+                if (consumed[0]) return true;
             }
         }
 
         return true;
     }
 
-    private int handleSubTreeClick(LinkedHashMap<String, ConfigProcessor.ProcessedSubcategory> subs,
-                                   Object parent, List<String> parentPath, int depth, int catY,
-                                   int mouseX, int mouseY, int x, int y, String catKey, int catYBasis) {
+    private int handleSubTreeClick(LinkedHashMap<String, ConfigProcessor.ProcessedSubcategory> subs, Object parent, List<String> parentPath, int depth, int catY, int mouseX, int mouseY, int y, String catKey, int innerLeft, int x, int innerPadding) {
         List<Map.Entry<String, ConfigProcessor.ProcessedSubcategory>> visible = getVisibleSubcategories(subs, parent, depth);
-        FontRenderer fr = Minecraft.getMinecraft().fontRendererObj;
+        Set<List<String>> expandedPaths = getExpandedPaths(catKey);
         for (Map.Entry<String, ConfigProcessor.ProcessedSubcategory> subEntry : visible) {
-            int textX = catYBasis + TREE_INDENT * depth;
-            int textW = fr.getStringWidth(subEntry.getValue().name);
-            if (mouseX >= textX - 4 && mouseX <= textX + textW + 4 && mouseY >= y + 70 + catY - 8 && mouseY <= y + 70 + catY + 8) {
+            if (mouseY >= y + 70 + catY - 8 && mouseY <= y + 70 + catY + 8 && mouseX >= x + innerPadding + 7 && mouseX <= innerLeft - 10) {
                 List<String> targetPath = new ArrayList<>(parentPath);
                 targetPath.add(subEntry.getKey());
                 toggleTreePath(catKey, targetPath);
@@ -888,25 +829,70 @@ public class ConfigEditor extends GuiElement {
             }
             catY += 13;
 
-            if (selectedSubcategoryPath.size() >= depth && selectedSubcategoryPath.get(depth - 1).equals(subEntry.getKey()) && !subEntry.getValue().subcategories.isEmpty()) {
+            if (isPathExpanded(expandedPaths, subEntry.getKey(), depth) && !subEntry.getValue().subcategories.isEmpty()) {
                 List<String> childPath = new ArrayList<>(parentPath);
                 childPath.add(subEntry.getKey());
-                catY = handleSubTreeClick(subEntry.getValue().subcategories, subEntry.getValue(), childPath, depth + 1, catY, mouseX, mouseY, x, y, catKey, catYBasis);
+                catY = handleSubTreeClick(subEntry.getValue().subcategories, subEntry.getValue(), childPath, depth + 1, catY, mouseX, mouseY, y, catKey, innerLeft, x, innerPadding);
             }
         }
         return catY;
     }
 
-    private int treeSubcategoryCount(LinkedHashMap<String, ConfigProcessor.ProcessedSubcategory> subs,
-                                     Object parent, List<String> activePath, int depth) {
+    private Set<List<String>> getExpandedPaths(String catKey) {
+        return expandedSubcategoryPaths.computeIfAbsent(catKey, k -> new HashSet<>());
+    }
+
+    private boolean isPathExpanded(Set<List<String>> paths, String key, int depth) {
+        if (paths == null) return false;
+        for (List<String> path : paths) {
+            if (path.size() >= depth && path.get(depth - 1).equals(key)) return true;
+        }
+        return false;
+    }
+
+    private boolean isPathDeepest(Set<List<String>> paths, String key, int depth) {
+        if (paths == null) return false;
+        for (List<String> path : paths) {
+            if (path.size() == depth && path.get(depth - 1).equals(key)) return true;
+        }
+        return false;
+    }
+
+    private int treeSubcategoryCount(LinkedHashMap<String, ConfigProcessor.ProcessedSubcategory> subs, Object parent, Set<List<String>> expandedPaths, int depth) {
         int count = 0;
         for (Map.Entry<String, ConfigProcessor.ProcessedSubcategory> subEntry : getVisibleSubcategories(subs, parent, depth)) {
             count++;
-            if (activePath.size() >= depth && activePath.get(depth - 1).equals(subEntry.getKey()) && !subEntry.getValue().subcategories.isEmpty()) {
-                count += treeSubcategoryCount(subEntry.getValue().subcategories, subEntry.getValue(), activePath, depth + 1);
+            if (isPathExpanded(expandedPaths, subEntry.getKey(), depth) && !subEntry.getValue().subcategories.isEmpty()) {
+                count += treeSubcategoryCount(subEntry.getValue().subcategories, subEntry.getValue(), expandedPaths, depth + 1);
             }
         }
         return count;
+    }
+
+    private int computeCategoryHeight() {
+        int h = 5;
+        for (Map.Entry<String, ConfigProcessor.ProcessedCategory> entry : getCurrentConfigEditing().entrySet()) {
+            h += 15;
+            if (entry.getKey().equals(selectedCategory)) {
+                ConfigProcessor.ProcessedCategory cat = processedConfig.get(entry.getKey());
+                if (cat != null) {
+                    Set<List<String>> paths = getExpandedPaths(selectedCategory);
+                    h += treeSubcategoryCount(cat.subcategories, cat, paths, 1) * 13;
+                }
+            }
+        }
+        return h;
+    }
+
+    private int computeOptionHeight() {
+        int h = 5;
+        if (getSelectedCategory() != null && getCurrentConfigEditing().containsKey(getSelectedCategory())) {
+            ConfigProcessor.ProcessedCategory cat = getCurrentConfigEditing().get(getSelectedCategory());
+            for (ConfigProcessor.ProcessedOption option : getOptionsInCategory(cat).values()) {
+                h += option.editor.getHeight() + 5;
+            }
+        }
+        return h;
     }
 
     public boolean keyboardInput() {
@@ -928,7 +914,7 @@ public class ConfigEditor extends GuiElement {
             if (!searchField.getText().equals(old)) search();
         }
 
-        if (getSelectedCategory() != null && getCurrentConfigEditing() != null && getCurrentConfigEditing().containsKey(getSelectedCategory())) {
+        if (getSelectedCategory() != null && getCurrentConfigEditing().containsKey(getSelectedCategory())) {
             ConfigProcessor.ProcessedCategory cat = getCurrentConfigEditing().get(getSelectedCategory());
             HashMap<Integer, Integer> activeAccordions = new HashMap<>();
             for (ConfigProcessor.ProcessedOption option : getOptionsInCategory(cat).values()) {
@@ -964,15 +950,15 @@ public class ConfigEditor extends GuiElement {
 
         if (searchField.getFocus()) {
             int heldKey = 0;
-            if      (Keyboard.isKeyDown(Keyboard.KEY_BACK))   heldKey = Keyboard.KEY_BACK;
-            else if (Keyboard.isKeyDown(Keyboard.KEY_DELETE))  heldKey = Keyboard.KEY_DELETE;
+            if (Keyboard.isKeyDown(Keyboard.KEY_BACK)) heldKey = Keyboard.KEY_BACK;
+            else if (Keyboard.isKeyDown(Keyboard.KEY_DELETE)) heldKey = Keyboard.KEY_DELETE;
 
             if (heldKey != 0) {
                 long now = System.currentTimeMillis();
                 if (searchRepeatKey != heldKey) {
-                    searchRepeatKey   = heldKey;
+                    searchRepeatKey = heldKey;
                     searchRepeatStart = now;
-                    searchRepeatLast  = now;
+                    searchRepeatLast = now;
                 } else if (now - searchRepeatStart >= SEARCH_REPEAT_DELAY_MS && now - searchRepeatLast >= SEARCH_REPEAT_RATE_MS) {
                     searchRepeatLast = now;
                     String old = searchField.getText();
@@ -983,5 +969,67 @@ public class ConfigEditor extends GuiElement {
                 searchRepeatKey = 0;
             }
         }
+    }
+
+    private void handleDragScroll(int mouseX, int mouseY) {
+        if (isDraggingOptionsScroll) {
+            if (Mouse.isButtonDown(0)) {
+                ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+                int sh = sr.getScaledHeight();
+                int ySize = Math.min(sh - 100 / sr.getScaleFactor(), 400);
+                int y = (sh - ySize) / 2;
+                int adjScaleFactor = Math.max(2, sr.getScaleFactor());
+                int innerPadding = 20 / adjScaleFactor;
+                int innerTop = y + 49 + innerPadding;
+                int innerBottom = y + ySize - 5 - innerPadding;
+                int dist = innerBottom - innerTop - 12;
+                float visibleHeight = innerBottom - innerTop - 2;
+                float totalContent = visibleHeight / Math.max(0.01f, optionsBarend - optionsBarStart);
+                float scrollDelta = (mouseY - dragMouseStartY) * totalContent / dist;
+                int maxScroll = Math.max(0, (int) (totalContent - visibleHeight));
+                int newScroll = Math.max(0, Math.min((int) (dragScrollStartValue + scrollDelta), maxScroll));
+                optionsScroll.setValue(newScroll);
+                optionsScroll.setTarget(newScroll);
+            } else {
+                isDraggingOptionsScroll = false;
+            }
+        }
+        if (isDraggingCategoryScroll) {
+            if (Mouse.isButtonDown(0)) {
+                ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
+                int sw = sr.getScaledWidth();
+                int sh = sr.getScaledHeight();
+                int xSize = Math.min(sw - 100 / sr.getScaleFactor(), 540);
+                int ySize = Math.min(sh - 100 / sr.getScaleFactor(), 400);
+                int x = (sw - xSize) / 2;
+                int y = (sh - ySize) / 2;
+                int adjScaleFactor = Math.max(2, sr.getScaleFactor());
+                int innerPadding = 20 / adjScaleFactor;
+                int innerTop = y + 49 + innerPadding;
+                int innerBottom = y + ySize - 5 - innerPadding;
+                int innerLeft = x + 189 + innerPadding;
+                keyboardScrollXCutoff = innerLeft - 10;
+                int catBarStartX = x + innerPadding + 7;
+                int catBarEndX = x + innerPadding + 12;
+
+                if (mouseX >= catBarStartX && mouseX <= catBarEndX) {
+                    int dist = innerBottom - innerTop - 12;
+                    float visibleHeight = innerBottom - innerTop - 2;
+                    float totalContent = visibleHeight / Math.max(0.01f, categoryBarSize);
+                    float scrollDelta = (mouseY - dragMouseStartY) * totalContent / dist;
+                    int maxScroll = Math.max(0, (int) (totalContent - visibleHeight));
+                    int newScroll = Math.max(0, Math.min((int) (dragScrollStartValue + scrollDelta), maxScroll));
+                    categoryScroll.setValue(newScroll);
+                    categoryScroll.setTarget(newScroll);
+                }
+            } else {
+                isDraggingCategoryScroll = false;
+            }
+        }
+    }
+
+    @FunctionalInterface
+    private interface OptionCallback {
+        boolean apply(GuiOptionEditor editor, int x, int y, int width);
     }
 }

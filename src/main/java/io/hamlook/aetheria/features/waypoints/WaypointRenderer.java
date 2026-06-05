@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.features.waypoints;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.editors.ChromaColour;
+import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour;
 import io.hamlook.aetheria.init.RegisterEvents;
 import io.hamlook.aetheria.utils.render.WorldRenderUtils;
 import net.minecraft.client.Minecraft;

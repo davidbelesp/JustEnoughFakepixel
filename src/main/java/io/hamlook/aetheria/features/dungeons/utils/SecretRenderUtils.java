@@ -3,7 +3,7 @@ package io.hamlook.aetheria.features.dungeons.utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.editors.ChromaColour;
+import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour;
 import io.hamlook.aetheria.events.ActionBarUpdateEvent;
 import io.hamlook.aetheria.events.BlockBreakEvent;
 import io.hamlook.aetheria.features.waypoints.WaypointRenderer;
@@ -25,8 +25,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.opengl.GL11;
 import java.awt.Color;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

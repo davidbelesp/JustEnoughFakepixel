@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.features.qol
 
 import io.hamlook.aetheria.core.ATHRConfig
-import io.hamlook.aetheria.core.config.editors.ChromaColour
+import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour
 import io.hamlook.aetheria.init.RegisterEvents
 import io.hamlook.aetheria.utils.chat.ChatUtils
 import io.hamlook.aetheria.utils.data.SkyblockData

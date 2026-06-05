@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.utils.render;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.editors.ChromaColour;
+import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour;
 import io.hamlook.aetheria.features.misc.SearchBar;
 import io.hamlook.aetheria.utils.ColorUtils;
 import net.minecraft.client.Minecraft;

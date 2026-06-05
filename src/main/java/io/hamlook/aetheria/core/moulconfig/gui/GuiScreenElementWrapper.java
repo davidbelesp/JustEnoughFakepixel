@@ -1,4 +1,7 @@
-package io.hamlook.aetheria.core.config.gui;
+// SPDX-License-Identifier: LGPL-3.0-only
+// Derived from MoulConfig (https://github.com/NotEnoughUpdates/MoulConfig)
+
+package io.hamlook.aetheria.core.moulconfig.gui;
 
 import io.hamlook.aetheria.core.ATHRConfig;
 import net.minecraft.client.gui.GuiScreen;

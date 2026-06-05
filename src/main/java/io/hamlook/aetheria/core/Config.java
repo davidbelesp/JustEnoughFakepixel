@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.core;
 
 import com.google.gson.annotations.Expose;
-import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations.Category;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigAnnotations.Category;
 import io.hamlook.aetheria.core.features.about.About;
 import io.hamlook.aetheria.core.features.chat.ChatConfig;
 import io.hamlook.aetheria.core.features.cosmetics.Cosmetics;
@@ -123,6 +123,8 @@ public class Config {
             case "openLicenseMoulConfig": openUrl("https://github.com/NotEnoughUpdates/MoulConfig"); break;
             case "openLicenseLombok": openUrl("https://projectlombok.org/"); break;
             case "openLicenseJbAnnotations": openUrl("https://github.com/JetBrains/java-annotations"); break;
+            case "openModrinth": openUrl("https://modrinth.com/mod/aetheriamod"); break;
+            case "openSkyAtlas": openUrl("https://skyatlas.qzz.io"); break;
         }
     }
 }

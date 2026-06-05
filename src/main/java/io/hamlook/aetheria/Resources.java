@@ -1,9 +1,9 @@
-package io.hamlook.aetheria.core.config.gui;
+package io.hamlook.aetheria;
 
 import net.minecraft.util.ResourceLocation;
 
 
-public final class GuiTextures {
+public final class Resources {
 
     public static final ResourceLocation DISCORD = new ResourceLocation("aetheria:discord.png");
     public static final ResourceLocation GITHUB = new ResourceLocation("aetheria:github.png");
@@ -67,7 +67,7 @@ public final class GuiTextures {
             STORAGE_SLOT_TEXTURES[i] = new ResourceLocation("aetheria", "textures/gui/containers/style" + i + "_slot.png");
         }
     }
-    private GuiTextures() {
+    private Resources() {
     }
 
     public static ResourceLocation betterContainersBg(int styleIndex) {

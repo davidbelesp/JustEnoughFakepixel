@@ -1,6 +1,9 @@
-package io.hamlook.aetheria.core.config.editors;
+// SPDX-License-Identifier: LGPL-3.0-only
+// Derived from MoulConfig (https://github.com/NotEnoughUpdates/MoulConfig)
 
-import io.hamlook.aetheria.core.config.gui.config.ConfigProcessor;
+package io.hamlook.aetheria.core.moulconfig.editors;
+
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigProcessor;
 import io.hamlook.aetheria.utils.LerpUtils;
 import io.hamlook.aetheria.utils.render.RenderUtils;
 import io.hamlook.aetheria.utils.render.TextRenderUtils;
@@ -17,8 +20,8 @@ import org.lwjgl.opengl.GL11;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.hamlook.aetheria.core.config.gui.GuiTextures.DELETE;
-import static io.hamlook.aetheria.core.config.gui.GuiTextures.button_tex;
+import static io.hamlook.aetheria.Resources.DELETE;
+import static io.hamlook.aetheria.Resources.button_tex;
 
 public class GuiOptionEditorDraggableList extends GuiOptionEditor {
 

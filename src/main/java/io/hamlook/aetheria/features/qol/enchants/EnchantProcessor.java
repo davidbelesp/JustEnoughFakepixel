@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.editors.ChromaColour;
+import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour;
 import io.hamlook.aetheria.init.RegisterEvents;
 import io.hamlook.aetheria.repo.ATHRRepo;
 import io.hamlook.aetheria.repo.RepoHandler;

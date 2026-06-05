@@ -2,7 +2,7 @@ package io.hamlook.aetheria.features.qol;
 
 import io.hamlook.aetheria.DebugLogger;
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.utils.data.SkyblockData;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
@@ -53,7 +53,7 @@ public final class BetterContainers {
     private static int currentStyle() {
         if (ATHRConfig.feature == null) return 0;
         int s = ATHRConfig.feature.qol.betterContainers.style;
-        return Math.max(0, Math.min(GuiTextures.BETTER_CONTAINERS_STYLE_COUNT - 1, s));
+        return Math.max(0, Math.min(Resources.BETTER_CONTAINERS_STYLE_COUNT - 1, s));
     }
 
     public boolean tryBindTexture(TextureManager tm, ResourceLocation original) {
@@ -74,8 +74,8 @@ public final class BetterContainers {
             return false;
         }
 
-        mc.getTextureManager().loadTexture(GuiTextures.BETTER_CONTAINERS_DYNAMIC, dynamicTexture);
-        mc.getTextureManager().bindTexture(GuiTextures.BETTER_CONTAINERS_DYNAMIC);
+        mc.getTextureManager().loadTexture(Resources.BETTER_CONTAINERS_DYNAMIC, dynamicTexture);
+        mc.getTextureManager().bindTexture(Resources.BETTER_CONTAINERS_DYNAMIC);
         return true;
     }
 
@@ -101,8 +101,8 @@ public final class BetterContainers {
         if (imagesLoaded && style == lastLoadedStyle) return;
         imagesLoaded = false;
         try {
-            imgBase = read(GuiTextures.betterContainersBg(style));
-            imgSlot = read(GuiTextures.betterContainersSlot(style));
+            imgBase = read(Resources.betterContainersBg(style));
+            imgSlot = read(Resources.betterContainersSlot(style));
             imagesLoaded = imgBase != null && imgSlot != null;
             lastLoadedStyle = style;
         } catch (Exception e) {

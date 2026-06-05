@@ -1,8 +1,11 @@
-package io.hamlook.aetheria.core.config.editors;
+// SPDX-License-Identifier: LGPL-3.0-only
+// Derived from MoulConfig (https://github.com/NotEnoughUpdates/MoulConfig)
 
-import io.hamlook.aetheria.core.config.gui.GuiElementTextField;
-import io.hamlook.aetheria.core.config.gui.config.ConfigProcessor;
-import io.hamlook.aetheria.core.config.gui.GuiElementSlider;
+package io.hamlook.aetheria.core.moulconfig.editors;
+
+import io.hamlook.aetheria.core.moulconfig.gui.GuiElementTextField;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigProcessor;
+import io.hamlook.aetheria.core.moulconfig.gui.GuiElementSlider;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;

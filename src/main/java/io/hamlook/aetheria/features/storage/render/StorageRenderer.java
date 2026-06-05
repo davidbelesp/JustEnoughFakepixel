@@ -1,6 +1,7 @@
 package io.hamlook.aetheria.features.storage.render;
 
 import io.hamlook.aetheria.core.ATHRConfig;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import io.hamlook.aetheria.features.misc.SearchBar;
 import io.hamlook.aetheria.features.storage.StorageManager;
@@ -22,8 +23,6 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 import java.util.LinkedHashMap;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
-
 public class StorageRenderer extends Gui {
 
     private static final int PADDING = 5;
@@ -37,15 +36,15 @@ public class StorageRenderer extends Gui {
     private static final int SLOT_SIZE = 18;
     private static final int SLOTS_PER_ROW = 9;
 
-    /** Number of bundled overlay styles – mirrors {@link GuiTextures#STORAGE_STYLE_COUNT}. */
-    public static final int STYLE_COUNT = GuiTextures.STORAGE_STYLE_COUNT;
+    /** Number of bundled overlay styles – mirrors {@link Resources#STORAGE_STYLE_COUNT}. */
+    public static final int STYLE_COUNT = Resources.STORAGE_STYLE_COUNT;
 
     private ResourceLocation getContainerBg() {
-        return GuiTextures.storageBackground(ATHRConfig.feature.storage.overlayStyle);
+        return Resources.storageBackground(ATHRConfig.feature.storage.overlayStyle);
     }
 
     private ResourceLocation getSlotTexture() {
-        return GuiTextures.storageSlot(ATHRConfig.feature.storage.overlayStyle);
+        return Resources.storageSlot(ATHRConfig.feature.storage.overlayStyle);
     }
 
     private final LinkedHashMap<String, SContainer> containers;

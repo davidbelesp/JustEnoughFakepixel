@@ -1,5 +1,9 @@
-package io.hamlook.aetheria.core.config.gui;
+// SPDX-License-Identifier: LGPL-3.0-only
+// Derived from MoulConfig (https://github.com/NotEnoughUpdates/MoulConfig)
 
+package io.hamlook.aetheria.core.moulconfig.gui;
+
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.utils.LerpUtils;
 import io.hamlook.aetheria.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
@@ -40,10 +44,10 @@ public class GuiElementBoolean extends GuiElement {
     @Override
     public void render() {
         GlStateManager.color(1, 1, 1, 1);
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.BAR);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.BAR);
         RenderUtils.drawTexturedRect(x, y, xSize, ySize);
 
-        ResourceLocation buttonLoc = GuiTextures.ON;
+        ResourceLocation buttonLoc = Resources.ON;
         long currentMillis = System.currentTimeMillis();
         long deltaMillis = currentMillis - lastMillis;
         lastMillis = currentMillis;
@@ -65,10 +69,10 @@ public class GuiElementBoolean extends GuiElement {
         }
 
         int anim = (int) (LerpUtils.sigmoidZeroOne(this.animation / 36f) * 36);
-        if      (anim < 3)  buttonLoc = GuiTextures.OFF;
-        else if (anim < 13) buttonLoc = GuiTextures.ONE;
-        else if (anim < 23) buttonLoc = GuiTextures.TWO;
-        else if (anim < 33) buttonLoc = GuiTextures.THREE;
+        if      (anim < 3)  buttonLoc = Resources.OFF;
+        else if (anim < 13) buttonLoc = Resources.ONE;
+        else if (anim < 23) buttonLoc = Resources.TWO;
+        else if (anim < 33) buttonLoc = Resources.THREE;
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(buttonLoc);
         RenderUtils.drawTexturedRect(x + anim, y, 12, 14);

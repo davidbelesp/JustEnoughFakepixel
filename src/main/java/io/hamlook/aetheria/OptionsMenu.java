@@ -1,7 +1,6 @@
 package io.hamlook.aetheria;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
 import io.hamlook.aetheria.utils.render.RenderUtils;
 import io.hamlook.aetheria.features.capes.ui.CapeSelectorGUI;
 import io.hamlook.aetheria.repo.ATHRRepo;
@@ -35,7 +34,7 @@ public class OptionsMenu extends GuiScreen {
     // Social icon strip
     private static final int ICON_SIZE = 24;
     private static final int ICON_GAP = 10;
-    private static final ResourceLocation[] SOCIAL_ICONS = {GuiTextures.DISCORD, GuiTextures.GITHUB, GuiTextures.MODRINTH,GuiTextures.SKYATLAS};
+    private static final ResourceLocation[] SOCIAL_ICONS = {Resources.DISCORD, Resources.GITHUB, Resources.MODRINTH, Resources.SKYATLAS};
     private static final String[] SOCIAL_URLS = {"https://discord.gg/HHf5yqSy9R", "https://github.com/aetheria-org/Aetheria", "https://modrinth.com/mod/aetheriamod","https://skyatlas.qzz.io"};
 
     private final List<Particle> particles = new ArrayList<>();

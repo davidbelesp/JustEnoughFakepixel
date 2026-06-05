@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.features.scoreboard;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.editors.ChromaColour;
+import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour;
 import io.hamlook.aetheria.utils.Position;
 import io.hamlook.aetheria.features.mining.fetchur.FetchurData;
 import io.hamlook.aetheria.init.RegisterEvents;
@@ -11,7 +11,6 @@ import io.hamlook.aetheria.utils.data.SkyblockData;
 import io.hamlook.aetheria.utils.data.TablistParser;
 import io.hamlook.aetheria.utils.overlay.Overlay;
 import io.hamlook.aetheria.utils.overlay.OverlayUtils;
-import io.hamlook.aetheria.features.storage.StorageManager;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;

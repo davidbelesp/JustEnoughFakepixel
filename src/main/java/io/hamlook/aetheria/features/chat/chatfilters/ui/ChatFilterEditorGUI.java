@@ -1,6 +1,6 @@
 package io.hamlook.aetheria.features.chat.chatfilters.ui;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.features.chat.chatfilters.ChatFilter;
 import io.hamlook.aetheria.features.chat.chatfilters.ChatFilterManager;
 import io.hamlook.aetheria.features.chat.chatfilters.vars.FilterAction;
@@ -294,7 +294,7 @@ public class ChatFilterEditorGUI extends ChatFilterBaseGUI {
         drawDefaultBackground();
 
         GlStateManager.color(0.18f, 0.18f, 0.18f, 1f);
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), boxX, boxY, boxW, boxH, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), boxX, boxY, boxW, boxH, 6, 18);
         GlStateManager.color(1f, 1f, 1f, 1f);
 
         if (previewDirty) {
@@ -322,7 +322,7 @@ public class ChatFilterEditorGUI extends ChatFilterBaseGUI {
         GlStateManager.color(0.12f, 0.12f, 0.12f, 1f);
 
         // Left: word list area
-        NineSliceUtils.draw(GuiTextures.storageBackground(1),
+        NineSliceUtils.draw(Resources.storageBackground(1),
                 left.x - pad, left.y - pad,
                 left.width + pad * 2, left.height + pad * 2,
                 6, 18);
@@ -330,13 +330,13 @@ public class ChatFilterEditorGUI extends ChatFilterBaseGUI {
         // Right: settings section (match/case/action/custom)
         int settingsTop = secMatchY() - getScaledY(4);
         int settingsBot = secPreviewY() - getScaledY(4);
-        NineSliceUtils.draw(GuiTextures.storageBackground(1),
+        NineSliceUtils.draw(Resources.storageBackground(1),
                 right.x - pad, settingsTop,
                 right.width + pad * 2, settingsBot - settingsTop,
                 6, 18);
 
         // Right: preview section
-        NineSliceUtils.draw(GuiTextures.storageBackground(1),
+        NineSliceUtils.draw(Resources.storageBackground(1),
                 right.x - pad, settingsBot,
                 right.width + pad * 2, (bottomBtnY() - getScaledY(4)) - settingsBot,
                 6, 18);
@@ -461,7 +461,7 @@ public class ChatFilterEditorGUI extends ChatFilterBaseGUI {
 
         for (String word : words) {
             GlStateManager.color(0.22f, 0.22f, 0.22f, 1f);
-            NineSliceUtils.draw(GuiTextures.storageBackground(1), layout.x, curY + getScaledY(3), itemW, getScaledY(32), 6, 18);
+            NineSliceUtils.draw(Resources.storageBackground(1), layout.x, curY + getScaledY(3), itemW, getScaledY(32), 6, 18);
             GlStateManager.color(1f, 1f, 1f, 1f);
             TextRenderUtils.drawCenteredStringScaleAware(word, layout.x + (itemW - delW - getScaledX(4)) / 2f, curY + getScaledY(19), textScale, false);
             new CFButton(-1, layout.x + itemW - delW - getScaledX(2), curY + getScaledY(7), delW, delH, "X", 0.8f, 0.2f, 0.2f).drawButton(mc, mouseX, mouseY);

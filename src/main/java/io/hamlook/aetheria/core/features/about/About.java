@@ -1,6 +1,6 @@
 package io.hamlook.aetheria.core.features.about;
 
-import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations.*;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigAnnotations.*;
 
 public class About {
 
@@ -19,6 +19,14 @@ public class About {
     @ConfigOption(name = "GitHub", desc = "View the ATHR source code on GitHub")
     @ConfigEditorButton(runnableId = "openGithub", buttonText = "Open")
     public boolean githubButton = false;
+
+    @ConfigOption(name = "Modrinth", desc = "View ATHR on Modrinth")
+    @ConfigEditorButton(runnableId = "openModrinth", buttonText = "Open")
+    public boolean modrinthButton = false;
+
+    @ConfigOption(name = "SkyAtlas", desc = "Sync your gear and stats on SkyAtlas")
+    @ConfigEditorButton(runnableId = "openSkyAtlas", buttonText = "Open")
+    public boolean skyatlasButton = false;
 
     @ConfigOption(name = "Used Software / Libraries", desc = "Libraries and projects used by ATHR and their licenses")
     @ConfigEditorAccordion(id = 0)

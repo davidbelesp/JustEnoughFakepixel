@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.features.qol.helpers;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.editors.ChromaColour;
+import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour;
 import io.hamlook.aetheria.mixins.accessors.FontRendererAccessor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

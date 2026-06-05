@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.features.misc;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.features.storage.StorageManager;
 import io.hamlook.aetheria.init.RegisterEvents;
 import io.hamlook.aetheria.utils.CalculatorUtils;
@@ -170,7 +170,7 @@ public class SearchBar {
         toggleBtnX = barX + BAR_WIDTH + TOGGLE_BTN_GAP;
         toggleBtnY = barY;
 
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), toggleBtnX, toggleBtnY, TOGGLE_BTN_W, BAR_HEIGHT, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), toggleBtnX, toggleBtnY, TOGGLE_BTN_W, BAR_HEIGHT, 6, 18);
 
         int[] mouse = getMouseCoords();
         boolean hovered = mouse[0] >= toggleBtnX && mouse[0] < toggleBtnX + TOGGLE_BTN_W && mouse[1] >= toggleBtnY && mouse[1] < toggleBtnY + BAR_HEIGHT;
@@ -184,7 +184,7 @@ public class SearchBar {
             }
         }
         if (sendToItemList) {
-            MC.getTextureManager().bindTexture(GuiTextures.SEARCH_ICON);
+            MC.getTextureManager().bindTexture(Resources.SEARCH_ICON);
             GlStateManager.color(1f, 1f, 1f, 1f);
             int size = 12;
             Gui.drawModalRectWithCustomSizedTexture(toggleBtnX + (TOGGLE_BTN_W - size) / 2, toggleBtnY + (BAR_HEIGHT - size) / 2, 0, 0, size, size, size, size);

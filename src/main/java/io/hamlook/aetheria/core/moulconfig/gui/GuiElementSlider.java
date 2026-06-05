@@ -1,5 +1,9 @@
-package io.hamlook.aetheria.core.config.gui;
+// SPDX-License-Identifier: LGPL-3.0-only
+// Derived from MoulConfig (https://github.com/NotEnoughUpdates/MoulConfig)
 
+package io.hamlook.aetheria.core.moulconfig.gui;
+
+import io.hamlook.aetheria.Resources;
 import net.minecraft.client.Minecraft;
 import io.hamlook.aetheria.utils.Utils;
 import net.minecraft.client.gui.ScaledResolution;
@@ -47,29 +51,29 @@ public class GuiElementSlider extends GuiElement {
 
         GlStateManager.color(1, 1, 1, 1);
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.slider_on_cap);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.slider_on_cap);
         Utils.drawTexturedRect(x, y, 4, HEIGHT, GL11.GL_NEAREST);
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.slider_off_cap);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.slider_off_cap);
         Utils.drawTexturedRect(x + width - 4, y, 4, HEIGHT, GL11.GL_NEAREST);
 
         if (sliderAmtI > 5) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.slider_on_segment);
+            Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.slider_on_segment);
             Utils.drawTexturedRect(x + 4, y, sliderAmtI - 4, HEIGHT, GL11.GL_NEAREST);
         }
         if (sliderAmtI < width - 5) {
-            Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.slider_off_segment);
+            Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.slider_off_segment);
             Utils.drawTexturedRect(x + sliderAmtI, y, width - 4 - sliderAmtI, HEIGHT, GL11.GL_NEAREST);
         }
 
         for (int i = 1; i < 4; i++) {
             int notchX = x + width * i / 4 - 1;
             Minecraft.getMinecraft().getTextureManager().bindTexture(
-                    notchX > x + sliderAmtI ? GuiTextures.slider_off_notch : GuiTextures.slider_on_notch);
+                    notchX > x + sliderAmtI ? Resources.slider_off_notch : Resources.slider_on_notch);
             Utils.drawTexturedRect(notchX, y + (HEIGHT - 4f) / 2, 2, 4, GL11.GL_NEAREST);
         }
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(GuiTextures.slider_button_new);
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.slider_button_new);
         Utils.drawTexturedRect(x + sliderAmtI - 4, y, 8, HEIGHT, GL11.GL_NEAREST);
     }
 

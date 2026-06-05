@@ -6,6 +6,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.hamlook.aetheria.Aetheria;
 import io.hamlook.aetheria.core.ATHRConfig;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.features.dungeons.DungeonStats;
 import io.hamlook.aetheria.features.dungeons.rooms.DungeonRoomOverlay;
 import io.hamlook.aetheria.init.RegisterEvents;
@@ -16,7 +17,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
@@ -362,7 +362,7 @@ public class DungeonRoomDetector {
 
     private void loadSecretLocationsJson() {
         String webUrl = "https://raw.githubusercontent.com/aetheria-org/Aetheria-REPO/refs/heads/main/data/secretlocations.json";
-        ResourceLocation loc = GuiTextures.SECRET_LOCATIONS_JSON;
+        ResourceLocation loc = Resources.SECRET_LOCATIONS_JSON;
         try {
             InputStream in = getStreamWithFallback(webUrl, loc);
             if(in == null) return;
@@ -394,7 +394,7 @@ public class DungeonRoomDetector {
 
     private void loadRoomsJson() {
         String webUrl = "https://raw.githubusercontent.com/aetheria-org/Aetheria-REPO/refs/heads/main/data/dungeonrooms.json";
-        ResourceLocation loc = GuiTextures.DUNGEON_ROOMS_JSON;
+        ResourceLocation loc = Resources.DUNGEON_ROOMS_JSON;
         try {
             InputStream in = getStreamWithFallback(webUrl, loc);
             if(in == null) return;

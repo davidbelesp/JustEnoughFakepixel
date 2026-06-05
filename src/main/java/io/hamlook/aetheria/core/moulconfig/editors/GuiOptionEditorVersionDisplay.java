@@ -1,7 +1,10 @@
-package io.hamlook.aetheria.core.config.editors;
+// SPDX-License-Identifier: LGPL-3.0-only
+// Derived from MoulConfig (https://github.com/NotEnoughUpdates/MoulConfig)
+
+package io.hamlook.aetheria.core.moulconfig.editors;
 
 import io.hamlook.aetheria.Aetheria;
-import io.hamlook.aetheria.core.config.gui.config.ConfigProcessor;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigProcessor;
 import io.hamlook.aetheria.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;

@@ -24,12 +24,12 @@ import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 
 @RegisterEvents
 public class InvButtonRenderer {
 
-    private static final ResourceLocation EDITOR_TEX = GuiTextures.INV_EDITOR_TEX;
+    private static final ResourceLocation EDITOR_TEX = Resources.INV_EDITOR_TEX;
 
     private static Method drawHoveringTextMethod = null;
 

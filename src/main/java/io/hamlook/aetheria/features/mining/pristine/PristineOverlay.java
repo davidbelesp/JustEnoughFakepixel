@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.features.mining.pristine;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.editors.ChromaColour;
+import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour;
 import io.hamlook.aetheria.utils.Position;
 import io.hamlook.aetheria.features.mining.powder.PowderStats;
 import io.hamlook.aetheria.init.RegisterEvents;

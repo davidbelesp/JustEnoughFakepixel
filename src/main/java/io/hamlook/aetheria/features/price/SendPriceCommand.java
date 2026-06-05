@@ -1,12 +1,12 @@
 package io.hamlook.aetheria.features.price;
 
-import io.hamlook.aetheria.command.SimpleCommand;
+import io.hamlook.aetheria.command.ASMCommand;
 import io.hamlook.aetheria.init.RegisterCommand;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 
 @RegisterCommand
-public class SendPriceCommand extends SimpleCommand {
+public class SendPriceCommand extends ASMCommand {
     @Override
     public String getName() {
         return "sendprice";

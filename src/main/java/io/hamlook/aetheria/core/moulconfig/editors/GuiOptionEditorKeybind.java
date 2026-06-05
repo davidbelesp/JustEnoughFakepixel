@@ -1,7 +1,10 @@
-package io.hamlook.aetheria.core.config.editors;
+// SPDX-License-Identifier: LGPL-3.0-only
+// Derived from MoulConfig (https://github.com/NotEnoughUpdates/MoulConfig)
+
+package io.hamlook.aetheria.core.moulconfig.editors;
 
 import io.hamlook.aetheria.utils.KeybindHelper;
-import io.hamlook.aetheria.core.config.gui.config.ConfigProcessor;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigProcessor;
 import io.hamlook.aetheria.utils.render.RenderUtils;
 import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import net.minecraft.client.Minecraft;
@@ -11,13 +14,13 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 
-import static io.hamlook.aetheria.core.config.gui.GuiTextures.button_tex;
+import static io.hamlook.aetheria.Resources.button_tex;
 
 public class GuiOptionEditorKeybind extends GuiOptionEditor {
 
-    private static final ResourceLocation RESET = GuiTextures.RESET;
+    private static final ResourceLocation RESET = Resources.RESET;
 
     private int keyCode;
     private final int defaultKeyCode;

@@ -1,4 +1,7 @@
-package io.hamlook.aetheria.core.config.gui.config;
+// SPDX-License-Identifier: LGPL-3.0-only
+// Derived from MoulConfig (https://github.com/NotEnoughUpdates/MoulConfig)
+
+package io.hamlook.aetheria.core.moulconfig.gui.config;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

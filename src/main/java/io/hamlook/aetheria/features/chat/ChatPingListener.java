@@ -69,6 +69,15 @@ public class ChatPingListener {
         }
     }
 
+    private static String getLastFormatCode(String text) {
+        for (int i = text.length() - 2; i >= 0; i--) {
+            if (text.charAt(i) == '§') {
+                return text.substring(i, i + 2);
+            }
+        }
+        return "";
+    }
+
     private void highlightName(IChatComponent component, String name, EnumChatFormatting color) {
         highlightName(component, name, color, new boolean[]{false});
     }
@@ -133,6 +142,9 @@ public class ChatPingListener {
             i++;
 
             if (!after.isEmpty()) {
+                if (!after.startsWith("§")) {
+                    after = getLastFormatCode(before) + after;
+                }
                 ChatComponentText afterComp = new ChatComponentText(after);
                 afterComp.setChatStyle(sib.getChatStyle().createDeepCopy());
                 for (IChatComponent child : sib.getSiblings()) {

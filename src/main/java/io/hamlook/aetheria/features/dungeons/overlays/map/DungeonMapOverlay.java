@@ -1,5 +1,6 @@
 package io.hamlook.aetheria.features.dungeons.overlays.map;
 
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.core.ATHRConfig;
 import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour;
 import io.hamlook.aetheria.init.RegisterEvents;
@@ -14,8 +15,12 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.GlStateManager;
 import lombok.Getter;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Vec4b;
 import net.minecraft.world.storage.MapData;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -23,6 +28,7 @@ import org.lwjgl.opengl.GL11;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RegisterEvents
@@ -80,10 +86,10 @@ public class DungeonMapOverlay extends Overlay {
             List<EntityPlayerSP> players = Minecraft.getMinecraft().theWorld.getPlayers(
                     EntityPlayerSP.class, Objects::nonNull
             );
-            info.mapDecorations.forEach((dec,vec) -> {
-
-            });
             if (players.isEmpty()) return;
+            if(!ATHRConfig.feature.dungeons.dungeonMapConfig.showPlayerHead){
+                drawMarkers(info.mapDecorations,x,y);
+            }
             for (EntityPlayerSP playerSP : players) {
                 int worldX = -1 * (playerSP.getPosition().getX() + 6);
                 int worldZ = -1 * (playerSP.getPosition().getZ() + 6);
@@ -93,19 +99,6 @@ public class DungeonMapOverlay extends Overlay {
 
                 if (ATHRConfig.feature.dungeons.dungeonMapConfig.showPlayerHead) {
                     renderPlayerHead(pixelX, pixelZ, -1, (getScale() * 1.25f), new NetworkPlayerInfo(playerSP.getGameProfile()), playerSP.rotationYaw);
-                }else {
-                    int markerColor = (playerSP == Minecraft.getMinecraft().thePlayer) ? 0xFF00FF00 : 0xFF0000FF;
-                    float markerScale = getScale() * 1.25f;
-                    float markerSize = markerScale * 8f;
-                    float half = markerSize / 2f;
-                    float cx = pixelX + half;
-                    float cy = (pixelZ - 1f) + half;
-                    GlStateManager.pushMatrix();
-                    GlStateManager.translate(cx, cy, 0f);
-                    GlStateManager.rotate(playerSP.rotationYaw, 0f, 0f, 1f);
-                    GlStateManager.translate(-cx, -cy, 0f);
-                    Gui.drawRect((int) pixelX, (int) (pixelZ - 1f), (int) (pixelX + markerSize), (int) ((pixelZ - 1f) + markerSize), markerColor);
-                    GlStateManager.popMatrix();
                 }
                 if (ATHRConfig.feature.dungeons.dungeonMapConfig.showPlayerUsername) {
                     String name = playerSP.getDisplayName().getFormattedText();
@@ -118,6 +111,36 @@ public class DungeonMapOverlay extends Overlay {
         }
 
         GL11.glPopMatrix();
+    }
+
+    private void drawMarkers(Map<String, Vec4b> mapDecorations) {
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldRenderer = tessellator.getWorldRenderer();
+        Minecraft.getMinecraft().getTextureManager().bindTexture(Resources.DEFAULT_MAP_ICONS);
+        int k = 0;
+        for(Vec4b vec4b : mapDecorations.values()) {
+            if (vec4b.func_176110_a() == 1) {
+                GlStateManager.pushMatrix();
+                GlStateManager.translate((float)vec4b.func_176112_b() / 2.0F + 64.0F, (float)vec4b.func_176113_c() / 2.0F + 64.0F, -0.02F);
+                GlStateManager.rotate((float)(vec4b.func_176111_d() * 360) / 16.0F, 0.0F, 0.0F, 1.0F);
+                GlStateManager.scale(4.0F, 4.0F, 3.0F);
+                GlStateManager.translate(-0.125F, 0.125F, 0.0F);
+                byte b = vec4b.func_176110_a();
+                float g = (float)(b % 4) / 4.0F;
+                float h = (float)(b / 4) / 4.0F;
+                float l = (float)(b % 4 + 1) / 4.0F;
+                float m = (float)(b / 4 + 1) / 4.0F;
+                worldRenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+                float n = -0.001F;
+                worldRenderer.pos((double)-1.0F, (double)1.0F, (double)((float)k * -0.001F)).tex((double)g, (double)h).endVertex();
+                worldRenderer.pos((double)1.0F, (double)1.0F, (double)((float)k * -0.001F)).tex((double)l, (double)h).endVertex();
+                worldRenderer.pos((double)1.0F, (double)-1.0F, (double)((float)k * -0.001F)).tex((double)l, (double)m).endVertex();
+                worldRenderer.pos((double)-1.0F, (double)-1.0F, (double)((float)k * -0.001F)).tex((double)g, (double)m).endVertex();
+                tessellator.draw();
+                GlStateManager.popMatrix();
+                ++k;
+            }
+        }
     }
 
     public static void renderPlayerName(float pixelX, float pixelZ, int color, float scale, String name) {

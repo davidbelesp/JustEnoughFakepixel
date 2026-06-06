@@ -1,3 +1,9 @@
+/*
+ * Based on AutoDiscoveryMixinPlugin by Linnea Gräf.
+ * Original implementation released under the Unlicense.
+ * Modified by Aetheria contributors.
+ */
+
 package io.hamlook.aetheria.init;
 
 import org.spongepowered.asm.lib.tree.ClassNode;

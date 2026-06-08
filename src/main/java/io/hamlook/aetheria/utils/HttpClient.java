@@ -2,7 +2,6 @@ package io.hamlook.aetheria.utils;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -40,17 +39,7 @@ public class HttpClient {
     }
 
     public void post(String url, String body, String contentType) throws Exception {
-        HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", contentType);
-        conn.setConnectTimeout(TIMEOUT_MS);
-        conn.setReadTimeout(TIMEOUT_MS);
-        conn.setDoOutput(true);
-        try (OutputStream os = conn.getOutputStream()) {
-            os.write(body.getBytes(StandardCharsets.UTF_8));
-        }
-        conn.getResponseCode();
-        conn.disconnect();
+        // Outbound POST requests are disabled in this build.
     }
 
     public static class FetchResult {

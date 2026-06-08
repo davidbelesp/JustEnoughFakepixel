@@ -12,11 +12,9 @@ import io.hamlook.aetheria.features.price.vars.PriceData;
 import io.hamlook.aetheria.features.price.vars.PriceType;
 import io.hamlook.aetheria.features.profile.ProfileParser;
 import io.hamlook.aetheria.init.RegisterEvents;
-import io.hamlook.aetheria.repo.CapeAPI;
 import io.hamlook.aetheria.repo.OtherDataAPI;
 import io.hamlook.aetheria.utils.ColorUtils;
 import io.hamlook.aetheria.utils.item.ItemUtils;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.ContainerChest;
@@ -28,10 +26,6 @@ import net.minecraftforge.client.event.GuiScreenEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,8 +40,6 @@ public class PriceDetector {
 
     private static final Map<String, List<BazaarEntry>> bazaarMap = new HashMap<>();
     private static final Map<String, List<AuctionEntry>> auctionMap = new HashMap<>();
-    private static final Gson gson = new Gson();
-    private static final String MOD_SECRET = "a7c0e73c-3b0b-4789-8c80-741dd09ba1bc";
     private static final long DEDUP_INTERVAL_MS = 120_000;
     private static final long REPARSE_COOLDOWN_MS = 1_000;
 
@@ -129,44 +121,10 @@ public class PriceDetector {
     }
 
     private static void sendPrices() {
-        if(!ATHRConfig.feature.misc.priceFetcher.enabled
-        || !ATHRConfig.feature.misc.priceFetcher.sendToDB) return;
+        if (!ATHRConfig.feature.misc.priceFetcher.enabled || !ATHRConfig.feature.misc.priceFetcher.sendToDB) return;
         if (bazaarMap.isEmpty() && auctionMap.isEmpty()) return;
 
-        Minecraft mc = Minecraft.getMinecraft();
-        PriceData payload = new PriceData();
-        payload.bazaar.putAll(bazaarMap);
-        payload.auction.putAll(auctionMap);
-
-        String json = gson.toJson(payload);
-
-        if (mc.thePlayer != null) {
-            Aetheria.logger.info("Sending " + bazaarMap.size() + " bazaar and " + auctionMap.size() + " auction entries to API");
-        }
-
-        new Thread(() -> {
-            try {
-                URL url = new URL(CapeAPI.getAPIUrl("upload-price"));
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setRequestProperty("x-mod-secret", MOD_SECRET);
-                conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36");
-                conn.setDoOutput(true);
-                conn.setConnectTimeout(5000);
-                conn.setReadTimeout(5000);
-
-                try (OutputStream os = conn.getOutputStream()) {
-                    os.write(json.getBytes(StandardCharsets.UTF_8));
-                }
-
-                int responseCode = conn.getResponseCode();
-                Aetheria.logger.info("Sent all prices, response: " + responseCode);
-            } catch (Exception e) {
-                Aetheria.logger.info("Failed to send prices: " + e.getMessage());
-            }
-        }).start();
-
+        Aetheria.logger.info("Price upload disabled: clearing " + bazaarMap.size() + " bazaar and " + auctionMap.size() + " auction entries without sending.");
         bazaarMap.clear();
         auctionMap.clear();
     }

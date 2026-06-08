@@ -9,9 +9,6 @@ import net.minecraft.util.ResourceLocation;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -47,21 +44,7 @@ public class SkinManager {
                 File skinFile = new File(SKIN_DIR, username + ".png");
 
                 if (!skinFile.exists() || !sessionUpdated.contains(username)) {
-                    URL url = new URL("https://mc-heads.net/skin/" + username);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36");
-                    conn.setConnectTimeout(5000);
-                    conn.setReadTimeout(5000);
-
-                    try (InputStream in = conn.getInputStream()) {
-                        BufferedImage img = ImageIO.read(in);
-                        if (img != null) {
-                            ImageIO.write(img, "png", skinFile);
-                            sessionUpdated.add(username);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    sessionUpdated.add(username);
                 }
 
                 if (skinFile.exists()) {

@@ -77,10 +77,8 @@ public class ProfileViewerGUI extends GuiScreen {
                 if (ProfileViewerAPI.profileHashMap.containsKey(username)) {
                     this.playerProfile = ProfileViewerAPI.profileHashMap.get(username);
                 } else {
-                    this.playerProfile = ProfileViewerAPI.fetchUser(username);
-                    if (this.playerProfile != null) {
-                        ProfileViewerAPI.profileHashMap.put(username, this.playerProfile);
-                    }
+                    ProfileViewerAPI.fetchFromAPI(username);
+                    this.playerProfile = ProfileViewerAPI.profileHashMap.get(username);
                 }
 
                 if (this.playerProfile != null && this.playerProfile.profiles != null && !this.playerProfile.profiles.isEmpty()) {

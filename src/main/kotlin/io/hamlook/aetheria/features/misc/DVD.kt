@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.features.misc
 
 import io.hamlook.aetheria.core.ATHRConfig
-import io.hamlook.aetheria.core.config.gui.GuiTextures
+import io.hamlook.aetheria.Resources
 import io.hamlook.aetheria.utils.render.RenderUtils
 import io.hamlook.aetheria.init.RegisterEvents
 import io.hamlook.aetheria.utils.chat.ChatUtils
@@ -66,7 +66,7 @@ object DVD {
         val boxWidth = getBoxWidth()
         val boxHeight = getBoxHeight()
 
-        mc.textureManager.bindTexture(GuiTextures.DVD_LOGO)
+        mc.textureManager.bindTexture(Resources.DVD_LOGO)
 
         val r = (color shr 16 and 0xFF) / 255f
         val g = (color shr 8 and 0xFF) / 255f

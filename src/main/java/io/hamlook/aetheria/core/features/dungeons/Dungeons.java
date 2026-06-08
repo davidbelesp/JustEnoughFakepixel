@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.core.features.dungeons;
 
 import com.google.gson.annotations.Expose;
-import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations.*;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigAnnotations.*;
 
 public class Dungeons {
 
@@ -38,6 +38,14 @@ public class Dungeons {
     @Expose
     @Category(name = "Chest Case Opening", desc = "CS:GO style animation when opening dungeon chests")
     public CaseOpeningConfig caseOpening = new CaseOpeningConfig();
+
+    @Expose
+    @Category(name = "Secret Finder", desc = "Secret finder with  secret ESP, and display options")
+    public DungeonSecretFinderConfig dungeonSecretFinder = new DungeonSecretFinderConfig();
+
+    @Expose
+    @Category(name = "Dungeon Map", desc = "Custom Dungeon Map display overlay")
+    public DungeonMapConfig dungeonMapConfig = new DungeonMapConfig();
 
     @Expose
     @ConfigOption(name = "Hide Blessing Messages", desc = "Hides the 'DUNGEON BUFF! ... found a Blessing of ...' chat spam in dungeons")

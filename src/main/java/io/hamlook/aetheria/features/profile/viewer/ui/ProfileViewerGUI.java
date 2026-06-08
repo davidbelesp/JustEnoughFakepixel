@@ -1,6 +1,6 @@
 package io.hamlook.aetheria.features.profile.viewer.ui;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import io.hamlook.aetheria.features.profile.data.ProfileData;
 import io.hamlook.aetheria.features.profile.viewer.PlayerProfile;
@@ -32,7 +32,7 @@ import java.util.List;
 public class ProfileViewerGUI extends GuiScreen {
 
     // UI Data
-    public static ResourceLocation CONTAINER_BG = GuiTextures.CAPES_UI;
+    public static ResourceLocation CONTAINER_BG = Resources.CAPES_UI;
     public static float uiScale = 1f;
     private static int tab = 0;
     private int boxW;
@@ -117,7 +117,7 @@ public class ProfileViewerGUI extends GuiScreen {
         tabButton = null;
         isDropdownOpen = false;
         isTabDropdownOpen = false;
-        CONTAINER_BG = GuiTextures.storageBackground(1);
+        CONTAINER_BG = Resources.storageBackground(1);
         uiScale = ATHRConfig.feature.overlays.pvScale * ResolutionUtils.getXStatic(1);
         addTab(new BasicInfoTab());
         addTab(new InventoryStorageInfoTab());

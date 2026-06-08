@@ -1,6 +1,6 @@
 package io.hamlook.aetheria.features.chat.chatfilters.ui;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
 import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import io.hamlook.aetheria.utils.render.ResolutionUtils;
@@ -60,7 +60,7 @@ public class CFButton extends GuiButton {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             GlStateManager.color(r, g, b, 1.0F);
-            NineSliceUtils.draw(GuiTextures.storageBackground(1), xPosition, yPosition, width, height, 6, 18);
+            NineSliceUtils.draw(Resources.storageBackground(1), xPosition, yPosition, width, height, 6, 18);
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             
             this.mouseDragged(mc, mouseX, mouseY);

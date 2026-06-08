@@ -1,6 +1,6 @@
 package io.hamlook.aetheria.utils.render;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
@@ -19,8 +19,8 @@ import java.util.Map;
 
 public final class RenderUtils {
 
-    private static final ResourceLocation SEARCH_BAR_TEX = GuiTextures.SEARCH_BAR_TEX;
-    private static final ResourceLocation SEARCH_BAR_TEX_GOLD = GuiTextures.SEARCH_BAR_TEX_GOLD;
+    private static final ResourceLocation SEARCH_BAR_TEX = Resources.SEARCH_BAR_TEX;
+    private static final ResourceLocation SEARCH_BAR_TEX_GOLD = Resources.SEARCH_BAR_TEX_GOLD;
     private static final Map<ResourceLocation, Boolean> RESOURCE_CACHE = new HashMap<>();
 
     private RenderUtils() {

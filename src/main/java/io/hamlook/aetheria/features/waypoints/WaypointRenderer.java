@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.features.waypoints;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.editors.ChromaColour;
+import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour;
 import io.hamlook.aetheria.init.RegisterEvents;
 import io.hamlook.aetheria.utils.render.WorldRenderUtils;
 import net.minecraft.client.Minecraft;
@@ -94,7 +94,7 @@ public class WaypointRenderer {
             WaypointPoint wp = wps.get(i);
             String col = (i == cur) ? "§a" : (i == nxt) ? "§e" : "§7";
             String label = (wp.name != null && !wp.name.isEmpty()) ? wp.name : String.valueOf(i + 1);
-            drawLabel(wp.x + 0.5, wp.y + 2.2, wp.z + 0.5, col + label);
+            drawLabel(wp.x + 0.5, wp.y + 2.2, wp.z + 0.5, col + label,labelColor(),distanceLabelColor());
         }
     }
 
@@ -103,12 +103,16 @@ public class WaypointRenderer {
         WaypointPoint cur = state.getCurrent();
         WaypointPoint nxt = state.getNext();
         if (prev != null && prev != cur)
-            drawLabel(prev.x + 0.5, prev.y + 2.2, prev.z + 0.5, "§7" + safeName(prev, "Prev"));
-        if (cur != null) drawLabel(cur.x + 0.5, cur.y + 2.2, cur.z + 0.5, "§a" + safeName(cur, "Current"));
-        if (nxt != null && nxt != cur) drawLabel(nxt.x + 0.5, nxt.y + 2.2, nxt.z + 0.5, "§e" + safeName(nxt, "Next"));
+            drawLabel(prev.x + 0.5, prev.y + 2.2, prev.z + 0.5, "§7" + safeName(prev, "Prev"),labelColor(),distanceLabelColor());
+        if (cur != null) drawLabel(cur.x + 0.5, cur.y + 2.2, cur.z + 0.5, "§a" + safeName(cur, "Current"),labelColor(),distanceLabelColor());
+        if (nxt != null && nxt != cur) drawLabel(nxt.x + 0.5, nxt.y + 2.2, nxt.z + 0.5, "§e" + safeName(nxt, "Next"),labelColor(),distanceLabelColor());
     }
 
-    private void drawLabel(double wx, double wy, double wz, String text) {
+    public static void drawLabel(double wx, double wy, double wz, String text, int nameColor, int distColor) {
+        drawLabel(wx, wy, wz, text, nameColor, distColor, 1.0);
+    }
+
+    public static void drawLabel(double wx, double wy, double wz, String text, int nameColor, int distColor, double scaleMultiplier) {
         if (mc.thePlayer == null || mc.fontRendererObj == null) return;
 
         double dx = wx - mc.thePlayer.posX;
@@ -117,17 +121,16 @@ public class WaypointRenderer {
         double dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
 
         float scale = Math.max(0.025f, (float) (Math.min(dist, 50.0) / 300.0));
+        scale *= (float) scaleMultiplier;
 
         String nameStr = StringUtils.stripControlCodes(text);
-        String distStr = (int) Math.round(dist) + "m";
+        String distNum = String.valueOf((int) Math.round(dist));
 
-        int nameW  = mc.fontRendererObj.getStringWidth(nameStr);
-        int spaceW = mc.fontRendererObj.getStringWidth(" ");
-        int distW  = mc.fontRendererObj.getStringWidth(distStr);
-        int totalW = nameW + spaceW + distW;
-
-        int nameColor = labelColor();
-        int distColor = distanceLabelColor();
+        int nameW = mc.fontRendererObj.getStringWidth(nameStr);
+        String bracketOpen = "[";
+        String bracketClose = "]";
+        int distNumW = mc.fontRendererObj.getStringWidth(distNum);
+        int bracketW = mc.fontRendererObj.getStringWidth(bracketOpen) + distNumW + mc.fontRendererObj.getStringWidth(bracketClose);
 
         GL11.glPushMatrix();
         GL11.glTranslated(wx, wy, wz);
@@ -138,9 +141,14 @@ public class WaypointRenderer {
         GlStateManager.disableLighting();
         GlStateManager.disableDepth();
 
-        float sx = -totalW / 2f;
+        float sx = -nameW / 2f;
         mc.fontRendererObj.drawString(nameStr, sx, 0f, nameColor, false);
-        mc.fontRendererObj.drawString(distStr, sx + nameW + spaceW, 0f, distColor, false);
+
+        float bx = -bracketW / 2f;
+        float bw1 = mc.fontRendererObj.getStringWidth(bracketOpen);
+        mc.fontRendererObj.drawString(bracketOpen, bx, 10f, 0xAAAAAA, false);
+        mc.fontRendererObj.drawString(distNum, bx + bw1, 10f, nameColor, false);
+        mc.fontRendererObj.drawString(bracketClose, bx + bw1 + mc.fontRendererObj.getStringWidth(distNum), 10f, 0xAAAAAA, false);
 
         GlStateManager.enableDepth();
         GL11.glPopMatrix();

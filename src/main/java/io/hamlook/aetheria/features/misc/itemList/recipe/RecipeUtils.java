@@ -3,7 +3,7 @@ package io.hamlook.aetheria.features.misc.itemList.recipe;
 import io.hamlook.aetheria.features.misc.itemList.ItemRegistry;
 import io.hamlook.aetheria.features.misc.itemList.SkyblockItem;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 
@@ -15,7 +15,7 @@ public final class RecipeUtils {
     private RecipeUtils() {}
 
     public static void drawSlot(int x, int y, int size) {
-        NineSliceUtils.draw(GuiTextures.storageSlot(1), x, y, size, size, 6, 18);
+        NineSliceUtils.draw(Resources.storageSlot(1), x, y, size, size, 6, 18);
     }
 
     public static void drawAmount(FontRenderer fr, String amount, int sx, int sy) {

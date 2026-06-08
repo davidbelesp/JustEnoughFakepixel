@@ -1,7 +1,8 @@
 package io.hamlook.aetheria.features.scoreboard;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.editors.ChromaColour;
+import io.hamlook.aetheria.core.moulconfig.editors.ChromaColour;
+import io.hamlook.aetheria.utils.KeybindHelper;
 import io.hamlook.aetheria.utils.Position;
 import io.hamlook.aetheria.features.mining.fetchur.FetchurData;
 import io.hamlook.aetheria.init.RegisterEvents;
@@ -11,12 +12,10 @@ import io.hamlook.aetheria.utils.data.SkyblockData;
 import io.hamlook.aetheria.utils.data.TablistParser;
 import io.hamlook.aetheria.utils.overlay.Overlay;
 import io.hamlook.aetheria.utils.overlay.OverlayUtils;
-import io.hamlook.aetheria.features.storage.StorageManager;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.util.*;
@@ -56,7 +55,7 @@ public class CustomScoreboard extends Overlay {
     private static final int LINE_EMPTY7       = 23;
     private static final int LINE_EXTRA        = 24;
     private static final int LINE_EMPTY2       = 25;
-    
+
     private static final String LOC_SYMBOL_NORMAL = "⏣";
     private static final String LOC_SYMBOL_RIFT   = "ф";
 
@@ -393,9 +392,10 @@ public class CustomScoreboard extends Overlay {
         List<String> lines = getLines(preview);
         if (lines.isEmpty()) return;
 
-        boolean down = Keyboard.isKeyDown(ATHRConfig.feature.debug.scoreboardDebugConfig.scoreboardDebugKey);
-        if (down && !wasDown && ATHRConfig.feature.debug.scoreboardDebugConfig.scoreboardDebug)
-            ChatUtils.sendMessage(CustomScoreboardAPI.toJson());
+        boolean debugEnabled = ATHRConfig.feature.debug.scoreboardDebugConfig.scoreboardDebug;
+        int debugKey = ATHRConfig.feature.debug.scoreboardDebugConfig.scoreboardDebugKey;
+        boolean down = debugEnabled && KeybindHelper.isKeyDown(debugKey);
+        if (down && !wasDown) ChatUtils.sendMessage(CustomScoreboardAPI.toJson());
         wasDown = down;
 
         Minecraft mc   = Minecraft.getMinecraft();

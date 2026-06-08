@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.core;
 
 import com.google.gson.annotations.Expose;
-import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations.Category;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigAnnotations.Category;
 import io.hamlook.aetheria.core.features.about.About;
 import io.hamlook.aetheria.core.features.chat.ChatConfig;
 import io.hamlook.aetheria.core.features.cosmetics.Cosmetics;
@@ -107,6 +107,7 @@ public class Config {
             case "openPristineEditor": ATHRConfig.openPristineEditor(); break;
             case "resetPristineTracker": ATHRConfig.resetPristineTracker(); break;
             case "openDungeonBreakerEditor": ATHRConfig.openDungeonBreakerEditor(); break;
+            case "editDungeonMapPos": ATHRConfig.openDungeonMapEditor(); break;
             case "openTrophyFishEditor": ATHRConfig.openTrophyFishEditor(); break;
             case "openDungeonRoomOverlayEditor": ATHRConfig.openDungeonRoomOverlayEditor(); break;
             case "openItemInvincibilityEditor": ATHRConfig.openItemInvincibilityEditor(); break;
@@ -122,9 +123,9 @@ public class Config {
             case "openLicenseMixin": openUrl("https://github.com/SpongePowered/Mixin/"); break;
             case "openLicenseMoulConfig": openUrl("https://github.com/NotEnoughUpdates/MoulConfig"); break;
             case "openLicenseLombok": openUrl("https://projectlombok.org/"); break;
-            case "openLicenseReflections": openUrl("https://github.com/ronmamo/reflections"); break;
-            case "openLicenseJavassist": openUrl("https://github.com/jboss-javassist/javassist"); break;
             case "openLicenseJbAnnotations": openUrl("https://github.com/JetBrains/java-annotations"); break;
+            case "openModrinth": openUrl("https://modrinth.com/mod/aetheriamod"); break;
+            case "openSkyAtlas": openUrl("https://skyatlas.qzz.io"); break;
         }
     }
 }

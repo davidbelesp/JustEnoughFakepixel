@@ -1,5 +1,3 @@
-// Credit: NotEnoughFakepixel (https://github.com/davidbelesp/NotEnoughFakepixel)
-
 package io.hamlook.aetheria.repo;
 
 public class ATHRRepo {
@@ -10,6 +8,8 @@ public class ATHRRepo {
     public static final String KEY_TIMERS = "timers";
     public static final String KEY_TAGS = "tags";
     public static final String KEY_REPO = "repo";
+    public static final String KEY_OTHER = "other";
+
     private static final String BASE = "https://raw.githubusercontent.com/aetheria-org/Aetheria-REPO/main/";
 
     private ATHRRepo() {
@@ -22,6 +22,7 @@ public class ATHRRepo {
         RepoHandler.register(KEY_TIMERS, BASE + "data/timers.json");
         RepoHandler.register(KEY_TAGS, BASE + "data/tags.json");
         RepoHandler.register(KEY_REPO, BASE + "data/repo.json");
+        RepoHandler.register(KEY_OTHER, BASE + "data/other.json");
         RepoHandler.warmupAll();
     }
 }

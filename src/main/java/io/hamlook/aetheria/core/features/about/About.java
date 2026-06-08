@@ -1,6 +1,6 @@
 package io.hamlook.aetheria.core.features.about;
 
-import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations.*;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigAnnotations.*;
 
 public class About {
 
@@ -19,6 +19,14 @@ public class About {
     @ConfigOption(name = "GitHub", desc = "View the ATHR source code on GitHub")
     @ConfigEditorButton(runnableId = "openGithub", buttonText = "Open")
     public boolean githubButton = false;
+
+    @ConfigOption(name = "Modrinth", desc = "View ATHR on Modrinth")
+    @ConfigEditorButton(runnableId = "openModrinth", buttonText = "Open")
+    public boolean modrinthButton = false;
+
+    @ConfigOption(name = "SkyAtlas", desc = "Sync your gear and stats on SkyAtlas")
+    @ConfigEditorButton(runnableId = "openSkyAtlas", buttonText = "Open")
+    public boolean skyatlasButton = false;
 
     @ConfigOption(name = "Used Software / Libraries", desc = "Libraries and projects used by ATHR and their licenses")
     @ConfigEditorAccordion(id = 0)
@@ -43,16 +51,6 @@ public class About {
     @ConfigEditorButton(runnableId = "openLicenseLombok", buttonText = "Website")
     @ConfigAccordionId(id = 0)
     public boolean lombokButton = false;
-
-    @ConfigOption(name = "Reflections", desc = "Reflections is available under the WTFPL / Apache 2 license")
-    @ConfigEditorButton(runnableId = "openLicenseReflections", buttonText = "Source")
-    @ConfigAccordionId(id = 0)
-    public boolean reflectionsButton = false;
-
-    @ConfigOption(name = "Javassist", desc = "Javassist is available under the Apache 2 / LGPL 2.1 / MPL 1.1 license")
-    @ConfigEditorButton(runnableId = "openLicenseJavassist", buttonText = "Source")
-    @ConfigAccordionId(id = 0)
-    public boolean javassistButton = false;
 
     @ConfigOption(name = "JB Annotations", desc = "JetBrains Annotations is available under the Apache 2 license")
     @ConfigEditorButton(runnableId = "openLicenseJbAnnotations", buttonText = "Source")

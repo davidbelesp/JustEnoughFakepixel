@@ -3,8 +3,8 @@ package io.hamlook.aetheria.features.waypoints;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import io.hamlook.aetheria.core.config.gui.GuiElement;
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.core.moulconfig.gui.GuiElement;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
 import io.hamlook.aetheria.utils.render.TextRenderUtils;
 import net.minecraft.client.Minecraft;
@@ -165,7 +165,7 @@ public class WaypointGroupGui extends GuiElement {
         Gui.drawRect(0, 0, sr.getScaledWidth(), sr.getScaledHeight(), 0xaa050508);
 
         GlStateManager.color(0.18f, 0.18f, 0.18f, 1f);
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), px, py, pw, ph, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), px, py, pw, ph, 6, 18);
         GlStateManager.color(1f, 1f, 1f, 1f);
 
         int curY = py + PAD;
@@ -180,7 +180,7 @@ public class WaypointGroupGui extends GuiElement {
         WaypointStorage storage = WaypointStorage.getInstance();
 
         GlStateManager.color(0.14f, 0.14f, 0.14f, 1f);
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), px + PAD, curY, pw - PAD * 2, ROW_H, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), px + PAD, curY, pw - PAD * 2, ROW_H, 6, 18);
         GlStateManager.color(1f, 1f, 1f, 1f);
 
         if (state.hasGroup()) {
@@ -287,7 +287,7 @@ public class WaypointGroupGui extends GuiElement {
         boolean isLoaded = state.loadedGroup != null && state.loadedGroup.name.equalsIgnoreCase(gr.g.name);
 
         GlStateManager.color(isLoaded ? 0.12f : 0.14f, isLoaded ? 0.16f : 0.14f, isLoaded ? 0.12f : 0.14f, 1f);
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), panelX + PAD, gr.y, panelW - PAD * 2, ROW_H, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), panelX + PAD, gr.y, panelW - PAD * 2, ROW_H, 6, 18);
         GlStateManager.color(1f, 1f, 1f, 1f);
         if (isLoaded) Gui.drawRect(panelX + PAD, gr.y, panelX + PAD + 2, gr.y + ROW_H, 0xff55aa55);
         String arrow = gr.expanded ? EnumChatFormatting.GRAY + "▼" : EnumChatFormatting.DARK_GRAY + "▶";

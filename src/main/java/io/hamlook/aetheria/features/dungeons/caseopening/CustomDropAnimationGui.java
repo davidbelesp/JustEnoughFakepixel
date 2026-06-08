@@ -2,6 +2,7 @@ package io.hamlook.aetheria.features.dungeons.caseopening;
 
 import io.hamlook.aetheria.DebugLogger;
 import io.hamlook.aetheria.core.ATHRConfig;
+import io.hamlook.aetheria.Resources;
 import io.netty.util.internal.ThreadLocalRandom;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
@@ -21,11 +22,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
-
 public class CustomDropAnimationGui extends GuiScreen {
 
-    private static final ResourceLocation FADE_SIDE  = GuiTextures.CASE_FADE_SIDE;
+    private static final ResourceLocation FADE_SIDE  = Resources.CASE_FADE_SIDE;
     // AUDIO is a Minecraft sound event ResourceLocation – kept inline below where used
     private static final ResourceLocation AUDIO = new ResourceLocation("gui.button.press");
 
@@ -191,7 +190,7 @@ public class CustomDropAnimationGui extends GuiScreen {
         super.initGui();
         DebugLogger.log("[ATHR ANIMATION] initGui called - initializing animation GUI");
         try {
-            blurShader = new ShaderGroup(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), GuiTextures.CASE_BLUR_SHADER);
+            blurShader = new ShaderGroup(mc.getTextureManager(), mc.getResourceManager(), mc.getFramebuffer(), Resources.CASE_BLUR_SHADER);
             blurShader.createBindFramebuffers(mc.displayWidth, mc.displayHeight);
             DebugLogger.log("[ATHR ANIMATION] Blur shader initialized successfully");
         } catch (Exception e) {

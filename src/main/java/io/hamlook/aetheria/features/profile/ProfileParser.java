@@ -1183,7 +1183,7 @@ public class ProfileParser {
         return new SkillsData(result);
     }
 
-    private static long parseRawNumber(String raw) {
+    public static long parseRawNumber(String raw) {
         String s = raw.trim().replace(",", "");
         if (s.isEmpty()) return 0L;
         char suffix = Character.toUpperCase(s.charAt(s.length() - 1));

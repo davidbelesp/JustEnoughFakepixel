@@ -1,8 +1,8 @@
 package io.hamlook.aetheria;
 
 import io.hamlook.aetheria.core.ATHRConfig;
-import io.hamlook.aetheria.core.config.gui.GuiScreenElementWrapper;
-import io.hamlook.aetheria.core.config.gui.config.ConfigEditor;
+import io.hamlook.aetheria.core.moulconfig.gui.GuiScreenElementWrapper;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigEditor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.IModGuiFactory;

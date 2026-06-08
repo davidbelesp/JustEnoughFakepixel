@@ -1,6 +1,6 @@
 package io.hamlook.aetheria.features.chat.chatfilters.ui;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.features.chat.chatfilters.ChatFilter;
 import io.hamlook.aetheria.features.chat.chatfilters.ChatFilterManager;
 import io.hamlook.aetheria.features.chat.chatfilters.vars.FilterCase;
@@ -170,7 +170,7 @@ public class ChatFilterGUI extends ChatFilterBaseGUI {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         drawDefaultBackground();
         GlStateManager.color(0.18f, 0.18f, 0.18f, 1f);
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), boxX, boxY, boxW, boxH, 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), boxX, boxY, boxW, boxH, 6, 18);
         GlStateManager.color(1f, 1f, 1f, 1f);
         List<ChatFilter> displayed = getDisplayedFilters();
         cachedLayout = buildLayout(displayed);
@@ -178,7 +178,7 @@ public class ChatFilterGUI extends ChatFilterBaseGUI {
         updateScroll(l, mouseY);
 
         GlStateManager.color(0.12f, 0.12f, 0.12f, 1f);
-        NineSliceUtils.draw(GuiTextures.storageBackground(1), boxX + getScaledX(10), l.listY - getScaledY(6), boxW - getScaledX(20), l.listH + getScaledY(12), 6, 18);
+        NineSliceUtils.draw(Resources.storageBackground(1), boxX + getScaledX(10), l.listY - getScaledY(6), boxW - getScaledX(20), l.listH + getScaledY(12), 6, 18);
         GlStateManager.color(1f, 1f, 1f, 1f);
         RenderUtils.drawSearchBar(searchField, false);
 
@@ -217,7 +217,7 @@ public class ChatFilterGUI extends ChatFilterBaseGUI {
 
         for (ChatFilter cf : displayed) {
             GlStateManager.color(0.22f, 0.22f, 0.22f, 1f);
-            NineSliceUtils.draw(GuiTextures.storageBackground(1), boxX + getScaledX(18), curY + getScaledY(4), boxW - getScaledX(36), getScaledY(44), 6, 18);
+            NineSliceUtils.draw(Resources.storageBackground(1), boxX + getScaledX(18), curY + getScaledY(4), boxW - getScaledX(36), getScaledY(44), 6, 18);
             GlStateManager.color(1f, 1f, 1f, 1f);
             String preview = String.join(", ", cf.filterWords);
 

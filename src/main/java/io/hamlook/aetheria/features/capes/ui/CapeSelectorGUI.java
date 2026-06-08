@@ -14,13 +14,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
+import io.hamlook.aetheria.Resources;
 
 public class CapeSelectorGUI extends GuiScreen {
 
     public List<CapeDisplay> capes = new ArrayList<>();
 
-    private static final ResourceLocation CONTAINER_BG = GuiTextures.CAPES_UI;
+    private static final ResourceLocation CONTAINER_BG = Resources.CAPES_UI;
 
     private float scrollOffset = 0f;
     private float scrollVelocity = 0f;

@@ -1,5 +1,6 @@
 package io.hamlook.aetheria.features.capes.ui;
 
+import io.hamlook.aetheria.Resources;
 import io.hamlook.aetheria.features.capes.Cape;
 import io.hamlook.aetheria.features.capes.CapeManager;
 import io.hamlook.aetheria.utils.render.NineSliceUtils;
@@ -9,8 +10,6 @@ import net.minecraft.client.model.ModelBase;
 import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
-
-import io.hamlook.aetheria.core.config.gui.GuiTextures;
 
 public class CapeDisplay {
 
@@ -22,7 +21,7 @@ public class CapeDisplay {
 
     private final ModelRenderer capeModel;
 
-    private static final ResourceLocation SLOT_BG = GuiTextures.CAPES_UI;
+    private static final ResourceLocation SLOT_BG = Resources.CAPES_UI;
 
     public CapeDisplay(Cape cape) {
         this.capeID = cape.id;

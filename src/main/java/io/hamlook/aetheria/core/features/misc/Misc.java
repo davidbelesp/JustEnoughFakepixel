@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.core.features.misc;
 
 import com.google.gson.annotations.Expose;
-import io.hamlook.aetheria.core.config.gui.config.ConfigAnnotations.*;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigAnnotations.*;
 
 public class Misc {
 
@@ -32,6 +32,10 @@ public class Misc {
     @Expose
     @Category(name = "Bazaar Orders", desc = "Highlights filled sell and buy orders in the Bazaar Orders menu")
     public BazaarOrdersConfig bazaarOrders = new BazaarOrdersConfig();
+
+    @Expose
+    @Category(name = "Price Fetcher", desc = "Settings related to the dynamic price fetcher used for various purposes.")
+    public PriceFetcherConfig priceFetcher = new PriceFetcherConfig();
 
     // ── standalone options ───────────────────────────────────────────────────
     @Expose

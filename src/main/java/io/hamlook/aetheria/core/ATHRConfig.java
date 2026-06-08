@@ -1,13 +1,14 @@
 package io.hamlook.aetheria.core;
 
 import io.hamlook.aetheria.command.Command;
-import io.hamlook.aetheria.core.config.editors.GuiPositionEditor;
-import io.hamlook.aetheria.core.config.gui.GuiScreenElementWrapper;
-import io.hamlook.aetheria.core.config.gui.config.ConfigEditor;
+import io.hamlook.aetheria.core.moulconfig.editors.GuiPositionEditor;
+import io.hamlook.aetheria.core.moulconfig.gui.GuiScreenElementWrapper;
+import io.hamlook.aetheria.core.moulconfig.gui.config.ConfigEditor;
 import io.hamlook.aetheria.features.chat.chatfilters.ui.ChatFilterGUI;
 import io.hamlook.aetheria.features.diana.GuiDianaOverlayEditor;
 import io.hamlook.aetheria.features.dungeons.DungeonStats;
 import io.hamlook.aetheria.features.dungeons.overlays.DungeonBreakerOverlay;
+import io.hamlook.aetheria.features.dungeons.overlays.map.DungeonMapOverlay;
 import io.hamlook.aetheria.features.dungeons.rooms.DungeonRoomOverlay;
 import io.hamlook.aetheria.features.farming.BPSOverlay;
 import io.hamlook.aetheria.features.fishing.trophy.TrophyFishOverlay;
@@ -211,6 +212,15 @@ public class ATHRConfig {
         if (overlay == null) return;
         screenToOpen = new GuiPositionEditor(feature.dungeons.dungeonBreaker.dungeonBreakerPos, overlay::getOverlayWidth, overlay::getOverlayHeight, () -> overlay.render(true), ATHRConfig::saveConfig, ATHRConfig::saveConfig).withOverlayScale(feature.dungeons.dungeonBreaker.dungeonBreakerScale).withParent(Minecraft.getMinecraft().currentScreen);
     }
+
+    public static void openDungeonMapEditor(){
+        if (feature == null) return;
+        DungeonMapOverlay overlay = DungeonMapOverlay.getInstance();
+        if (overlay == null) return;
+        screenToOpen = new GuiPositionEditor(feature.dungeons.dungeonMapConfig.dungeonMapPos, overlay::getOverlayWidth, overlay::getOverlayHeight, () -> overlay.render(true), ATHRConfig::saveConfig, ATHRConfig::saveConfig).withOverlayScale(feature.dungeons.dungeonMapConfig.scale).withParent(Minecraft.getMinecraft().currentScreen);
+
+    }
+
 
     public static void openInvButtonEditor() {
         screenToOpen = new GuiInvButtonEditor();

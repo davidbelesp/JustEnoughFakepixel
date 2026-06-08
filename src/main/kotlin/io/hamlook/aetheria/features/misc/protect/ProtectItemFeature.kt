@@ -1,7 +1,7 @@
 package io.hamlook.aetheria.features.misc.protect
 
 import io.hamlook.aetheria.core.ATHRConfig
-import io.hamlook.aetheria.core.config.gui.GuiTextures
+import io.hamlook.aetheria.Resources
 import io.hamlook.aetheria.events.ItemTossEvent
 import io.hamlook.aetheria.events.RenderItemOverlayEvent
 import io.hamlook.aetheria.events.SlotClickEvent
@@ -185,7 +185,7 @@ class ProtectItemFeature {
         GlStateManager.color(1f, 1f, 1f, opacity)
         GlStateManager.disableDepth()
 
-        mc.textureManager.bindTexture(GuiTextures.PROTECT_ITEM_STAR)
+        mc.textureManager.bindTexture(Resources.PROTECT_ITEM_STAR)
         Gui.drawModalRectWithCustomSizedTexture(
             x, y, 0f, 0f, STAR_SIZE, STAR_SIZE, STAR_SIZE.toFloat(), STAR_SIZE.toFloat()
         )
